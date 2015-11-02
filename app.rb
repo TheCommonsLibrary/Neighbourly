@@ -14,11 +14,9 @@ enable :sessions
 configure do
   db = Sequel.connect('postgres://localhost/walklist')
   set :db, db
-  set :redirect_uri, 'http://localhost:4567/electorates'
 end
 
 configure :production do
-	set :redirect_uri, 'http://desolate-fortress-8938.herokuapp.com/electorates'
 end
 
 configure :test do
@@ -38,13 +36,13 @@ post '/login' do
   site_path = "https://#{nation}.nationbuilder.com"
   session[:site_path] = site_path
   oauth_client = OAuth2::Client.new(ENV['OAUTH_CLIENT_ID'], ENV['OAUTH_CLIENT_SECRET'], :site => site_path)
-  redirect oauth_client.auth_code.authorize_url(:redirect_uri => settings.redirect_uri)
+  redirect oauth_client.auth_code.authorize_url(:redirect_uri => ENV['REDIRECT_URI'])
 end
 
 get '/home' do
   code = params['code']
   oauth_client = OAuth2::Client.new(ENV['OAUTH_CLIENT_ID'], ENV['OAUTH_CLIENT_SECRET'], :site => session[:site_path])
-  token = oauth_client.auth_code.get_token(code, :redirect_uri => settings.redirect_uri)
+  token = oauth_client.auth_code.get_token(code, :redirect_uri => ENV['REDIRECT_URI'])
   puts token
   #TODO store token?
   haml :"home"
