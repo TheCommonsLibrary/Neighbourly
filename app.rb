@@ -22,7 +22,7 @@ configure :production do
 end
 
 configure :test do
-  db = Sequel.connect(ENV['SNAP_DB_PG_HOST'] || "postgres://localhost/walklist_test")
+  db = Sequel.connect(ENV['SNAP_DB_PG_URL'] || "postgres://localhost/walklist_test")
   set :db, db
 end
 
