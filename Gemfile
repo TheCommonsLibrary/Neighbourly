@@ -10,6 +10,7 @@ gem 'sequel_pg'
 gem 'oauth2'
 gem 'dotenv-rails'
 gem 'haml'
+gem 'puma'
 
 group :dev do
   gem 'rake'
