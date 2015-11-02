@@ -3,6 +3,8 @@ GEM
   specs:
     backports (3.6.6)
     diff-lcs (1.2.5)
+    haml (4.0.6)
+      tilt
     multi_json (1.11.2)
     pg (0.18.3)
     rack (1.6.4)
@@ -45,6 +47,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  haml
   pg
   rack-test
   rake

@@ -1,5 +1,5 @@
 require 'sinatra'
-require 'erb'
+require 'haml'
 require 'sequel'
 require 'time'
 
@@ -14,5 +14,5 @@ end
 Sequel.datetime_class = DateTime
 
 get '/' do
-  erb :"main"
+  haml :main
 end

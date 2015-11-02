@@ -7,6 +7,7 @@ gem "sinatra"
 gem 'pg'
 gem 'sequel'
 gem 'sequel_pg'
+gem 'haml'
 
 group :dev do
   gem 'rake'
