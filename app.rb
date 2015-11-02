@@ -19,6 +19,11 @@ end
 configure :production do
 end
 
+configure :test do
+  db = Sequel.connect(ENV['SNAP_DB_PG_HOST'] || "postgres://localhost/walklist_test")
+  set :db, db
+end
+
 Sequel.datetime_class = DateTime
 
 set :redirect_uri, 'http://localhost:4567/home'
