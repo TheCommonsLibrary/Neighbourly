@@ -32,20 +32,10 @@ end
 
 post '/login' do
   nation = params['nation']
-  puts "nation = #{nation}"
   site_path = "https://#{nation}.nationbuilder.com"
   session[:site_path] = site_path
   oauth_client = OAuth2::Client.new(ENV['OAUTH_CLIENT_ID'], ENV['OAUTH_CLIENT_SECRET'], :site => site_path)
   redirect oauth_client.auth_code.authorize_url(:redirect_uri => ENV['REDIRECT_URI'])
-end
-
-get '/home' do
-  code = params['code']
-  oauth_client = OAuth2::Client.new(ENV['OAUTH_CLIENT_ID'], ENV['OAUTH_CLIENT_SECRET'], :site => session[:site_path])
-  token = oauth_client.auth_code.get_token(code, :redirect_uri => ENV['REDIRECT_URI'])
-  puts token
-  #TODO store token?
-  haml :home
 end
 
 get '/map' do
@@ -53,5 +43,10 @@ get '/map' do
 end
 
 get '/electorates' do
+  code = params['code']
+  oauth_client = OAuth2::Client.new(ENV['OAUTH_CLIENT_ID'], ENV['OAUTH_CLIENT_SECRET'], :site => session[:site_path])
+  token = oauth_client.auth_code.get_token(code, :redirect_uri => ENV['REDIRECT_URI'])
+  puts "Token = #{token}"
+  #TODO store token?
   haml :electorates
 end
