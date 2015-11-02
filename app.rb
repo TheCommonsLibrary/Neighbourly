@@ -36,11 +36,10 @@ post '/login' do
 end
 
 get '/home' do
-  byebug
   code = params['code']
   oauth_client = OAuth2::Client.new(ENV['OAUTH_CLIENT_ID'], ENV['OAUTH_CLIENT_SECRET'], :site => session[:site_path])
   token = oauth_client.auth_code.get_token(code, :redirect_uri => settings.redirect_uri)
   puts token
   #TODO store token?
-  erb :"home"
+  haml :"home"
 end
