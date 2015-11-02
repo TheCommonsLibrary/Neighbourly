@@ -7,6 +7,9 @@ gem "sinatra"
 gem 'pg'
 gem 'sequel'
 gem 'sequel_pg'
+gem 'oauth2'
+gem 'byebug'
+gem 'dotenv-rails'
 
 group :dev do
   gem 'rake'
