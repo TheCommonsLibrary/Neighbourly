@@ -52,3 +52,6 @@ get '/map' do
   haml :map
 end
 
+get '/electorates' do
+  haml :electorates
+end
