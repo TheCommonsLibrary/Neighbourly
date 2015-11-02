@@ -10,6 +10,7 @@ gem 'sequel_pg'
 gem 'oauth2'
 gem 'byebug'
 gem 'dotenv-rails'
+gem 'haml'
 
 group :dev do
   gem 'rake'

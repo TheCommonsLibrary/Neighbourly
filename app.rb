@@ -3,14 +3,27 @@ require 'erb'
 require 'oauth2'
 require 'byebug'
 require 'dotenv'
-enable :sessions
+require 'haml'
+require 'sequel'
+require 'time'
 
 Dotenv.load
+enable :sessions
+
+configure do
+  db = Sequel.connect('postgres://localhost/walklist')
+  set :db, db
+end
+
+configure :production do
+end
+
+Sequel.datetime_class = DateTime
 
 set :redirect_uri, 'http://localhost:4567/home'
 
 get '/' do
-  erb :"main"
+  haml :main
 end
 
 post '/login' do
