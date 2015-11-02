@@ -20,3 +20,7 @@ group :dev do
   gem 'rack-test'
   gem 'byebug'
 end
+
+group :test do 
+	gem 'cucumber'
+end
