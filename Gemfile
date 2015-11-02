@@ -11,6 +11,7 @@ gem 'oauth2'
 gem 'dotenv-rails'
 gem 'haml'
 gem 'puma'
+gem 'httparty'
 
 group :dev do
   gem 'rake'
