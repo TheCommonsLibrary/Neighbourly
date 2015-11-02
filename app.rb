@@ -14,9 +14,11 @@ enable :sessions
 configure do
   db = Sequel.connect('postgres://localhost/walklist')
   set :db, db
+  set :redirect_uri, 'http://localhost:4567/electorates'
 end
 
 configure :production do
+	set :redirect_uri, 'http://desolate-fortress-8938.herokuapp.com/electorates'
 end
 
 configure :test do
@@ -25,8 +27,6 @@ configure :test do
 end
 
 Sequel.datetime_class = DateTime
-
-set :redirect_uri, 'http://localhost:4567/home'
 
 get '/' do
   haml :main
