@@ -24,7 +24,7 @@ class ElectorateService
     }
   end
 
-  def get_mesh_blocks
+  def get_boundary_coordinates
     ElectorateService.post('https://site:a1534a534ef72b948437133ae441e134@kili-eu-west-1.searchly.com/_search', request_payload)
   end
 end

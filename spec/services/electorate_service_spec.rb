@@ -8,7 +8,6 @@ describe ElectorateService do
 
   	expect(ElectorateService).to receive(:post).with elastic_search_url, electorate_service.request_payload
 
-  	electorate_service.get_mesh_blocks
+  	electorate_service.get_boundary_coordinates
   end
-
 end
