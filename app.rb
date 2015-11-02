@@ -6,6 +6,7 @@ require 'dotenv'
 require 'haml'
 require 'sequel'
 require 'time'
+require "sinatra/reloader" if development?
 
 Dotenv.load
 enable :sessions
