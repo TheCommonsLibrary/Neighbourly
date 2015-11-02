@@ -52,6 +52,7 @@ GEM
       multi_xml (~> 0.5)
       rack (~> 1.2)
     pg (0.18.3)
+    puma (2.14.0)
     rack (1.6.4)
     rack-protection (1.5.3)
       rack
@@ -114,6 +115,7 @@ DEPENDENCIES
   haml
   oauth2
   pg
+  puma
   rack-test
   rake
   rspec
