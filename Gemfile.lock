@@ -5,7 +5,12 @@ GEM
     diff-lcs (1.2.5)
     haml (4.0.6)
       tilt
+    httparty (0.13.7)
+      json (~> 1.8)
+      multi_xml (>= 0.5.2)
+    json (1.8.3)
     multi_json (1.11.2)
+    multi_xml (0.5.5)
     pg (0.18.3)
     rack (1.6.4)
     rack-protection (1.5.3)
@@ -48,6 +53,7 @@ PLATFORMS
 
 DEPENDENCIES
   haml
+  httparty
   pg
   rack-test
   rake

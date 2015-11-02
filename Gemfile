@@ -8,6 +8,7 @@ gem 'pg'
 gem 'sequel'
 gem 'sequel_pg'
 gem 'haml'
+gem 'httparty'
 
 group :dev do
   gem 'rake'
