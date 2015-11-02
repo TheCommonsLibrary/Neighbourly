@@ -1,3 +1,4 @@
 .idea/
 logfile
 run.sh
+.env
