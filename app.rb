@@ -45,5 +45,10 @@ get '/home' do
   token = oauth_client.auth_code.get_token(code, :redirect_uri => ENV['REDIRECT_URI'])
   puts token
   #TODO store token?
-  haml :"home"
+  haml :home
 end
+
+get '/map' do
+  haml :map
+end
+

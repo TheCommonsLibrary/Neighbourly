@@ -123,6 +123,3 @@ DEPENDENCIES
   sequel_pg
   sinatra
   sinatra-contrib
-
-BUNDLED WITH
-   1.10.6
