@@ -8,7 +8,6 @@ gem 'pg'
 gem 'sequel'
 gem 'sequel_pg'
 gem 'oauth2'
-gem 'byebug'
 gem 'dotenv-rails'
 gem 'haml'
 
@@ -17,4 +16,5 @@ group :dev do
   gem 'rspec'
   gem 'sinatra-contrib'
   gem 'rack-test'
+  gem 'byebug'
 end
