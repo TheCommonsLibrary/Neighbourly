@@ -5,6 +5,12 @@ ruby "2.2.3"
 
 gem "sinatra"
 gem 'pg'
-gem 'rspec'
 gem 'sequel'
 gem 'sequel_pg'
+
+group :dev do
+  gem 'rake'
+  gem 'rspec'
+  gem 'sinatra-contrib'
+  gem 'rack-test'
+end
