@@ -27,11 +27,15 @@ module Sinatra
         JSON.parse(HTTParty.get("https://#{nation_slug}.nationbuilder.com/api/v1/#{path}?access_token=#{nation_token}").body)
       end
 
+      def authorised?
+        !nation_slug.nil? and !nation_token.nil? 
+      end
+
       def authorised
-        if nation_slug.nil? or nation_token.nil? 
-          redirect '/'
-        else
+        if authorised?
           yield
+        else
+          redirect '/'
         end
       end
     end

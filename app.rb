@@ -31,7 +31,15 @@ end
 Sequel.datetime_class = DateTime
 
 get '/' do
-  haml :main
+  if authorised?
+    redirect '/electorates'
+  else
+    haml :main
+  end
+end
+
+get '/login' do
+  redirect '/'
 end
 
 post '/login' do
