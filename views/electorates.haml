@@ -1,27 +1,22 @@
 .container.select-electorate
-  .spacer
-  .form
+  .select-electorate
     %h2 Select your electorate
 
-    %form{ :action => "/map", :method => "GET"}
-      %select{ :id => "electorate", :name => "electorate" }
-        %option{:value => "301020"}= "Batman"
-        %option{:value => "300989"}= "Bonner"
-        %option{:value => "300991"}= "Brisbane"
-        %option{:value => "300923"}= "Curtin"
-        %option{:value => "301028"}= "Deakin"
-        %option{:value => "300937"}= "Denison"
-        %option{:value => "301029"}= "Dunkley"
-        %option{:value => "301035"}= "Higgins"
-        %option{:value => "301059"}= "Hindmarsh"
-        %option{:value => "301041"}= "Kooyong"
-        %option{:value => "301046"}= "McEwen"
-        %option{:value => "301048"}= "Melbourne"
-        %option{:value => "301011"}= "Moreton"
-        %option{:value => "301013"}= "Petrie"
-        %option{:value => "300977"}= "Reid"
-        %option{:value => "301015"}= "Ryan"
-        %option{:value => "301064"}= "Sturt"
-        %option{:value => "300986"}= "Wentworth"
-
-      %input{:id => 'submit-electorate', :type => "submit", :value => "View", :class => "button"}
+    %a{ href:"/map?electorate=301020"}="Batman"
+    %a{ href:"/map?electorate=300989"}="Bonner"
+    %a{ href:"/map?electorate=300991"}="Brisbane"
+    %a{ href:"/map?electorate=300923"}="Curtin"
+    %a{ href:"/map?electorate=301028"}="Deakin"
+    %a{ href:"/map?electorate=300937"}="Denison"
+    %a{ href:"/map?electorate=301029"}="Dunkley"
+    %a{ href:"/map?electorate=301035"}="Higgins"
+    %a{ href:"/map?electorate=301059"}="Hindmarsh"
+    %a{ href:"/map?electorate=301041"}="Kooyong"
+    %a{ href:"/map?electorate=301046"}="McEwen"
+    %a{ href:"/map?electorate=301048"}="Melbourne"
+    %a{ href:"/map?electorate=301011"}="Moreton"
+    %a{ href:"/map?electorate=301013"}="Petrie"
+    %a{ href:"/map?electorate=300977"}="Reid"
+    %a{ href:"/map?electorate=301015"}="Ryan"
+    %a{ href:"/map?electorate=301064"}="Sturt"
+    %a{ href:"/map?electorate=300986"}="Wentworth"

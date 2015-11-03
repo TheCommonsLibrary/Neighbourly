@@ -7,6 +7,40 @@
   border-radius: 5px;
 }
 
+.select-electorate a {
+  font-size: 2rem;
+  float: left;
+  clear: both;
+  margin-bottom: 5px;
+}
+
+.logo-link {
+  float: left;
+}
+
+.header {
+  overflow: hidden;
+}
+
+.electorates {
+  float: left;
+}
+
+.electorate-picker {
+  display: inline;
+  margin-left: 45px;
+  float: left;
+  margin-top: 31px;
+}
+
+.electorate-picker form {
+  display: inline;
+}
+
+.electorate-picker select {
+  min-width: 175px;
+}
+
 .main {
   background-image: url('/images/background-home-image.jpg');
   background-size: 100%;
