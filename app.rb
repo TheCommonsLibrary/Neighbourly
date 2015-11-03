@@ -50,12 +50,6 @@ post '/login' do
   redirect oauth_client.auth_code.authorize_url(:redirect_uri => ENV['REDIRECT_URI'])
 end
 
-get '/map' do
-  authorised do
-    haml :map
-  end
-end
-
 get '/authorise' do
   code = params['code']
   oauth_client = OAuth2::Client.new(ENV['OAUTH_CLIENT_ID'], ENV['OAUTH_CLIENT_SECRET'], :site => site_path)
@@ -67,5 +61,11 @@ end
 get '/electorates' do
   authorised do
     haml :electorates
+  end
+end
+
+get '/map' do
+  authorised do
+    haml :map
   end
 end
