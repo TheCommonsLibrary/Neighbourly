@@ -18,6 +18,26 @@ require_relative 'services/electorate_service'
 Dotenv.load
 enable :sessions
 
+ELECTORATES = 
+  {"Batman"   => "301020",
+  "Bonner"   => "300989",
+  "Brisbane" => "300991",
+  "Curtin"   => "300923",
+  "Deakin"   => "301028",
+  "Denison"  => "300937",
+  "Dunkley"  => "301029",
+  "Higgins"  => "301035",
+  "Hindmarsh"=> "301059",
+  "Kooyong"  => "301041",
+  "McEwen"   => "301046",
+  "Melbourne"=> "301048",
+  "Moreton"  => "301011",
+  "Petrie"   => "301013",
+  "Reid"     => "300977",
+  "Ryan"     => "301015",
+  "Sturt"    => "301064",
+  "Wentworth"=> "300986"}
+
 configure do
   db = Sequel.connect('postgres://localhost/walklist')
   set :db, db

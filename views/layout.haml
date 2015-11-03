@@ -17,23 +17,10 @@
           %form{ :action => "/map", :method => "GET"}
             %select{ :id => "electorate", :name => "electorate" }
               %option{:value => ""}= "- Select Electorate -"
-              %option{:value => "301020"}= "Batman"
-              %option{:value => "300989"}= "Bonner"
-              %option{:value => "300991"}= "Brisbane"
-              %option{:value => "300923"}= "Curtin"
-              %option{:value => "301028"}= "Deakin"
-              %option{:value => "300937"}= "Denison"
-              %option{:value => "301029"}= "Dunkley"
-              %option{:value => "301035"}= "Higgins"
-              %option{:value => "301059"}= "Hindmarsh"
-              %option{:value => "301041"}= "Kooyong"
-              %option{:value => "301046"}= "McEwen"
-              %option{:value => "301048"}= "Melbourne"
-              %option{:value => "301011"}= "Moreton"
-              %option{:value => "301013"}= "Petrie"
-              %option{:value => "300977"}= "Reid"
-              %option{:value => "301015"}= "Ryan"
-              %option{:value => "301064"}= "Sturt"
-              %option{:value => "300986"}= "Wentworth"
+              - ELECTORATES.each do |electorate, code|
+                - if code == params['electorate']
+                  %option{:value => "#{code}", :selected => 'selected'}= "#{electorate}"
+                - else
+                  %option{:value => "#{code}"}= "#{electorate}"
         
     = yield

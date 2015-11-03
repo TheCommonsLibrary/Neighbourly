@@ -2,21 +2,5 @@
   .select-electorate
     %h2 Select your electorate
 
-    %a{ href:"/map?electorate=301020"}="Batman"
-    %a{ href:"/map?electorate=300989"}="Bonner"
-    %a{ href:"/map?electorate=300991"}="Brisbane"
-    %a{ href:"/map?electorate=300923"}="Curtin"
-    %a{ href:"/map?electorate=301028"}="Deakin"
-    %a{ href:"/map?electorate=300937"}="Denison"
-    %a{ href:"/map?electorate=301029"}="Dunkley"
-    %a{ href:"/map?electorate=301035"}="Higgins"
-    %a{ href:"/map?electorate=301059"}="Hindmarsh"
-    %a{ href:"/map?electorate=301041"}="Kooyong"
-    %a{ href:"/map?electorate=301046"}="McEwen"
-    %a{ href:"/map?electorate=301048"}="Melbourne"
-    %a{ href:"/map?electorate=301011"}="Moreton"
-    %a{ href:"/map?electorate=301013"}="Petrie"
-    %a{ href:"/map?electorate=300977"}="Reid"
-    %a{ href:"/map?electorate=301015"}="Ryan"
-    %a{ href:"/map?electorate=301064"}="Sturt"
-    %a{ href:"/map?electorate=300986"}="Wentworth"
+    - ELECTORATES.each do |electorate, code|
+      %a{ href:"/map?electorate=#{code}"}="#{electorate}"
