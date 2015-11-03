@@ -10,6 +10,7 @@ require "sinatra/reloader" if development?
 require "httparty"
 require 'json'
 require 'sinatra/flash'
+require 'sinatra/json'
 
 require_relative 'lib/nation_helper'
 require_relative 'lib/view_helper'
@@ -91,12 +92,11 @@ get '/map' do
   end
 end
 
-#not needed for now
 get '/electorate/:id/meshblocks' do
   authorised do
     electorate_id = params[:id]
     electorate_service = ElectorateService.new(electorate_id)
-    electorate_service.get_mesh_blocks
+    json electorate_service.get_mesh_blocks
   end
 end
 
