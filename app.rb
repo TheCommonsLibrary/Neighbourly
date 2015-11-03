@@ -50,7 +50,9 @@ post '/login' do
 end
 
 get '/map' do
-  haml :map
+  authorised do
+    haml :map
+  end
 end
 
 get '/authorise' do
