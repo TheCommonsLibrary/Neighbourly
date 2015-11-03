@@ -99,3 +99,9 @@ get '/electorate/:id/meshblocks' do
     electorate_service.get_mesh_blocks
   end
 end
+
+post '/download' do
+  authorised do
+    haml :download, locals: { slugs: param['slugs'] }
+  end
+end

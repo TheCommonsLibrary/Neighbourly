@@ -1,0 +1,10 @@
+.container
+  %p
+    %a{href: "javascript:(function(){Array.from(document.links).filter(function(el){return el.href.match(/\.pdf$/);}).map(function(el){el.click();});})();" }<
+      Download all
+    or, individually:
+  %ul
+    - slugs.each do |slug|
+      %li
+        %a{download: true, href: "http://turf.getup.org/walklists/#{slug}_walklist.pdf"}
+          #{slug}_walklist.pdf
