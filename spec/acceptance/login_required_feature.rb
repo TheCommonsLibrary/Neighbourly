@@ -1,32 +1,53 @@
 
 #happy path
-describe 'Login Feature' do 
+describe 'Login' do 
 
-  describe 'without credentials' do
+  describe 'should failed' do
   
-    it "should fail the login with valid invalid credentials" do
+    it "with invalid nation slug" do
         visit 'http://localhost:4567'
         fill_in('nation-input', :with => 'Victoria')
         find_button('login-button').click
         expect(page).to have_content "We couldn't find the page you were looking for."
     end
 
-    it "should fail the login with invalid invalid credentials" do
+    it "with invalid credentials" do
         visit 'http://localhost:4567'
         fill_in('nation-input', :with => 'getupstaging')
         find_button('login-button').click
         expect(current_url).to match(/https:\/\/getupstaging.nationbuilder.com/)
 
-        find('#user_session_email').set('cherryzh@gmail.com')
-        find('#user_session_password').set('123')
+        find('#user_session_email').set('invalid@test.com')
+        find('#user_session_password').set('invalid')
         first('input[name="commit"]').click
         expect(page).to have_content "1 ERROR OCCURRED WHILE PROCESSING THIS FORM."
     end
-    
-    it "should redirect to login page" do
+  end
+
+  describe 'should redirect to login page without authentication' do
+    it "from /map" do
         visit 'http://localhost:4567/map'
         expect(page).to have_content "You need to login before you can view that page."
     end
+
+    it "from /electorates" do
+        visit 'http://localhost:4567/electorates'
+        expect(page).to have_content "You need to login before you can view that page."
+    end
   end
-end
-  
+
+  describe 'with credentials' do
+
+    it "should login successfully with valid credentials" do
+        visit 'http://localhost:4567'
+        fill_in('nation-input', :with => 'getupstaging')
+        find_button('login-button').click
+        expect(current_url).to match(/https:\/\/getupstaging.nationbuilder.com/)
+
+        find('#user_session_email').set('ili@thoughtworks.com')
+        find('#user_session_password').set('11qazwsxedc')
+        first('input[name="commit"]').click
+        expect(current_url).to eq('http://localhost:4567/electorates')
+    end
+  end  
+end  
