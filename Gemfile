@@ -22,5 +22,6 @@ group :dev do
 end
 
 group :test do 
+	gem 'cucumber'
 	gem 'capybara'
 end
