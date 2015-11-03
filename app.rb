@@ -7,6 +7,10 @@ require 'haml'
 require 'sequel'
 require 'time'
 require "sinatra/reloader" if development?
+require "httparty"
+require 'json'
+
+require_relative 'lib/nation_helper'
 
 Dotenv.load
 enable :sessions
@@ -31,9 +35,7 @@ get '/' do
 end
 
 post '/login' do
-  nation = params['nation']
-  site_path = "https://#{nation}.nationbuilder.com"
-  session[:site_path] = site_path
+  nation_slug(params['nation']) #sets the nation slug
   oauth_client = OAuth2::Client.new(ENV['OAUTH_CLIENT_ID'], ENV['OAUTH_CLIENT_SECRET'], :site => site_path)
   redirect oauth_client.auth_code.authorize_url(:redirect_uri => ENV['REDIRECT_URI'])
 end
@@ -42,11 +44,16 @@ get '/map' do
   haml :map
 end
 
-get '/electorates' do
+get '/authorise' do
   code = params['code']
-  oauth_client = OAuth2::Client.new(ENV['OAUTH_CLIENT_ID'], ENV['OAUTH_CLIENT_SECRET'], :site => session[:site_path])
-  token = oauth_client.auth_code.get_token(code, :redirect_uri => ENV['REDIRECT_URI'])
-  puts "Token = #{token}"
-  #TODO store token?
-  haml :electorates
+  oauth_client = OAuth2::Client.new(ENV['OAUTH_CLIENT_ID'], ENV['OAUTH_CLIENT_SECRET'], :site => site_path)
+  auth = oauth_client.auth_code.get_token(code, :redirect_uri => ENV['REDIRECT_URI'])
+  nation_token(auth.token) #sets the auth token for this session.
+  redirect '/electorates'
+end
+
+get '/electorates' do
+  authorised do
+    haml :electorates
+  end
 end
