@@ -1,5 +1,6 @@
 require 'capybara'
 require 'capybara/dsl'
+require 'capybara/rspec'
 
 ENV['RACK_ENV'] = 'test'
 
@@ -12,4 +13,5 @@ Capybara.app = Sinatra::Application
 
 RSpec.configure do |config|
   config.include Capybara
+  config.include Capybara::DSL
 end
