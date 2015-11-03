@@ -3,7 +3,7 @@
 source 'https://rubygems.org'
 ruby "2.2.3"
 
-gem "sinatra"
+gem 'sinatra'
 gem 'pg'
 gem 'sequel'
 gem 'sequel_pg'
@@ -22,5 +22,5 @@ group :dev do
 end
 
 group :test do 
-	gem 'cucumber'
+	gem 'capybara'
 end
