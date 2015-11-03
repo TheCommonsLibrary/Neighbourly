@@ -13,6 +13,7 @@ require 'sinatra/flash'
 
 require_relative 'lib/nation_helper'
 require_relative 'lib/view_helper'
+require_relative 'services/electorate_service'
 
 Dotenv.load
 enable :sessions
@@ -67,5 +68,14 @@ end
 get '/map' do
   authorised do
     haml :map
+  end
+end
+
+#not needed for now
+get '/electorate/:id/meshblocks' do
+  authorised do
+    electorate_id = params[:id]
+    electorate_service = ElectorateService.new(electorate_id)
+    electorate_service.get_mesh_blocks
   end
 end
