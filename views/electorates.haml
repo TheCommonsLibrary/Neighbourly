@@ -1,24 +1,27 @@
-%h2 Select your electorate
+.container.select-electorate
+  .spacer
+  .form
+    %h2 Select your electorate
 
-%form{ :action => "/electorates", :method => "get"}
-  %select{ :id => "electorate", :name => "electorate" }
-    %option{:value => "elec-fed-lower-batman"}= "Batman"
-    %option{:value => "elec-fed-lower-bonner"}= "Bonner"
-    %option{:value => "elec-fed-lower-brisbane"}= "Brisbane"
-    %option{:value => "elec-fed-lower-curtin"}= "Curtin"
-    %option{:value => "elec-fed-lower-deakin"}= "Deakin"
-    %option{:value => "elec-fed-lower-denison"}= "Denison"
-    %option{:value => "elec-fed-lower-dunkley"}= "Dunkley"
-    %option{:value => "elec-fed-lower-higgins"}= "Higgins"
-    %option{:value => "elec-fed-lower-hindmarsh"}= "Hindmarsh"
-    %option{:value => "elec-fed-lower-kooyong"}= "Kooyong"
-    %option{:value => "elec-fed-lower-mcewen"}= "McEwen"
-    %option{:value => "elec-fed-lower-melbourne"}= "Melbourne"
-    %option{:value => "elec-fed-lower-moreton"}= "Moreton"
-    %option{:value => "elec-fed-lower-petrie"}= "Petrie"
-    %option{:value => "elec-fed-lower-reid"}= "Reid"
-    %option{:value => "elec-fed-lower-ryan"}= "Ryan"
-    %option{:value => "elec-fed-lower-sturt"}= "Sturt"
-    %option{:value => "elec-fed-lower-wentworth"}= "Wentworth"
+    %form{ :action => "/electorates", :method => "get"}
+      %select{ :id => "electorate", :name => "electorate" }
+        %option{:value => "elec-fed-lower-batman"}= "Batman"
+        %option{:value => "elec-fed-lower-bonner"}= "Bonner"
+        %option{:value => "elec-fed-lower-brisbane"}= "Brisbane"
+        %option{:value => "elec-fed-lower-curtin"}= "Curtin"
+        %option{:value => "elec-fed-lower-deakin"}= "Deakin"
+        %option{:value => "elec-fed-lower-denison"}= "Denison"
+        %option{:value => "elec-fed-lower-dunkley"}= "Dunkley"
+        %option{:value => "elec-fed-lower-higgins"}= "Higgins"
+        %option{:value => "elec-fed-lower-hindmarsh"}= "Hindmarsh"
+        %option{:value => "elec-fed-lower-kooyong"}= "Kooyong"
+        %option{:value => "elec-fed-lower-mcewen"}= "McEwen"
+        %option{:value => "elec-fed-lower-melbourne"}= "Melbourne"
+        %option{:value => "elec-fed-lower-moreton"}= "Moreton"
+        %option{:value => "elec-fed-lower-petrie"}= "Petrie"
+        %option{:value => "elec-fed-lower-reid"}= "Reid"
+        %option{:value => "elec-fed-lower-ryan"}= "Ryan"
+        %option{:value => "elec-fed-lower-sturt"}= "Sturt"
+        %option{:value => "elec-fed-lower-wentworth"}= "Wentworth"
 
-  %input{:id => 'submit-electorate', :type => "submit", :value => "Submit", :class => "button"}
+      %input{:id => 'submit-electorate', :type => "submit", :value => "View", :class => "button"}
