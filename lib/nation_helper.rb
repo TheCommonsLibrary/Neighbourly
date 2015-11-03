@@ -42,7 +42,6 @@ module Sinatra
     end
 
     def self.registered(app)
-      puts "Registering"
       app.helpers NationBuilder::Helpers
     end
   end

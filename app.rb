@@ -12,6 +12,7 @@ require 'json'
 require 'sinatra/flash'
 
 require_relative 'lib/nation_helper'
+require_relative 'lib/view_helper'
 
 Dotenv.load
 enable :sessions
@@ -35,7 +36,7 @@ get '/' do
   if authorised?
     redirect '/electorates'
   else
-    haml :main
+    haml :main, locals: {body: 'main'}
   end
 end
 
