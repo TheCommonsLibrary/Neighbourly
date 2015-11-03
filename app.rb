@@ -9,6 +9,7 @@ require 'time'
 require "sinatra/reloader" if development?
 require "httparty"
 require 'json'
+require 'sinatra/flash'
 
 require_relative 'lib/nation_helper'
 

@@ -12,6 +12,7 @@ gem 'dotenv-rails'
 gem 'haml'
 gem 'puma'
 gem 'httparty'
+gem 'sinatra-flash'
 
 group :dev do
   gem 'rake'
