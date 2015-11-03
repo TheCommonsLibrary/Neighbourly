@@ -17,34 +17,25 @@ var mesh_interactions = function(style) {
         fillColor: mesh_colors.selected,
         fillOpacity: 0.7,
       });
-
-      if (!L.Browser.ie && !L.Browser.opera) {
-        mesh.bringToFront();
-      }
     },
+
     mouseout: function(e) {
       var mesh = e.target;
       mesh.setStyle(style(e.target.feature));
-      if (!L.Browser.ie && !L.Browser.opera) {
-        mesh.bringToFront();
-      }
     },
+
     click: function(e) {
-      var mesh = e.target;
-      mesh.setStyle(style(e.target.feature));
-      if (e.target.feature.properties.selected) {
-        e.target.feature.properties.selected = false;
-        selected_boxes[e.target.feature.properties.slug] = false;
+      var mesh_properties = e.target.feature.properties;
+
+      if (mesh_properties.selected) {
+        mesh_properties.selected = false;
+        selected_boxes[mesh_properties.slug] = false;
       } else {
-        e.target.feature.properties.selected = true;
-        selected_boxes[e.target.feature.properties.slug] = true;
+        mesh_properties.selected = true;
+        selected_boxes[mesh_properties.slug] = true;
       }
 
       mesh.setStyle(style(e.target.feature));
-
-      if (!L.Browser.ie && !L.Browser.opera) {
-        mesh.bringToFront();
-      }
     }
   };
 }
@@ -57,9 +48,6 @@ var draw_map = function(start) {
       attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
   }).addTo(map);
 
-
-
-  //$.get("https://gist.githubusercontent.com/tjmcewan/ce917fb3af63a4700426/raw/70828859b4493f241e32ae2beb9beaa3f691252a/response.json", function(body) {
 //      var polygon = L.geoJson(parsed_body.hits.hits[i]._source.location, { style: style }).addTo(map);
   //$.get('/electorate/' + electorateId + '/meshblocks', function(body) {
   $.get("https://gist.githubusercontent.com/tjmcewan/ccefff4ee4baad9fc555/raw/1924f6bcc4b5e4a2c95790d1b7c207cf784cf1c5/inside_territories.json", function(body) {
@@ -67,9 +55,11 @@ var draw_map = function(start) {
 
     var style = function(feature) {
       var color = mesh_colors.unclaimed
+      
       if (feature.properties.selected) {
         color = mesh_colors.selected
       }
+      
       return {
         weight: 2,
         opacity: 1,
@@ -79,7 +69,6 @@ var draw_map = function(start) {
         fillOpacity: 0.5,
       }
     }
-
 
     var onEachFeature = function(feature, layer) {
       layer.on(mesh_interactions(style))
@@ -91,7 +80,6 @@ var draw_map = function(start) {
                   ).addTo(map);
 
     map.fitBounds(mesh_boxes.getBounds());
-
   })
 }
 
