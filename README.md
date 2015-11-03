@@ -11,3 +11,7 @@ walklist tool in collab with TW
 
 # TODO 
 Fix - SECURITY WARNING: No secret option provided to Rack::Session::Cookie.
+
+# TEST
+Run unit test: rake spec:unit_tests
+Run acceptance test: rake spec:acceptance
