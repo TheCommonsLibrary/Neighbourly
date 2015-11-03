@@ -5,6 +5,7 @@ class ElectorateService
 
   def initialize(electorate_id)
     @electorate_id = electorate_id
+    @elastic_search_url = env['ELASTIC_SEARCH_BASE_URL'] 
   end
 
   def request_payload
@@ -13,30 +14,30 @@ class ElectorateService
       "size": 3000,
       "query": {
         "filtered": {
-        "query": {
-          "match": {
-             "type": "MeshBlock"
-          }
-        },
-        "filter": {
+          "query": {
+            "match": {
+              "type": "MeshBlock"
+            }
+          },
+          "filter": {
             "geo_shape": {
-               "location": {
-                   "indexed_shape": {
-                       "id": @electorate_id,
-                       "index": "territories",
-                       "type": "territory",
-                       "path": "location"
-                   }
-               }
-             }
+              "location": {
+                "indexed_shape": {
+                  "id": @electorate_id,
+                  "index": "territories",
+                  "type": "territory",
+                  "path": "location"
+                }
+              }
+            }
           }
         }
+      }
     }
-  }
   end
 
   def get_mesh_blocks
-    response = ElectorateService.get('https://site:a1534a534ef72b948437133ae441e134@kili-eu-west-1.searchly.com/_search', body: request_payload.to_json)
+    response = ElectorateService.get(@elastic_search_url, body: request_payload.to_json)
     response.body
   end
 end
