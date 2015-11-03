@@ -1,4 +1,9 @@
+#Ignores all swap files.
+**/*.swp
+**/*.swo
+
 .idea/
 logfile
 run.sh
 .env
+
