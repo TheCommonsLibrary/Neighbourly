@@ -9,22 +9,16 @@ class ElectorateService
 
   def request_payload
     {
+      fields: [],
       query: {
-        bool: {
-          must: [
-            {
-              query_string: {
-                default_field: "slug",
-                query: @electorate_name
-              }
-            }
-          ]
+        term: {
+            slug: @electorate_name
         }
       }
     }
   end
 
-  def get_boundary_coordinates
-    ElectorateService.post('https://site:a1534a534ef72b948437133ae441e134@kili-eu-west-1.searchly.com/_search', request_payload)
+  def get_id
+    ElectorateService.post('https://site:a1534a534ef72b948437133ae441e134@kili-eu-west-1.searchly.com/territories/territory/_search', body: request_payload.to_json)
   end
 end
