@@ -151,6 +151,3 @@ DEPENDENCIES
   sinatra
   sinatra-contrib
   sinatra-flash
-
-BUNDLED WITH
-   1.10.6
