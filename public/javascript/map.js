@@ -95,6 +95,6 @@ var draw_map = function(start) {
   })
 }
 
-$('#map').height($(window).height());
+$('#map').height($(window).height() - $('.header').height() - 190);
 $('#map').width($(window).width());
 draw_map([-29.8650, 131.2094]);
