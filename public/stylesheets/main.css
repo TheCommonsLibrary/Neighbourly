@@ -58,10 +58,11 @@
   width: 50%;
   border-color: #A9A9A9;
   margin-left: 25%;
+  height: 3.6em;
 }
 
 .login .spacer {
-	height: 20em;
+	height: 13em;
 }
 
 .login #nation-input {

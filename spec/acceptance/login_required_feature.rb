@@ -1,34 +1,43 @@
 
 #happy path
-describe 'Login Feature' do  
-  context 'the login URL' do
+describe 'Login' do 
 
-    # before (:each) do
-    #   visit 'http://localhost:4567'
-    # end
-
-#sad path with invalid nation name
-    it "should fail the login with valid invalid credentials" do
+  describe 'should failed' do
+  
+    it "with invalid nation slug" do
         visit 'http://localhost:4567'
         fill_in('nation-input', :with => 'Victoria')
         find_button('login-button').click
         expect(page).to have_content "We couldn't find the page you were looking for."
     end
 
-#sad path with valid nation name but invalid credentials
-      it "should fail the login with invalid invalid credentials" do
-          visit 'http://localhost:4567'
-          fill_in('nation-input', :with => 'getupstaging')
-          find_button('login-button').click
-          expect(current_url).to match(/https:\/\/getupstaging.nationbuilder.com/)
+    it "with invalid credentials" do
+        visit 'http://localhost:4567'
+        fill_in('nation-input', :with => 'getupstaging')
+        find_button('login-button').click
+        expect(current_url).to match(/https:\/\/getupstaging.nationbuilder.com/)
 
-          find('#user_session_email').set('cherryzh@gmail.com')
-          find('#user_session_password').set('123')
-          first('input[name="commit"]').click
-          expect(page).to have_content "1 ERROR OCCURRED WHILE PROCESSING THIS FORM."
+        find('#user_session_email').set('invalid@test.com')
+        find('#user_session_password').set('invalid')
+        first('input[name="commit"]').click
+        expect(page).to have_content "1 ERROR OCCURRED WHILE PROCESSING THIS FORM."
+    end
+  end
+
+  describe 'should redirect to login page without authentication' do
+    it "from /map" do
+        visit 'http://localhost:4567/map'
+        expect(page).to have_content "You need to login before you can view that page."
     end
 
-#happy path
+    it "from /electorates" do
+        visit 'http://localhost:4567/electorates'
+        expect(page).to have_content "You need to login before you can view that page."
+    end
+  end
+
+  describe 'with credentials' do
+
     it "should login successfully with valid credentials" do
         visit 'http://localhost:4567'
         fill_in('nation-input', :with => 'getupstaging')
@@ -40,7 +49,5 @@ describe 'Login Feature' do
         first('input[name="commit"]').click
         expect(current_url).to eq('http://localhost:4567/electorates')
     end
-
-  end
-end
-
+  end  
+end  
