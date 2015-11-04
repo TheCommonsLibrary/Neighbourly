@@ -1,10 +1,4 @@
-var meshColors =  {
-  selected: '#DDA0DD', //Purple
-  unclaimed: '#E6FF00', //Green
-  claimed: '#F0054C', //Pink
-};
-
-var makeMap = function(style) {
+var makeMap = function(style, onSelect) {
   var australia_coord = [-29.8650, 131.2094];
   var map = L.map('map').setView(australia_coord, 4);
 
@@ -14,8 +8,11 @@ var makeMap = function(style) {
 
   var styleFor = function(feature) {
     var color = style.unclaimed
-    if (feature.properties.selected) {
+    if (feature.properties.claimedBy === 'selected' || feature.properties.selected) {
       color = style.selected
+    }
+    if (feature.properties.claimedBy === 'claimed') {
+      color = style.claimed
     }
     return {
       weight: 2,
@@ -36,6 +33,17 @@ var makeMap = function(style) {
         fillOpacity: 0.9,
     };
 
+    var newlySelected = function() {
+          var newlySelected = []
+          for(var meshId in selections) {
+            if(selections[meshId]) {
+              newlySelected.push(meshId);
+            }
+          }
+
+          return newlySelected;
+        }
+
     return {
       mouseover: function(e) {
       	e.target.setStyle(highlightStyle);
@@ -52,19 +60,11 @@ var makeMap = function(style) {
           e.target.feature.properties.selected = true;
           selections[e.target.feature.properties.slug] = true;
         }
+        onSelect(newlySelected().length > 0);
         e.target.setStyle(styleFor(mesh.feature));
       },
       blocks: {
-	      newlySelected: function() {
-	        var newlySelected = []
-	        for(var meshId in selections) {
-	          if(selections[meshId]) {
-	            newlySelected.push(meshId);
-	          }
-	        }
-
-	        return newlySelected;
-	      },
+	      newlySelected: newlySelected,
 	      cleared: function() {
 	        var cleared = []
 	        for(var meshId in selections) {
@@ -106,11 +106,29 @@ var makeMap = function(style) {
 
 $('#map').height($(window).height() - $('.header').height() - 190);
 $('#map').width($(window).width());
-var map = makeMap(meshColors);
 
+var meshColors =  {
+  selected: '#DDA0DD', //Purple
+  unclaimed: '#E6FF00', //Green
+  claimed: '#F0054C', //Pink
+};
+
+var downloadButtonMaker = function(selected) {
+  if (selected) {
+    $('.download').removeClass('disabled');
+  } else {
+    $('.download').addClass('disabled');
+  }
+}
+
+var map = makeMap(meshColors, downloadButtonMaker);
 $('.electorate-picker select').change(function() {
     var electorateId = $(this).val();
     if (electorateId !== "") {
-      $.getJSON('/electorate/' + electorateId + '/meshblocks', map.render);
+      $('#load').removeClass('hidden');
+      $.getJSON('/electorate/' + electorateId + '/meshblocks', function(json) {
+        map.render(json);
+        $('#load').addClass('hidden');
+      });
     }    
 });

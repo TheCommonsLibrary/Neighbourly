@@ -8,6 +8,7 @@
     %link{:href => "/stylesheets/main.css", :rel => "stylesheet"}/
     %title Walk List
   %body{class: body_class(body)}
+    #load.hidden
     .header
       %a{href: '/electorates', class: 'logo-link'}
         %img{src: '/images/getup_logo.svg', class: 'logo'}
@@ -21,6 +22,7 @@
                   %option{:value => "#{code}", :selected => 'selected'}= "#{electorate}"
                 - else
                   %option{:value => "#{code}"}= "#{electorate}"
-        
-        %a{href: '/logout', class:'button logout'}="Logout"
+        .nav-top-right
+          .button.download.disabled= "Next"
+          %a{href: '/logout', class:'button logout'}="Logout"
     = yield

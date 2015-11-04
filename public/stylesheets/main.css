@@ -7,10 +7,14 @@
   border-radius: 5px;
 }
 
-.logout {
+.nav-top-right {
   float: right;
   margin-top: 31px;
   margin-right: 10px;
+}
+
+.nav-top-right .download.disabled {
+  visibility: hidden;
 }
 
 .select-electorate a {
@@ -118,4 +122,16 @@
   width: 73%;
   margin-left: 2%;
   margin-right: 2%;
+}
+
+#load{
+    width:100%;
+    height:100%;
+    position:fixed;
+    z-index:9999;
+    background:url("/images/loading.svg") no-repeat center center rgba(0,0,0,0.25)
+}
+
+#load.hidden {
+visibility: hidden;
 }
