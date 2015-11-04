@@ -1,41 +1,13 @@
-require_relative './elastic_search'
+require_relative './mesh_block_query'
+
 class ElectorateService
 
   def initialize(electorate_id)
-    @electorate_id = electorate_id
-    @elastic_search = ElasticSearch.new
-  end
-
-  def request_payload
-    {
-      "from": 0,
-      "size": 3000,
-      "query": {
-        "filtered": {
-          "query": {
-            "match": {
-              "type": "MeshBlock"
-            }
-          },
-          "filter": {
-            "geo_shape": {
-              "location": {
-                "indexed_shape": {
-                  "id": @electorate_id,
-                  "index": "territories",
-                  "type": "territory",
-                  "path": "location"
-                }
-              }
-            }
-          }
-        }
-      }
-    }
+    @mesh_block_query = MeshBlockQuery.new electorate_id
   end
 
   def get_mesh_blocks(db, nation_slug)
-    parsed_response = @elastic_search.execute(request_payload)
+    parsed_response = @mesh_block_query.execute
     if parsed_response.include?("error")
       {}
     else
