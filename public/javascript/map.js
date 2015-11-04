@@ -135,7 +135,7 @@ var makeMap = function(style, onSelect) {
     },
     clear: function() {
         map.eachLayer(function(layer) {
-          if (layer != tileLayer && layer != legend && tile != info) {
+          if (layer != tileLayer && layer != legend && layer != info) {
             map.removeLayer(layer)
           }
         });
@@ -173,3 +173,6 @@ $('.electorate-picker select').change(function() {
       });
     }    
 });
+
+
+$('.electorate-picker select').trigger('change');
