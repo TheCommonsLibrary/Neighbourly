@@ -4,13 +4,12 @@ require_relative './feature_collection'
 
 class MeshBlockService
   def initialize(electorate_id, db, nation_slug)
-    @db = db
     @query_results = MeshBlocksQuery.new(electorate_id).execute
-    @feature_collection = FeatureCollection.new @query_results, nation_slug
+    claim = MeshBlockClaim.new(db, @query_results['hits']['hits'])
+    @feature_collection = FeatureCollection.new @query_results, nation_slug, claim.get_claimers
   end
 
   def get_all
-    claim = MeshBlockClaim.new(@db, @query_results['hits']['hits'])
-    @feature_collection.format_meshblocks claim.get_claimers
+    @feature_collection.to_a
   end
 end
