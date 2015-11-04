@@ -1,9 +1,9 @@
-require_relative './elastic_search'
+require_relative './elastic_search/connection'
 
 class MeshBlocksQuery
   
   def initialize(electorate_id)
-  	@elastic_search = ElasticSearch.new
+  	@elastic_search = ElasticSearch::Connection.new
   	@electorate_id = electorate_id
   	@query = {
       "from": 0,
