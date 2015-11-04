@@ -6,4 +6,5 @@
 logfile
 run.sh
 .env
+**/.DS_Store
 
