@@ -8,7 +8,7 @@ var makeMap = function(style, onSelect) {
 
   var styleFor = function(feature) {
     var color = style.unclaimed
-    if (feature.properties.claimedBy === 'selected') {
+    if (feature.properties.claimedBy === 'selected' || feature.properties.selected) {
       color = style.selected
     }
     if (feature.properties.claimedBy === 'claimed') {
