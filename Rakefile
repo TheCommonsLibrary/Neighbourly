@@ -15,10 +15,10 @@ end
 namespace :db do
   require "sequel"
   Sequel.extension :migration
+  DB = Sequel.connect(ENV['DATABASE_URL'])
   
   desc "Prints current schema version"
   task :version do
-    DB = Sequel.connect(ENV['DATABASE_URL'])
     version = if DB.tables.include?(:schema_info)
       DB[:schema_info].first[:version]
     end || 0
@@ -28,14 +28,12 @@ namespace :db do
 
   desc "Perform migration up to latest migration available"
   task :migrate do
-    DB = Sequel.connect(ENV['DATABASE_URL'])
     Sequel::Migrator.run(DB, "migrations")
     Rake::Task['db:version'].execute
   end
     
   desc "Perform rollback to specified target or full rollback as default"
   task :rollback, :target do |t, args|
-    DB = Sequel.connect(ENV['DATABASE_URL'])
     args.with_defaults(:target => 0)
 
     Sequel::Migrator.run(DB, "migrations", :target => args[:target].to_i)
@@ -44,7 +42,6 @@ namespace :db do
 
   desc "Perform migration reset (full rollback and migration)"
   task :reset do
-    DB = Sequel.connect(ENV['DATABASE_URL'])
     Sequel::Migrator.run(DB, "migrations", :target => 0)
     Sequel::Migrator.run(DB, "migrations")
     Rake::Task['db:version'].execute
