@@ -14,8 +14,11 @@ var makeMap = function(style) {
 
   var styleFor = function(feature) {
     var color = style.unclaimed
-    if (feature.properties.selected) {
+    if (feature.properties.claimedBy === 'selected') {
       color = style.selected
+    }
+    if (feature.properties.claimedBy === 'claimed') {
+      color = style.claimed
     }
     return {
       weight: 2,
