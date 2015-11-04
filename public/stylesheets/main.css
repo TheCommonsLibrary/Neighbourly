@@ -7,6 +7,12 @@
   border-radius: 5px;
 }
 
+.logout {
+  float: right;
+  margin-top: 31px;
+  margin-right: 10px;
+}
+
 .select-electorate a {
   font-size: 2rem;
   float: left;

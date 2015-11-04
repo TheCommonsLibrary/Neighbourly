@@ -91,6 +91,12 @@ get '/map' do
   end
 end
 
+get '/logout' do
+  session.clear
+  flash[:notice] = 'You have been logged out.'
+  redirect '/'
+end
+
 #not needed for now
 get '/electorate/:id/meshblocks' do
   authorised do
