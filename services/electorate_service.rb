@@ -1,4 +1,5 @@
 require_relative './mesh_block_query'
+require_relative './elastic_search_gateway'
 
 class ElectorateService
 
@@ -8,12 +9,14 @@ class ElectorateService
 
   def get_mesh_blocks(db, nation_slug)
     parsed_response = @mesh_block_query.execute
+    elastic_search_gateway = ElasticSearchGateway.new(parsed_response, nation_slug)
+
     if parsed_response.include?("error")
       {}
     else
       mesh_blocks = parsed_response['hits']['hits']
       mesh_block_claimers = get_claimers(mesh_blocks, db)
-      format_meshblocks(mesh_blocks, mesh_block_claimers, nation_slug)
+      elastic_search_gateway.format_meshblocks(mesh_block_claimers)
     end
   end
 
@@ -30,32 +33,5 @@ class ElectorateService
       map { |row| 
         [ row[:mesh_block_slug], row[:mesh_block_claimer] ]
       }.to_h
-  end
-
-  def format_meshblocks(mesh_blocks, mesh_block_claimers, nation_slug)
-    mesh_blocks.map do |mesh_block|
-      claimed_by = mesh_block_claimers[mesh_block['_source']['slug']]
-      {
-        type: 'Feature',
-        geometry: mesh_block['_source']['location'],
-        properties: {
-          slug: mesh_block['_source']['slug'],
-          type: mesh_block['_source']['type'],
-          claimedBy: get_claimed_by_flag(claimed_by, nation_slug)
-        }
-      }
-    end
-  end
-
-  def get_claimed_by_flag(claimed_by, nation_slug)
-    # using three flags to denoted claim status of the a mesh block 
-    # unclaimed which means not claimed at all
-    # selected which means claimed by currently logged in nation
-    # claimed which means this mesh block is claimed by another nation
-    if claimed_by == nil
-      'unclaimed'
-    else
-      claimed_by == nation_slug ? 'selected' : 'claimed'
-    end
   end
 end
