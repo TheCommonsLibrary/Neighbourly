@@ -15,7 +15,7 @@ require 'sinatra/json'
 require_relative 'lib/nation_helper'
 require_relative 'lib/view_helper'
 require_relative 'lib/params_helper'
-require_relative 'services/electorate_service'
+require_relative 'services/mesh_block_service'
 
 Dotenv.load
 enable :sessions
@@ -106,8 +106,8 @@ end
 get '/electorate/:id/meshblocks' do
   authorised do
     electorate_id = params[:id]
-    electorate_service = ElectorateService.new(electorate_id, settings.db)
-    json electorate_service.get_mesh_blocks(nation_slug)
+    mesh_block_service = MeshBlockService.new(electorate_id, settings.db)
+    json mesh_block_service.get_mesh_blocks(nation_slug)
   end
 end
 

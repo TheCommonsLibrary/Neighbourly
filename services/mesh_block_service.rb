@@ -2,7 +2,7 @@ require_relative './mesh_block_query'
 require_relative './../models/mesh_blocks_claim'
 require_relative './feature_collection'
 
-class ElectorateService
+class MeshBlockService
   def initialize(electorate_id, db)
     @db = db
     @mesh_block_query = MeshBlocksQuery.new electorate_id
