@@ -6,12 +6,45 @@ var makeMap = function(style, onSelect) {
       attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
   }).addTo(map);
 
+  var legend = L.control({position: 'bottomright'});
+  legend.onAdd = function(map) {
+    var div = L.DomUtil.create('div', 'info legend');
+     div.innerHTML += '<i style="background:' + style.selected + '"></i><div>Selected</div>';
+     div.innerHTML += '<i style="background:' + style.claimed + '"></i><div>Claimed</div>';
+     div.innerHTML += '<i style="background:' + style.unclaimed + '"></i><div>Unclaimed</div>';
+     return div;
+  }
+  legend.addTo(map);
+
+  var info = L.control();
+  info.onAdd = function(map) {
+    this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
+    this.update();
+    return this._div;
+  }
+
+  info.update = function(properties) {
+    if (properties) {
+      //this._div.innerHTML = '<div class="text"> Walkpath is <b>' + properties.state + '</b> and is currently walked by <b>' + properties.claimedBy + '</b></div>';
+      if(properties.state === 'unclaimed') {
+        this._div.innerHTML = '<div class="text"><b>No one</b> will door knock this area.<br/><b>Click</b> if you want to walk it.</div>';
+      } else if(properties.state = 'selected') {
+        this._div.innerHTML = '<div class="text"><b>You</b> will door knock this area.<br/><b>Click</b> if you no longer want to door knock the area.</div>';
+      } else {
+        this._div.innerHTML = '<div class="text"><b>' + properties.claimedBy + '</b> will door knock this area.<br/><b>Click</b> if you want to walk it/download the walk survey.</div>';
+      }
+    } else {
+      this._div.innerHTML = "Hover over a area to see details";
+    }
+  }
+  info.addTo(map);
+
   var styleFor = function(feature) {
     var color = style.unclaimed
-    if (feature.properties.claimedBy === 'selected' || feature.properties.selected) {
+    if (feature.properties.state === 'selected' || feature.properties.selected) {
       color = style.selected
     }
-    if (feature.properties.claimedBy === 'claimed') {
+    if (feature.properties.state === 'claimed') {
       color = style.claimed
     }
     return {
@@ -23,6 +56,8 @@ var makeMap = function(style, onSelect) {
       fillOpacity: 0.5,
     }
   }
+
+
 
   var meshInteractions = function() {
     var selections = {};
@@ -46,20 +81,25 @@ var makeMap = function(style, onSelect) {
 
     return {
       mouseover: function(e) {
+        info.update(e.target.feature.properties);
       	e.target.setStyle(highlightStyle);
       },
       mouseout: function(e) {
+        info.update();
         e.target.setStyle(styleFor(e.target.feature));
       },
       click: function(e) {
         var mesh = e.target;
-        if (e.target.feature.properties.selected) {
-          e.target.feature.properties.selected = false;
-          selections[e.target.feature.properties.slug] = false;
+        var properties = e.target.feature.properties;
+        if (properties.state === 'unclaimed') {
+          properties.previous_state = properties.state;
+          properties.state = 'selected';
+          selections[properties.slug] = true;
         } else {
-          e.target.feature.properties.selected = true;
-          selections[e.target.feature.properties.slug] = true;
+          properties.state = properties.previous_state;
+          selections[properties.slug] = false;
         }
+        console.log(properties);
         onSelect(newlySelected().length > 0);
         e.target.setStyle(styleFor(mesh.feature));
       },
@@ -95,7 +135,7 @@ var makeMap = function(style, onSelect) {
     },
     clear: function() {
         map.eachLayer(function(layer) {
-          if (layer != tileLayer) {
+          if (layer != tileLayer && layer != legend && tile != info) {
             map.removeLayer(layer)
           }
         });
@@ -104,7 +144,7 @@ var makeMap = function(style, onSelect) {
   };
 }
 
-$('#map').height($(window).height() - $('.header').height() - 190);
+$('#map').height($(window).height() - $('.header').height() - 290);
 $('#map').width($(window).width());
 
 var meshColors =  {
@@ -127,6 +167,7 @@ $('.electorate-picker select').change(function() {
     if (electorateId !== "") {
       $('#load').removeClass('hidden');
       $.getJSON('/electorate/' + electorateId + '/meshblocks', function(json) {
+        map.clear();
         map.render(json);
         $('#load').addClass('hidden');
       });
