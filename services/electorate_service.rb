@@ -3,7 +3,7 @@ require_relative './mesh_block_query'
 class ElectorateService
 
   def initialize(electorate_id)
-    @mesh_block_query = MeshBlockQuery.new electorate_id
+    @mesh_block_query = MeshBlocksQuery.new electorate_id
   end
 
   def get_mesh_blocks(db, nation_slug)
@@ -18,13 +18,13 @@ class ElectorateService
   end
 
   private
-  def mesh_block_query(mesh_blocks)
+  def get_mesh_block_slugs(mesh_blocks)
     mesh_blocks.map { |mesh_block| mesh_block['_source']['slug'] }
   end
 
   def get_claimers(mesh_blocks, db)
     db[:mesh_block_claims].
-      where(mesh_block_slug: mesh_block_query(mesh_blocks)).
+      where(mesh_block_slug: get_mesh_block_slugs(mesh_blocks)).
       where("claim_date > now() - INTERVAL '2 weeks'").
       select(:mesh_block_claimer, :mesh_block_slug).
       map { |row| 
