@@ -1,6 +1,6 @@
 require_relative './mesh_block_query'
 require_relative './../models/mesh_blocks_claim'
-require_relative './feature_collection'
+require_relative './../models/feature_collection'
 
 class MeshBlockService
   def initialize(electorate_id, db, nation_slug)
