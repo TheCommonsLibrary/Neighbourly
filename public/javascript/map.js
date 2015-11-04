@@ -12,7 +12,22 @@ var makeMap = function(style) {
       attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
   }).addTo(map);
 
-  var meshInteractions = function(styleFor) {
+  var styleFor = function(feature) {
+    var color = style.unclaimed
+    if (feature.properties.selected) {
+      color = style.selected
+    }
+    return {
+      weight: 2,
+      opacity: 1,
+      color: 'white',
+      dashArray: '3',
+      fillColor: color,
+      fillOpacity: 0.5,
+    }
+  }
+
+  var meshInteractions = function() {
     var reStyle = function(mesh, style) {
       mesh.setStyle(style);
       if (!L.Browser.ie && !L.Browser.opera) {
@@ -29,6 +44,7 @@ var makeMap = function(style) {
     };
 
     return {
+      selections: selections,
       mouseover: function(e) {
         reStyle(e.target, highlightStyle);
       },
@@ -47,27 +63,13 @@ var makeMap = function(style) {
         reStyle(mesh, styleFor(mesh.feature));
       },
     };
-  };
+  }();
 
-  var styleFor = function(feature) {
-    var color = style.unclaimed
-    if (feature.properties.selected) {
-      color = style.selected
-    }
-    return {
-      weight: 2,
-      opacity: 1,
-      color: 'white',
-      dashArray: '3',
-      fillColor: color,
-      fillOpacity: 0.5,
-    }
-  }
 
   return {
     render: function(features) {
       var onEachFeatureCB = function(feature, layer) {
-        layer.on(meshInteractions(styleFor))
+        layer.on(meshInteractions)
       }
 
       var mesh_boxes = L.geoJson(
@@ -83,12 +85,51 @@ var makeMap = function(style) {
             map.removeLayer(layer)
           }
         });
+    },
+    blocks: {
+      newlySelected: function() {
+        var newlySelected = []
+        for(var meshId in meshInteractions.selections) {
+          if(meshInteractions.selections[meshId]) {
+            newlySelected.push(meshId);
+          }
+        }
+
+        return newlySelected;
+      },
+      cleared: function() {
+        var cleared = []
+        for(var meshId in meshInteractions.selections) {
+          if(meshInteractions.selections[meshId] === false) {
+            cleared.push(meshId);
+          }
+        }
+
+        return cleared;
+      }
     }
   };
+}
+
+var getUrlParameter = function getUrlParameter(sParam) {
+    var sPageURL = decodeURIComponent(window.location.search.substring(1)),
+        sURLVariables = sPageURL.split('&'),
+        sParameterName,
+        i;
+
+    for (i = 0; i < sURLVariables.length; i++) {
+        sParameterName = sURLVariables[i].split('=');
+
+        if (sParameterName[0] === sParam) {
+            return sParameterName[1] === undefined ? true : sParameterName[1];
+        }
+    }
 }
 
 $('#map').height($(window).height() - $('.header').height() - 190);
 $('#map').width($(window).width());
 var map = makeMap(meshColors);
-var electorateId = location.search.match(/[0-9]+/)[0]; //find a better way to do this?
-$.getJSON('/electorate/' + electorateId + '/meshblocks', map.render);
+var electorateId = getUrlParameter('electorate');
+if (electorateId) {
+  $.getJSON('/electorate/' + getUrlParameter('electorate') + '/meshblocks', map.render);
+}
