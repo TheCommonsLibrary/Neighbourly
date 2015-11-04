@@ -45,6 +45,8 @@ configure do
 end
 
 configure :production do
+  db = Sequel.connect(ENV['DATABASE_URL'])
+  set :db, db
 end
 
 configure :test do
