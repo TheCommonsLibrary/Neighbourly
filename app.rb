@@ -14,6 +14,7 @@ require 'sinatra/json'
 
 require_relative 'lib/nation_helper'
 require_relative 'lib/view_helper'
+require_relative 'lib/params_helper'
 require_relative 'services/electorate_service'
 
 Dotenv.load
@@ -69,13 +70,14 @@ get '/login' do
 end
 
 post '/login' do
-  nation_slug(params['nation']) #sets the nation slug
+  nation = nation_param
+  nation_slug(nation) #sets the nation slug
   oauth_client = OAuth2::Client.new(ENV['OAUTH_CLIENT_ID'], ENV['OAUTH_CLIENT_SECRET'], :site => site_path)
   redirect oauth_client.auth_code.authorize_url(:redirect_uri => ENV['REDIRECT_URI'])
 end
 
 get '/authorise' do
-  code = params['code']
+  code = code_param
   oauth_client = OAuth2::Client.new(ENV['OAUTH_CLIENT_ID'], ENV['OAUTH_CLIENT_SECRET'], :site => site_path)
   auth = oauth_client.auth_code.get_token(code, :redirect_uri => ENV['REDIRECT_URI'])
   nation_token(auth.token) #sets the auth token for this session.
