@@ -85,11 +85,10 @@ var makeMap = function(style) {
         });
     }
   };
-
-  //})
 }
 
 $('#map').height($(window).height() - $('.header').height() - 190);
 $('#map').width($(window).width());
 var map = makeMap(meshColors);
-$.getJSON("https://gist.githubusercontent.com/tjmcewan/ccefff4ee4baad9fc555/raw/1924f6bcc4b5e4a2c95790d1b7c207cf784cf1c5/inside_territories.json", map.render);
+var electorateId = location.search.match(/[0-9]+/)[0]; //find a better way to do this?
+$.getJSON('/electorate/' + electorateId + '/meshblocks', map.render);
