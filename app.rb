@@ -103,7 +103,7 @@ get '/electorate/:id/meshblocks' do
   authorised do
     electorate_id = params[:id]
     electorate_service = ElectorateService.new(electorate_id)
-    json electorate_service.get_mesh_blocks
+    json electorate_service.get_mesh_blocks(settings.db)
   end
 end
 
