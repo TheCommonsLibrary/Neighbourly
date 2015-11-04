@@ -28,13 +28,6 @@ var makeMap = function(style) {
   }
 
   var meshInteractions = function() {
-    var reStyle = function(mesh, style) {
-      mesh.setStyle(style);
-      if (!L.Browser.ie && !L.Browser.opera) {
-        mesh.bringToFront();
-      }
-    };
-
     var selections = {};
     var highlightStyle = {
         weight: 3,
@@ -44,12 +37,11 @@ var makeMap = function(style) {
     };
 
     return {
-      selections: selections,
       mouseover: function(e) {
-        reStyle(e.target, highlightStyle);
+      	e.target.setStyle(highlightStyle);
       },
       mouseout: function(e) {
-        reStyle(e.target, styleFor(e.target.feature));
+        e.target.setStyle(styleFor(e.target.feature));
       },
       click: function(e) {
         var mesh = e.target;
@@ -60,9 +52,31 @@ var makeMap = function(style) {
           e.target.feature.properties.selected = true;
           selections[e.target.feature.properties.slug] = true;
         }
-        reStyle(mesh, styleFor(mesh.feature));
+        e.target.setStyle(styleFor(mesh.feature));
       },
-    };
+      blocks: {
+	      newlySelected: function() {
+	        var newlySelected = []
+	        for(var meshId in selections) {
+	          if(selections[meshId]) {
+	            newlySelected.push(meshId);
+	          }
+	        }
+
+	        return newlySelected;
+	      },
+	      cleared: function() {
+	        var cleared = []
+	        for(var meshId in selections) {
+	          if(selections[meshId] === false) {
+	            cleared.push(meshId);
+	          }
+	        }
+
+	        return cleared;
+	      }
+	    }
+      };
   }();
 
 
@@ -86,28 +100,7 @@ var makeMap = function(style) {
           }
         });
     },
-    blocks: {
-      newlySelected: function() {
-        var newlySelected = []
-        for(var meshId in meshInteractions.selections) {
-          if(meshInteractions.selections[meshId]) {
-            newlySelected.push(meshId);
-          }
-        }
-
-        return newlySelected;
-      },
-      cleared: function() {
-        var cleared = []
-        for(var meshId in meshInteractions.selections) {
-          if(meshInteractions.selections[meshId] === false) {
-            cleared.push(meshId);
-          }
-        }
-
-        return cleared;
-      }
-    }
+    blocks: meshInteractions.blocks
   };
 }
 
