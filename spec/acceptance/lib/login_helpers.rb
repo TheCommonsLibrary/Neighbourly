@@ -2,6 +2,8 @@ require 'capybara'
 require 'capybara/dsl'
 require 'capybara/rspec'
 
+#TODO: Find a way to clear session
+
 shared_context "valid login" do
   def login
     visit 'http://localhost:4567'
@@ -17,7 +19,6 @@ shared_context "valid login" do
 
 
   after(:each) {
-    puts "Clearing cookies"
     Capybara.reset_sessions!
     Capybara.current_session.driver.browser.manage.delete_all_cookies
   }

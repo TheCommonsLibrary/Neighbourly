@@ -2,7 +2,7 @@ require_relative '../acceptance_helper'
 require_relative 'lib/login_helpers'
 
 #happy path
-describe 'Select Electorate Feature' do
+describe 'User journey login_select_electorate' do
   include_context "valid login"
 
     it "should see the map with mesh_blocks" do
