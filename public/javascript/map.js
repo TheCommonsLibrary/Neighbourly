@@ -104,25 +104,13 @@ var makeMap = function(style) {
   };
 }
 
-var getUrlParameter = function getUrlParameter(sParam) {
-    var sPageURL = decodeURIComponent(window.location.search.substring(1)),
-        sURLVariables = sPageURL.split('&'),
-        sParameterName,
-        i;
-
-    for (i = 0; i < sURLVariables.length; i++) {
-        sParameterName = sURLVariables[i].split('=');
-
-        if (sParameterName[0] === sParam) {
-            return sParameterName[1] === undefined ? true : sParameterName[1];
-        }
-    }
-}
-
 $('#map').height($(window).height() - $('.header').height() - 190);
 $('#map').width($(window).width());
 var map = makeMap(meshColors);
-var electorateId = getUrlParameter('electorate');
-if (electorateId) {
-  $.getJSON('/electorate/' + getUrlParameter('electorate') + '/meshblocks', map.render);
-}
+
+$('.electorate-picker select').change(function() {
+    var electorateId = $(this).val();
+    if (electorateId !== "") {
+      $.getJSON('/electorate/' + electorateId + '/meshblocks', map.render);
+    }    
+});

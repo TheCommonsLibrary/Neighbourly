@@ -77,7 +77,7 @@ get '/authorise' do
   oauth_client = OAuth2::Client.new(ENV['OAUTH_CLIENT_ID'], ENV['OAUTH_CLIENT_SECRET'], :site => site_path)
   auth = oauth_client.auth_code.get_token(code, :redirect_uri => ENV['REDIRECT_URI'])
   nation_token(auth.token) #sets the auth token for this session.
-  redirect '/electorates'
+  redirect '/map'
 end
 
 get '/electorates' do
