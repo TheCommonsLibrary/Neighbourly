@@ -1,6 +1,6 @@
 require_relative './mesh_block_query'
 require_relative './../models/mesh_blocks_claim'
-require_relative './elastic_search_gateway'
+require_relative './feature_collection'
 
 class ElectorateService
   def initialize(electorate_id, db)
@@ -10,8 +10,8 @@ class ElectorateService
 
   def get_mesh_blocks(nation_slug)
     results = @mesh_block_query.execute
-    elastic_search_gateway = ElasticSearchGateway.new(results, nation_slug)
+    feature_collection = FeatureCollection.new(results, nation_slug)
     claim = MeshBlockClaim.new(@db, results['hits']['hits'])
-    elastic_search_gateway.format_meshblocks claim.get_claimers
+    feature_collection.format_meshblocks claim.get_claimers
   end
 end

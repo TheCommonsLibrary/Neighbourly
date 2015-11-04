@@ -1,4 +1,4 @@
-class ElasticSearchGateway
+class FeatureCollection
 
   def initialize(query_results, nation_slug)
   	@nation_slug = nation_slug
