@@ -5,7 +5,7 @@ class ElectorateService
 
   def initialize(electorate_id)
     @electorate_id = electorate_id
-    @elastic_search_url = ENV['ELASTIC_SEARCH_BASE_URL'] 
+    @elastic_search_url = ENV['ELASTIC_SEARCH_BASE_URL']
   end
 
   def request_payload
@@ -48,7 +48,8 @@ class ElectorateService
     @mesh_blocks.map do |mesh_block|
       feature = {type: 'Feature'}
       feature[:geometry] = mesh_block['_source']['location']
-      feature[:properties] = {}
+      feature[:properties] = {slug: mesh_block['_source']['slug'], type: mesh_block['_source']['type']}
+      # check whether this feature is selected / claimed already, db query
       feature_collection << feature
     end
     feature_collection
