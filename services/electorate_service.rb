@@ -1,11 +1,9 @@
-require 'httparty'
-
+require_relative './elastic_search'
 class ElectorateService
-  #include HTTParty
 
   def initialize(electorate_id)
     @electorate_id = electorate_id
-    @elastic_search_url = ENV['ELASTIC_SEARCH_BASE_URL']
+    @elastic_search = ElasticSearch.new
   end
 
   def request_payload
@@ -37,8 +35,7 @@ class ElectorateService
   end
 
   def get_mesh_blocks(db, nation_slug)
-    response = HTTParty.get(@elastic_search_url + '/_search', body: request_payload.to_json)
-    parsed_response = JSON.parse(response.body)
+    parsed_response = @elastic_search.execute(request_payload)
     if parsed_response.include?("error")
       {}
     else
