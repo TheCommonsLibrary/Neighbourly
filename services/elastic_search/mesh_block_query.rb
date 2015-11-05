@@ -21,6 +21,7 @@ module ElasticSearch
               "filter": {
                 "geo_shape": {
                   "location": {
+                    "relation": "within",
                     "indexed_shape": {
                       "id": @electorate_id,
                       "index": "territories",
