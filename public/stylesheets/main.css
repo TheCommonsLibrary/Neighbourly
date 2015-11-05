@@ -17,6 +17,20 @@
   visibility: hidden;
 }
 
+.download-type .title {
+  display: inline-block;
+  font-size: 25px;
+}
+.download-type .claim {
+  margin-left: 2%;
+  display: inline-block;
+}
+
+.newly-added .claim {
+  margin-left: 2%;
+  color: #FD4A00;
+}
+
 .select-electorate a {
   font-size: 2rem;
   float: left;

@@ -1,17 +1,36 @@
 .container
-  %p
-    %a{href: "javascript:(function(){Array.from(document.links).filter(function(el){return el.href.match(/\.pdf$/);}).map(function(el){el.click();});})();" }<
-      Download all
-    or, individually:
-  %h4 Newly Selected Walkpaths
+  .download-type
+    .title Newly Selected Walkpaths
+    .button.button-primary.download-all Download All
+    %form.claim{action: '/claim', method: 'POST'}
+      - selected_slugs.each do |slug|
+        %input{type: 'hidden', value: slug}
+      %input.button-primary{type: 'submit', value: "Claim & Download All"}
+    /.button.button-primary.claim-all Claim & Download All
   %ul
     - selected_slugs.each do |slug|
-      %li
-        %a{download: true, href: "http://turf.getup.org/walklists/#{slug}_walklist.pdf"}
+      %li.newly-added
+        %a.pdf{download: true, href: "http://turf.getup.org/walklists/#{slug}_walklist.pdf"}
           #{slug}_walklist.pdf
-  %h4 Previously Selected Walkpaths
+        %a.claim{download: true, href: "/claim?slugs[]=#{slug}"}
+          Claim
+  .download-type
+    .title Previously Selected Walkpaths
+    .button.button-primary.download-all Download All
   %ul
     - claimed_slugs.each do |slug|
       %li
         %a{download: true, href: "http://turf.getup.org/walklists/#{slug}_walklist.pdf"}
           #{slug}_walklist.pdf
+:javascript
+  $('.download-all').click(function() {
+    $.each($('.newly-added a'), function(index, link) {
+      console.log(link);
+      window.open(link.href);
+    });
+  })
+
+  $('.claim-all').click(function() {
+    var slugs = $('.newly-added .slug').text();
+    $.post("/claim", { 'slugs[]': selected-slugs});
+  });
