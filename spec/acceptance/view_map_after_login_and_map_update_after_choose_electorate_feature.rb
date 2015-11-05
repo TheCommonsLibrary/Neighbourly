@@ -1,6 +1,6 @@
 require_relative '../acceptance_helper'
 require_relative 'lib/login_helpers'
-require_relative '../acceptance/lib/clear_cookies'
+require_relative 'lib/clear_cookies'
 
 
 describe 'choose electorate' do
@@ -16,6 +16,7 @@ describe 'choose electorate' do
     puts "HERE"
   end
 end
+
 
 
 
