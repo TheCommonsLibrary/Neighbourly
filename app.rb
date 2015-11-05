@@ -107,7 +107,6 @@ get '/logout' do
   redirect '/'
 end
 
-#not needed for now
 get '/electorate/:id/meshblocks' do
   authorised do
     electorate_id = params[:id]
@@ -133,3 +132,11 @@ get '/download' do
     haml :download, locals: { selected_slugs: params[:slugs] || [], claimed_slugs: claimed_mesh_blocks }
   end
 end
+
+post '/claim' do
+  authorised do
+    claim_service = ClaimService.new(settings.db)
+    claim_service.claim(params[:slugs], nation_slug)
+  end
+end
+

@@ -25,6 +25,12 @@ class ClaimService
       }
   end
 
+  def claim(mesh_blocks, claimer)
+    mesh_blocks.each do |mesh_block|
+      @db[:claims].insert(:mesh_block_slug => mesh_block, :mesh_block_claimer => claimer, :claim_date => Time.now)
+    end
+  end
+
   private
   def get_mesh_block_slugs(mesh_blocks)
     mesh_blocks.map { |mesh_block| mesh_block['_source']['slug'] }
