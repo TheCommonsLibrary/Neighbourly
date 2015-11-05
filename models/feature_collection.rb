@@ -2,8 +2,8 @@ require_relative './claim_status'
 
 class FeatureCollection
 
-  def initialize(query_results, nation_slug, mesh_block_claimers)
-  	@nation_slug = nation_slug
+  def initialize(query_results, user_email, mesh_block_claimers)
+  	@user_email = user_email
   	@mesh_blocks = query_results['hits']['hits']
     @mesh_block_claimers = mesh_block_claimers
   end
@@ -26,8 +26,9 @@ class FeatureCollection
   end
 
   private
+
   def define_claimed_by_status_from(claimer)
     return ClaimStatus::UNCLAIMED if claimer.nil?
-    claimer == @nation_slug ? ClaimStatus::SELECTED : ClaimStatus::CLAIMED
+    claimer == @user_email ? ClaimStatus::SELECTED : ClaimStatus::CLAIMED
   end
 end

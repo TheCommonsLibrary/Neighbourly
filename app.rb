@@ -90,7 +90,6 @@ end
 
 get '/logout' do
   session.clear
-  cookies.clear
   flash[:notice] = 'You have been logged out.'
   redirect '/'
 end
@@ -107,7 +106,7 @@ get '/electorate/:id/meshblocks' do
     mesh_blocks = query_results['hits']['hits']
     mesh_blocks_claimers = claim_service.get_claimers_for(mesh_blocks)
 
-    feature_collection = FeatureCollection.new(query_results, nation_slug, mesh_blocks_claimers)
+    feature_collection = FeatureCollection.new(query_results, user_email, mesh_blocks_claimers)
 
     json feature_collection.to_a
   end
@@ -116,7 +115,7 @@ end
 post '/download' do
   authorised do
     claim_service = ClaimService.new(settings.db)
-    claimed_mesh_blocks = claim_service.get_mesh_blocks_for(nation_slug)
+    claimed_mesh_blocks = claim_service.get_mesh_blocks_for(user_email)
     haml :download, locals: { selected_slugs: params[:slugs] || [], claimed_slugs: claimed_mesh_blocks }
   end
 end
@@ -124,6 +123,6 @@ end
 post '/claim' do
   authorised do
     claim_service = ClaimService.new(settings.db)
-    claim_service.claim(params[:slugs], nation_slug)
+    claim_service.claim(params[:slugs], user_email)
   end
 end
