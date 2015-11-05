@@ -132,11 +132,11 @@
     background:url("/images/loading.svg") no-repeat center center rgba(0,0,0,0.25)
 }
 
-#load.hidden {
-visibility: hidden;
+.hidden {
+  visibility: hidden;
 }
 
-.info {
+.instruct {
     padding: 6px 8px;
     font: 14px/16px Arial, Helvetica, sans-serif;
     background: white;
@@ -145,7 +145,7 @@ visibility: hidden;
     border-radius: 5px;
 }
 
-.info .text {
+.instruct .text {
   padding-left: 10px;
 }
 

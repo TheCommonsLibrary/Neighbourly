@@ -1,6 +1,13 @@
 var makeMap = function(style, onSelect) {
-  var australia_coord = [-29.8650, 131.2094];
-  var map = L.map('map').setView(australia_coord, 4);
+  var map = L.map('map');
+
+  var showAustralia = function() {
+    var australia_coord = [-29.8650, 131.2094];
+    map.setView(australia_coord, 4);
+//$('.map-content').html("<div
+  };
+
+  showAustralia();
 
   var tileLayer = L.tileLayer('http://{s}.tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
@@ -8,7 +15,7 @@ var makeMap = function(style, onSelect) {
 
   var legend = L.control({position: 'bottomright'});
   legend.onAdd = function(map) {
-    var div = L.DomUtil.create('div', 'info legend');
+    var div = L.DomUtil.create('div', 'legend');
      div.innerHTML += '<i style="background:' + style.selected + '"></i><div>Selected</div>';
      div.innerHTML += '<i style="background:' + style.claimed + '"></i><div>Claimed</div>';
      div.innerHTML += '<i style="background:' + style.unclaimed + '"></i><div>Unclaimed</div>';
@@ -16,14 +23,14 @@ var makeMap = function(style, onSelect) {
   }
   legend.addTo(map);
 
-  var info = L.control();
-  info.onAdd = function(map) {
-    this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
+  var instruct = L.control();
+  instruct.onAdd = function(map) {
+    this._div = L.DomUtil.create('div', 'instruct hidden'); // create a div with a class "instruct"
     this.update();
     return this._div;
   }
 
-  info.update = function(properties) {
+  instruct.update = function(properties) {
     if (properties) {
       //this._div.innerHTML = '<div class="text"> Walkpath is <b>' + properties.state + '</b> and is currently walked by <b>' + properties.claimedBy + '</b></div>';
       if(properties.state === 'unclaimed') {
@@ -34,10 +41,10 @@ var makeMap = function(style, onSelect) {
         this._div.innerHTML = '<div class="text"><b>' + properties.claimedBy + '</b> will door knock this area.<br/><b>Click</b> if you want to walk it/download the walk survey.</div>';
       }
     } else {
-      this._div.innerHTML = "Hover over a area to see details";
+      this._div.innerHTML = "Hover over an area to see details";
     }
   }
-  info.addTo(map);
+  instruct.addTo(map);
 
   var styleFor = function(feature) {
     var color = style.unclaimed
@@ -80,11 +87,11 @@ var makeMap = function(style, onSelect) {
 
     return {
       mouseover: function(e) {
-        info.update(e.target.feature.properties);
+        instruct.update(e.target.feature.properties);
       	e.target.setStyle(highlightStyle);
       },
       mouseout: function(e) {
-        info.update();
+        instruct.update();
         e.target.setStyle(styleFor(e.target.feature));
       },
       click: function(e) {
@@ -149,17 +156,18 @@ var makeMap = function(style, onSelect) {
     },
     clear: function() {
         map.eachLayer(function(layer) {
-          if (layer != tileLayer && layer != legend && layer != info) {
+          if (layer != tileLayer && layer != legend && layer != instruct) {
             map.removeLayer(layer)
           }
         });
     },
+    showAustralia: showAustralia,
     blocks: meshInteractions.blocks
   };
 }
 
-$('#map').height($(window).height() - $('.header').height() - 290);
-$('#map').width($(window).width());
+$('#map').height(document.documentElement.clientHeight - $('.header').height());
+$('#map').width("100%");
 
 var meshColors =  {
   selected: '#DDA0DD', //Purple
@@ -177,6 +185,11 @@ $('.electorate-picker select').change(function() {
         map.render(json);
         $('#load').addClass('hidden');
       });
+      $(".instruct").removeClass("hidden");
+    } else {
+      map.clear();
+      map.showAustralia();
+      $(".instruct").addClass("hidden");
     }    
 });
 
