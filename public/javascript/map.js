@@ -4,7 +4,7 @@ var makeMap = function(style) {
   var showAustralia = function() {
     var australia_coord = [-29.8650, 131.2094];
     map.setView(australia_coord, 4);
-//$('.map-content').html("<div
+    $('.map-blocker').removeClass('hidden')
   };
 
   showAustralia();
@@ -165,7 +165,21 @@ var makeMap = function(style) {
   };
 }
 
-$('#map').height(document.documentElement.clientHeight - $('.header').height());
+
+
+var windowHeight = function(){
+    if(window.innerHeight != undefined){
+        return window.innerHeight;
+    }
+    else{
+        var B= document.body, D= document.documentElement;
+        return Math.max(D.clientHeight, B.clientHeight);
+    }
+}
+
+
+
+$('#map').height(windowHeight() - $('.header').height());
 $('#map').width("100%");
 
 var meshColors =  {
@@ -178,6 +192,7 @@ var map = makeMap(meshColors);
 $('.electorate-picker select').change(function() {
     var electorateId = $(this).val();
     if (electorateId !== "") {
+      $('.map-blocker').addClass('hidden')
       $('#load').removeClass('hidden');
       $.getJSON('/electorate/' + electorateId + '/meshblocks', function(json) {
         map.clear();
