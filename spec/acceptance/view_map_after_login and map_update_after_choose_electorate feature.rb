@@ -14,7 +14,6 @@ describe 'choose electorate' do
     expect(find('.info .text').text).to eq("No one will door knock this area. Click if you want to walk it.")
     sleep 3
     puts "HERE"
-  
   end
 end
 
