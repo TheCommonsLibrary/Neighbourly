@@ -99,7 +99,6 @@ var makeMap = function(style, onSelect) {
           properties.state = properties.previous_state;
           selections[properties.slug] = false;
         }
-        console.log(properties);
         onSelect(newlySelected().length > 0);
         e.target.setStyle(styleFor(mesh.feature));
       },
@@ -119,6 +118,21 @@ var makeMap = function(style, onSelect) {
       };
   }();
 
+  var mergeModelsAndStyle = function(selected, cleared) {
+    return function(feature) {
+      if (selected.indexOf(feature.properties.slug) > -1) {
+        feature.properties.previous_state = feature.properties.state;
+        feature.properties.state = 'selected';
+      } else if (cleared.indexOf(feature.properties.slug) > -1) {
+        if(feature.properties.state === 'selected') {
+          feature.properties.state = 'unclaimed';
+        }
+      }
+      return styleFor(feature);
+    }
+  }
+
+
 
   return {
     render: function(features) {
@@ -128,7 +142,7 @@ var makeMap = function(style, onSelect) {
 
       var mesh_boxes = L.geoJson(
                       {"type": 'FeatureCollection', "features": features},
-                      { style: styleFor, onEachFeature: onEachFeatureCB }
+                      { style: mergeModelsAndStyle(meshInteractions.blocks.newlySelected(), meshInteractions.blocks.cleared()), onEachFeature: onEachFeatureCB }
                     ).addTo(map);
 
       map.fitBounds(mesh_boxes.getBounds());
