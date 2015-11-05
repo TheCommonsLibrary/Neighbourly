@@ -190,3 +190,11 @@ $('.electorate-picker select').change(function() {
 
 
 $('.electorate-picker select').trigger('change');
+$('.download').click(function() {
+  var url = "/download?";
+  url += map.blocks.newlySelected().map(function(x) { return "slugs[]=" + x }).join("&");
+  window.location = url;
+});
+
+
+

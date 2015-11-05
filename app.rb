@@ -111,8 +111,8 @@ get '/electorate/:id/meshblocks' do
   end
 end
 
-post '/download' do
+get '/download' do
   authorised do
-    haml :download, locals: { slugs: param['slugs'] }
+    haml :download, locals: { slugs: params[:slugs] || [] }
   end
 end
