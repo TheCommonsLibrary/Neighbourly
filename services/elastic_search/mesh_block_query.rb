@@ -3,9 +3,11 @@ require_relative './connection'
 module ElasticSearch
   module Query
     class MeshBlocksQuery
-      def initialize(electorate_id)
-        @elastic_search = ElasticSearch::Connection.new
+      
+      def initialize(electorate_id, elastic_search_connection)
+        @elastic_search_connection = elastic_search_connection
         @electorate_id = electorate_id
+
         @query = {
           "from": 0,
           "size": 3000,
@@ -34,7 +36,7 @@ module ElasticSearch
       end
 
       def execute
-        @elastic_search.execute @query
+        @elastic_search_connection.execute @query
       end
     end
   end
