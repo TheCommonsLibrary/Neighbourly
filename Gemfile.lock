@@ -100,6 +100,7 @@ DEPENDENCIES
   rack-test
   rake
   rspec
+  rspec-mocks
   selenium-webdriver
   sequel
   sequel_pg

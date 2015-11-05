@@ -17,6 +17,7 @@ gem 'sinatra-flash'
 group :dev do
   gem 'rake'
   gem 'rspec'
+  gem 'rspec-mocks'
   gem 'sinatra-contrib'
   gem 'rack-test'
   gem 'byebug'
