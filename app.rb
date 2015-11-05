@@ -15,7 +15,9 @@ require 'sinatra/json'
 require_relative 'lib/nation_helper'
 require_relative 'lib/view_helper'
 require_relative 'lib/params_helper'
-require_relative 'services/mesh_block_service'
+require_relative './services/elastic_search/mesh_block_query'
+require_relative './services/claim_service'
+require_relative './models/feature_collection'
 
 Dotenv.load
 enable :sessions
@@ -109,12 +111,18 @@ end
 get '/electorate/:id/meshblocks' do
   authorised do
     electorate_id = params[:id]
+    
     claim_service = ClaimService.new(settings.db)
     elastic_search_connection = ElasticSearch::Connection.new
     mesh_block_query = ElasticSearch::Query::MeshBlocksQuery.new(electorate_id, elastic_search_connection)
-    mesh_block_service = MeshBlockService.new claim_service, nation_slug, mesh_block_query
 
-    json mesh_block_service.get_all()
+    query_results = mesh_block_query.execute
+    mesh_blocks = query_results['hits']['hits']
+    mesh_blocks_claimers = claim_service.get_claimers_for(mesh_blocks)
+
+    feature_collection = FeatureCollection.new(query_results, nation_slug, mesh_blocks_claimers)
+
+    json feature_collection.to_a
   end
 end
 
