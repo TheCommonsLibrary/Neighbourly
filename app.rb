@@ -18,29 +18,10 @@ require_relative './services/elastic_search/mesh_block_query'
 require_relative './services/claim_service'
 require_relative './models/feature_collection'
 require_relative "models/user"
+require_relative "models/electorate"
 
 Dotenv.load
 enable :sessions
-
-ELECTORATES = 
-  {"Batman"   => "301020",
-  "Bonner"   => "300989",
-  "Brisbane" => "300991",
-  "Curtin"   => "300923",
-  "Deakin"   => "301028",
-  "Denison"  => "300937",
-  "Dunkley"  => "301029",
-  "Higgins"  => "301035",
-  "Hindmarsh"=> "301059",
-  "Kooyong"  => "301041",
-  "McEwen"   => "301046",
-  "Melbourne"=> "301048",
-  "Moreton"  => "301011",
-  "Petrie"   => "301013",
-  "Reid"     => "300977",
-  "Ryan"     => "301015",
-  "Sturt"    => "301064",
-  "Wentworth"=> "300986"}
 
 def test_db_connection
   Sequel.connect(ENV['SNAP_DB_PG_URL'] || "postgres://localhost/walklist_test")
