@@ -95,7 +95,7 @@ end
 
 get '/map' do
   authorised do
-    haml :map
+    haml :map, :layout => false
   end
 end
 
