@@ -10,6 +10,7 @@ disable :run
 Capybara.default_driver = :selenium
 
 Capybara.app = Sinatra::Application
+Capybara.default_wait_time = 20
 
 RSpec.configure do |config|
   config.include Capybara

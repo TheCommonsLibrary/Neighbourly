@@ -7,7 +7,7 @@ namespace :spec do
     task.pattern    = 'spec/unit_tests/**/*_spec.rb'
   end
   RSpec::Core::RakeTask.new(:acceptance) do |task|
-    task.rspec_opts = ["-c", "-f progress", "-r ./spec/acceptance_helper.rb"]
+    task.rspec_opts = ["-c", "-f documentation", "-r ./spec/acceptance_helper.rb"]
     task.pattern    = 'spec/acceptance/**/*_feature.rb'
   end
 end
