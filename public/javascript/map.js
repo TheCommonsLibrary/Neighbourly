@@ -167,15 +167,7 @@ var meshColors =  {
   claimed: '#F0054C', //Pink
 };
 
-var downloadButtonMaker = function(selected) {
-  if (selected) {
-    $('.download').removeClass('disabled');
-  } else {
-    $('.download').addClass('disabled');
-  }
-}
-
-var map = makeMap(meshColors, downloadButtonMaker);
+var map = makeMap(meshColors);
 $('.electorate-picker select').change(function() {
     var electorateId = $(this).val();
     if (electorateId !== "") {
