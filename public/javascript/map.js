@@ -1,4 +1,4 @@
-var makeMap = function(style, onSelect) {
+var makeMap = function(style) {
   var map = L.map('map');
 
   var showAustralia = function() {
@@ -105,7 +105,6 @@ var makeMap = function(style, onSelect) {
           properties.state = 'selected';
           selections[properties.slug] = true;
         }
-        onSelect(newlySelected().length > 0);
         e.target.setStyle(styleFor(mesh.feature));
       },
       blocks: {
