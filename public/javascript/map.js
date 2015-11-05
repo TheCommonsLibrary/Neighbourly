@@ -211,9 +211,10 @@ $('.electorate-picker select').change(function() {
 
 $('.electorate-picker select').trigger('change');
 $('.download').click(function() {
-  var url = "/download?";
-  url += map.blocks.newlySelected().map(function(x) { return "slugs[]=" + x }).join("&");
-  window.location = url;
+  var form = '<form action="/download" method="POST"><select name="slugs[]" multiple>';
+  form += map.blocks.newlySelected().map(function(x) { return '<option value="' + x + '"selected></option>'; }).join("");
+  form += '</select></form>';
+  $(form).appendTo('body').submit();
 });
 
 

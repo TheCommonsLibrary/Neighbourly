@@ -119,7 +119,7 @@ get '/electorate/:id/meshblocks' do
   end
 end
 
-get '/download' do
+post '/download' do
   authorised do
     claim_service = ClaimService.new(settings.db)
     claimed_mesh_blocks = claim_service.get_mesh_blocks_for(nation_slug)
