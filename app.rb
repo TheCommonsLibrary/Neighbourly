@@ -40,6 +40,10 @@ ELECTORATES =
   "Sturt"    => "301064",
   "Wentworth"=> "300986"}
 
+def test_db_connection
+  Sequel.connect(ENV['SNAP_DB_PG_URL'] || "postgres://localhost/walklist_test")
+end
+
 configure do
   db = Sequel.connect('postgres://localhost/walklist')
   set :db, db
@@ -51,8 +55,7 @@ configure :production do
 end
 
 configure :test do
-  db = Sequel.connect(ENV['SNAP_DB_PG_URL'] || "postgres://localhost/walklist_test")
-  set :db, db
+  set :db, test_db_connection
 end
 
 Sequel.datetime_class = DateTime

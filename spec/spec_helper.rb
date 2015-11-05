@@ -10,4 +10,7 @@ module RSpecMixin
   def app() Sinatra::Application end
 end
 
-RSpec.configure { |c| c.include RSpecMixin }
+RSpec.configure { |c|
+	c.include RSpecMixin 
+	c.add_setting :db, default: test_db_connection
+}
