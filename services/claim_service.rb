@@ -6,7 +6,7 @@ class ClaimService
   end
 
   def get_claimers(mesh_blocks)
-    @db[:mesh_block_claims].
+    @db[:claims].
       where(mesh_block_slug: get_mesh_block_slugs(mesh_blocks)).
       where("claim_date > now() - INTERVAL '2 weeks'").
       select(:mesh_block_claimer, :mesh_block_slug).
