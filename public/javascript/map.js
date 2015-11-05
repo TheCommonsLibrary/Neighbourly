@@ -16,9 +16,10 @@ var makeMap = function(style) {
   var legend = L.control({position: 'bottomright'});
   legend.onAdd = function(map) {
     var div = L.DomUtil.create('div', 'legend');
-     div.innerHTML += '<i style="background:' + style.selected + '"></i><div>Selected</div>';
-     div.innerHTML += '<i style="background:' + style.claimed + '"></i><div>Claimed</div>';
-     div.innerHTML += '<i style="background:' + style.unclaimed + '"></i><div>Unclaimed</div>';
+     div.innerHTML += '<b>This block is walked by</b>';
+     div.innerHTML += '<i style="background:' + style.selected + '"></i><div>Me</div>';
+     div.innerHTML += '<i style="background:' + style.claimed + '"></i><div>Someone else</div>';
+     div.innerHTML += '<i style="background:' + style.unclaimed + '"></i><div>No one</div>';
      return div;
   }
   legend.addTo(map);
