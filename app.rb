@@ -89,12 +89,6 @@ get '/authorise' do
   redirect '/map'
 end
 
-get '/electorates' do
-  authorised do
-    haml :electorates
-  end
-end
-
 get '/map' do
   authorised do
     haml :map, :layout => false
