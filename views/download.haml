@@ -3,8 +3,15 @@
     %a{href: "javascript:(function(){Array.from(document.links).filter(function(el){return el.href.match(/\.pdf$/);}).map(function(el){el.click();});})();" }<
       Download all
     or, individually:
+  %h4 Newly Selected Walkpaths
   %ul
-    - slugs.each do |slug|
+    - selected_slugs.each do |slug|
+      %li
+        %a{download: true, href: "http://turf.getup.org/walklists/#{slug}_walklist.pdf"}
+          #{slug}_walklist.pdf
+  %h4 Previously Selected Walkpaths
+  %ul
+    - claimed_slugs.each do |slug|
       %li
         %a{download: true, href: "http://turf.getup.org/walklists/#{slug}_walklist.pdf"}
           #{slug}_walklist.pdf

@@ -117,6 +117,8 @@ end
 
 get '/download' do
   authorised do
-    haml :download, locals: { slugs: params[:slugs] || [] }
+    claim_service = ClaimService.new(settings.db)
+    claimed_mesh_blocks = claim_service.get_mesh_blocks_for(nation_slug)
+    haml :download, locals: { selected_slugs: params[:slugs] || [], claimed_slugs: claimed_mesh_blocks }
   end
 end
