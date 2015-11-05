@@ -1,10 +1,7 @@
-
 .container.login
   = styled_flash
   .spacer
   .errors-container
   %form{method: 'post', action: '/login', class: 'login-box'}
-    %input#nation-input{:placeholder => "Nation Name", :name => 'nation', :type => "text"}/
-    %input.button-primary#login-button{:type => "submit", :value=>"Log In"}
-
-%script{:src => "/javascript/main.js"}
+    %input#login-input{placeholder: "Email Address", name: "email", type: "email", required: true}/
+    %input.button-primary#login-button{type: "submit", value: "Log In"}
