@@ -28,7 +28,7 @@ var makeMap = function(style, onSelect) {
       //this._div.innerHTML = '<div class="text"> Walkpath is <b>' + properties.state + '</b> and is currently walked by <b>' + properties.claimedBy + '</b></div>';
       if(properties.state === 'unclaimed') {
         this._div.innerHTML = '<div class="text"><b>No one</b> will door knock this area.<br/><b>Click</b> if you want to walk it.</div>';
-      } else if(properties.state = 'selected') {
+      } else if(properties.state === 'selected') {
         this._div.innerHTML = '<div class="text"><b>You</b> will door knock this area.<br/><b>Click</b> if you no longer want to door knock the area.</div>';
       } else {
         this._div.innerHTML = '<div class="text"><b>' + properties.claimedBy + '</b> will door knock this area.<br/><b>Click</b> if you want to walk it/download the walk survey.</div>';
@@ -41,10 +41,9 @@ var makeMap = function(style, onSelect) {
 
   var styleFor = function(feature) {
     var color = style.unclaimed
-    if (feature.properties.state === 'selected' || feature.properties.selected) {
+    if (feature.properties.state === 'selected') {
       color = style.selected
-    }
-    if (feature.properties.state === 'claimed') {
+    } else if (feature.properties.state === 'claimed') {
       color = style.claimed
     }
     return {
@@ -91,13 +90,13 @@ var makeMap = function(style, onSelect) {
       click: function(e) {
         var mesh = e.target;
         var properties = e.target.feature.properties;
-        if (properties.state === 'unclaimed') {
+        if (properties.state === 'selected') {
+          properties.state = properties.previous_state;
+          selections[properties.slug] = false;
+        } else {
           properties.previous_state = properties.state;
           properties.state = 'selected';
           selections[properties.slug] = true;
-        } else {
-          properties.state = properties.previous_state;
-          selections[properties.slug] = false;
         }
         onSelect(newlySelected().length > 0);
         e.target.setStyle(styleFor(mesh.feature));
@@ -120,6 +119,7 @@ var makeMap = function(style, onSelect) {
 
   var mergeModelsAndStyle = function(selected, cleared) {
     return function(feature) {
+      var initState = feature.properties.state;
       if (selected.indexOf(feature.properties.slug) > -1) {
         feature.properties.previous_state = feature.properties.state;
         feature.properties.state = 'selected';
