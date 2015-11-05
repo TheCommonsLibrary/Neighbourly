@@ -73,7 +73,7 @@ end
 post "/user_details" do
   user = User.new(settings.db)
   if user.create!(params[:user_details])
-    authorise(email)
+    authorise(params[:user_details]['email'])
     redirect "/map"
   else
     # TODO needs validation
