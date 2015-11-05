@@ -64,7 +64,7 @@ Sequel.datetime_class = DateTime
 
 get '/' do
   if authorised?
-    redirect '/electorates'
+    redirect '/map'
   else
     haml :main, locals: {body: 'main'}
   end
