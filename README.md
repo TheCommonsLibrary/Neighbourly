@@ -14,4 +14,6 @@ Fix - SECURITY WARNING: No secret option provided to Rack::Session::Cookie.
 
 # TEST
 Run unit test: rake spec:unit_tests
-Run acceptance test: rake spec:acceptance
+Run acceptance test: 
+	1. Start your test server: bundle exec puma -e test -p 8080
+	2. Run test: rake spec:acceptance

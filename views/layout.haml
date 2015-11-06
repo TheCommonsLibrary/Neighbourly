@@ -8,9 +8,9 @@
   %body{class: body_class(body)}
     #load.hidden
     .header
-      %a{href: '/map', class: 'logo-link'}
-        %img{src: '/images/getup_logo.svg', class: 'logo'}
+      %a.logo-link{href: '/map'}
+        %img.logo{src: '/images/getup_logo.svg'}
       - if authorised?
         .nav-top-right
-          %a{href: '/logout', class:'button logout'}="Logout"
+          %a#logout.button{href: '/logout'}="Logout"
     = yield
