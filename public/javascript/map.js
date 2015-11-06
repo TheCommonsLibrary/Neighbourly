@@ -39,7 +39,9 @@ var makeMap = function(style) {
       } else if(properties.state === 'selected') {
         this._div.innerHTML = '<div class="text"><b>You</b> will door knock this area.<br/><b>Click</b> if you no longer want to door knock the area.</div>';
       } else {
-        this._div.innerHTML = '<div class="text"><b>' + properties.claimedBy + '</b> will door knock this area.<br/><b>Click</b> if you want to walk it/download the walk survey.</div>';
+        this._div.innerHTML = '<div class="text"><b>' + properties.claimedBy.organisation + '</b> will door knock this area.<br/>'
+          + '<br>Contact Details:<br>' + properties.claimedBy.name + '<br>' + properties.claimedBy.email + '<br>' + properties.claimedBy.phone
+          + '<br><br>Click if you just want to download the walk list.</div>';
       }
     } else {
       this._div.innerHTML = "Hover over an area to see details";
@@ -216,6 +218,3 @@ $('.download').click(function() {
   form += '</select></form>';
   $(form).appendTo('body').submit();
 });
-
-
-

@@ -6,12 +6,12 @@ class ClaimService
   end
 
   def get_claimers_for(mesh_blocks)
-    @db[:claims].
-      where(mesh_block_slug: get_mesh_block_slugs(mesh_blocks)).
-      where("claim_date > now() - INTERVAL '2 weeks'").
-      select(:mesh_block_claimer, :mesh_block_slug).
-      map { |row| 
-        [ row[:mesh_block_slug], row[:mesh_block_claimer] ]
+    @db[:claims]
+      .where(mesh_block_slug: get_mesh_block_slugs(mesh_blocks))
+      .where("claim_date > now() - INTERVAL '2 weeks'")
+      .select(:mesh_block_claimer, :mesh_block_slug)
+      .map { |row|
+        [ row[:mesh_block_slug], claimer_details(row[:mesh_block_claimer]) ]
       }.to_h
   end
 
@@ -43,6 +43,10 @@ class ClaimService
   end
 
   private
+  def claimer_details(email)
+    @db[:users].where(email: email).first
+  end
+
   def get_mesh_block_slugs(mesh_blocks)
     mesh_blocks.map { |mesh_block| mesh_block['_source']['slug'] }
   end
