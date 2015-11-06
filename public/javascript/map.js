@@ -1,4 +1,4 @@
-var makeMap = function(style) {
+var makeMap = function(states, stateColors) {
   var map = L.map('map');
 
   var showAustralia = function() {
@@ -16,10 +16,10 @@ var makeMap = function(style) {
   var legend = L.control({position: 'bottomright'});
   legend.onAdd = function(map) {
     var div = L.DomUtil.create('div', 'legend');
-     div.innerHTML += '<b>This block is walked by</b>';
-     div.innerHTML += '<i style="background:' + style.selected + '"></i><div>Me</div>';
-     div.innerHTML += '<i style="background:' + style.claimed + '"></i><div>Someone else</div>';
-     div.innerHTML += '<i style="background:' + style.unclaimed + '"></i><div>No one</div>';
+     div.innerHTML += '<b>This block will be walked by</b>';
+     div.innerHTML += '<i style="background:' + stateColors.selected + '"></i><div>Me</div>';
+     div.innerHTML += '<i style="background:' + stateColors.claimed + '"></i><div>Someone else</div>';
+     div.innerHTML += '<i style="background:' + stateColors.unclaimed + '"></i><div>No one</div>';
      return div;
   }
   legend.addTo(map);
@@ -34,9 +34,9 @@ var makeMap = function(style) {
   instruct.update = function(properties) {
     if (properties) {
       //this._div.innerHTML = '<div class="text"> Walkpath is <b>' + properties.state + '</b> and is currently walked by <b>' + properties.claimedBy + '</b></div>';
-      if(properties.state === 'unclaimed') {
+      if(properties.state === states.unclaimed) {
         this._div.innerHTML = '<div class="text"><b>No one</b> will door knock this area.<br/><b>Click</b> if you want to walk it.</div>';
-      } else if(properties.state === 'selected' && properties.db_state !== 'claimed') {
+      } else if(properties.state === states.selected && properties.db_state !== states.claimed) {
         this._div.innerHTML = '<div class="text"><b>You</b> will door knock this area.<br/><b>Click</b> if you no longer want to door knock the area.</div>';
       } else {
         this._div.innerHTML = '<div class="text"><b>' + properties.claimedBy.organisation + '</b> will door knock this area.<br/>'
@@ -50,11 +50,11 @@ var makeMap = function(style) {
   instruct.addTo(map);
 
   var styleFor = function(feature) {
-    var color = style.unclaimed
-    if (feature.properties.state === 'selected') {
-      color = style.selected
-    } else if (feature.properties.state === 'claimed') {
-      color = style.claimed
+    var color = stateColors.unclaimed
+    if (feature.properties.state === states.selected) {
+      color = stateColors.selected
+    } else if (feature.properties.state === states.claimed) {
+      color = stateColors.claimed
     }
     return {
       weight: 2,
@@ -100,12 +100,12 @@ var makeMap = function(style) {
       click: function(e) {
         var mesh = e.target;
         var properties = e.target.feature.properties;
-        if (properties.state === 'selected') {
+        if (properties.state === states.selected) {
           properties.state = properties.db_state;
           selections[properties.slug] = false;
         } else {
           properties.db_state = properties.state;
-          properties.state = 'selected';
+          properties.state = states.selected;
           selections[properties.slug] = true;
         }
         e.target.setStyle(styleFor(mesh.feature));
@@ -131,10 +131,10 @@ var makeMap = function(style) {
       var initState = feature.properties.state;
       if (selected.indexOf(feature.properties.slug) > -1) {
         feature.properties.db_state = feature.properties.state;
-        feature.properties.state = 'selected';
+        feature.properties.state = states.selected;
       } else if (cleared.indexOf(feature.properties.slug) > -1) {
-        if(feature.properties.state === 'selected') {
-          feature.properties.state = 'unclaimed';
+        if(feature.properties.state === states.selected) {
+          feature.properties.state = states.unclaimed;
         }
       }
       return styleFor(feature);
@@ -185,13 +185,19 @@ var windowHeight = function(){
 $('#map').height(windowHeight() - $('.header').height());
 $('#map').width("100%");
 
-var meshColors =  {
+var stateColors =  {
   selected: '#DDA0DD', //Purple
   unclaimed: '#E6FF00', //Green
   claimed: '#F0054C', //Pink
 };
 
-var map = makeMap(meshColors);
+var states = {
+  selected: 'selected',
+  unclaimed: 'unclaimed',
+  claimed: 'claimed'
+}
+
+var map = makeMap(states, stateColors);
 $('.electorate-picker select').change(function() {
     var electorateId = $(this).val();
     if (electorateId !== "") {
