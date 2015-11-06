@@ -1,5 +1,4 @@
 require "sinatra/base"
-require "sinatra/cookies"
 
 module Sinatra
   module LoginHelper
