@@ -11,6 +11,10 @@ describe 'ClaimService' do
 		@claim_service = ClaimService.new(db)
 	end
 
+  after :each do
+			db[:claims].delete
+  end
+
 	let(:mesh_blocks) {
 		[
 	     {
@@ -37,16 +41,27 @@ describe 'ClaimService' do
 	describe '#get_claimers_for' do
 		it 'should get claimers for mesh_blocks' do
 			expect(@claim_service.get_claimers_for(mesh_blocks)).to eq({"slug1"=>"user1", "slug2"=>"user2", "slug3"=>"user1"})
-			db[:claims].delete
 		end
 	end
 
 	describe '#get_mesh_blocks_for' do
 		it 'should get mesh_blocks for a claimer' do
 			expect(@claim_service.get_mesh_blocks_for("user1")).to eq(["slug1", "slug3"])
-			db[:claims].delete
 		end
 	end
+
+  describe '#get_when_claimed_by_others' do
+    let(:user) { 'user1' }
+    context 'when not claimed by others' do
+      let(:block_slugs) { [ 'slug4', 'slug4' ] }
+      it { expect(@claim_service.get_when_claimed_by_others(block_slugs, user)).to be_empty }
+    end
+
+    context 'when not claimed by others' do
+      let(:block_slugs) { [ 'slug1', 'slug2', 'slug3' ] }
+      it { expect(@claim_service.get_when_claimed_by_others(block_slugs, user)).to contain_exactly(contain_exactly('slug2', 'user2')) }
+    end
+  end
 
 	describe '#claim' do
 		it 'should save mesh block slug and claimer into database' do

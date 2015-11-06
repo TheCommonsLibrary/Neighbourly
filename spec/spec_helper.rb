@@ -1,5 +1,7 @@
 require 'rack/test'
 require 'rspec'
+require 'sequel'
+Sequel.extension :migration
 
 ENV['RACK_ENV'] = 'test'
 
@@ -12,5 +14,12 @@ end
 
 RSpec.configure { |c|
 	c.include RSpecMixin 
-	c.add_setting :db, default: test_db_connection
+  db = test_db_connection
+	c.add_setting :db, default: db
+  c.before(:suite) do
+    Sequel::Migrator.apply(db, './migrations')
+  end
+  c.after(:suite) do
+    Sequel::Migrator.apply(db, './migrations', 0)
+  end
 }
