@@ -15,6 +15,7 @@ describe 'MeshBlockQuery' do
           },
           "filter": {
             "geo_shape": {
+              "_cache": true,
               "location": {
                 "relation": "within",
                   "indexed_shape": {

@@ -20,6 +20,7 @@ module ElasticSearch
               },
               "filter": {
                 "geo_shape": {
+                  "_cache": true,
                   "location": {
                     "relation": "within",
                     "indexed_shape": {
