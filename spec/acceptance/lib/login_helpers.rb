@@ -16,5 +16,6 @@ shared_context "valid login" do
 
   after(:all) {
     @db[:users].delete
+    @db[:claims].delete
   }
 end

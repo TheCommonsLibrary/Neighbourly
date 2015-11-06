@@ -26,14 +26,14 @@ describe 'Map Feature' do
 
     it 'should change when hover unclaimed mesh block' do
       find('#map .leaflet-map-pane .leaflet-overlay-pane svg g:nth-child(1)').hover
-      expect(find('.text').text).to eq("No one will door knock this area. Click if you want to walk it.")
+      expect(page).to have_content("No one will door knock this area. Click if you want to door knock it.")
     end
 
     it 'should change after select mesh block' do
       find('#map .leaflet-map-pane .leaflet-overlay-pane svg g:nth-child(1)').click
       find('#logo-image').hover
       find('#map .leaflet-map-pane .leaflet-overlay-pane svg g:nth-child(1)').hover
-      expect(find('.text').text).to eq("You will door knock this area. Click if you no longer want to door knock the area.")
+      expect(page).to have_content("You will door knock this area. Click if you no longer want to door knock the area.")
     end
 
   end
