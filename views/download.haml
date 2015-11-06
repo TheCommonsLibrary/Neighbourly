@@ -1,28 +1,24 @@
 .container
   - if claimable_slugs.size > 0
-    .download-type
+    .download-type#claimable
       .title Newly Selected Walkpaths
       .button.button-primary.download-all Download All
-      %form.claim-form{action: '/claim', method: 'POST'}
-        - claimable_slugs.each do |slug|
-          %select{name: 'slugs[]', multiple: 'multiple'}
-            %option{selected: 'selected', value: slug}
-        %input.button-primary{type: 'submit', value: "Claim & Download All"}
+      .button.button-primary.claim-all Claim & Download All
       %ul
         - claimable_slugs.each do |slug|
-          %li.claimable
+          %li.claimable{id: slug}
             %a.pdf{download: true, href: "http://turf.getup.org/walklists/#{slug}_walklist.pdf"}
               #{slug}_walklist.pdf
             %a.claim{download: true, href: "/claim?slugs[]=#{slug}"}
               Claim
   - if unclaimable_slugs.size > 0
-    .download-type
+    .download-type#unclaimable
       .title Walked by some one else
       .button.button-primary.download-all Download All
       %ul
         - unclaimable_slugs.each do |slug, user|
-          %li.unclaimable
-            %a.pdf{download: true, href: "http://turf.getup.org/walklists/#{slug}_walklist.pdf"}
+          %li.unclaimable{id: slug}
+            %a{download: true, href: "http://turf.getup.org/walklists/#{slug}_walklist.pdf"}
               #{slug}_walklist.pdf
             .details
               is walked by 
@@ -32,27 +28,12 @@
               %a{href: "mailto:#{user[:email]}"} #{user[:email]},
               Phone:
               %a{href: "tel:#{user[:phone]}"} #{user[:phone]}
-  .download-type
+  .download-type#all-claimed
     .title Previously Selected Walkpaths
     .button.button-primary.download-all Download All
     %ul
       - claimed_slugs.each do |slug|
-        %li.claimed
-          %a.pdf{download: true, href: "http://turf.getup.org/walklists/#{slug}_walklist.pdf"}
+        %li.claimed{id: slug}
+          %a{download: true, href: "http://turf.getup.org/walklists/#{slug}_walklist.pdf"}
             #{slug}_walklist.pdf
-:javascript
-  $('.download-all').click(function() {
-    console.log($(this).parent().find('.pdf'));
-    $.each($(this).parent().find('.pdf'), function(index, link) {
-      link.click();
-    });
-  })
-
-  $('.claim-all').click(function() {
-    var slugs = $('.newly-added .slug').text();
-    $.post("/claim", { 'slugs[]': selected-slugs});
-  });
-
-
-
-
+%script{ src: '/javascript/download.js', type: 'text/javascript' }

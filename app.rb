@@ -120,7 +120,9 @@ post '/download' do
     claimed_mesh_blocks = claim_service.get_mesh_blocks_for(user_email)
     unclaimable_mesh_blocks = claim_service.get_when_claimed_by_others(all_selected_slugs, user_email).
                                 map { |slug, email| [ slug, user.where(email: email).first ] }.to_h
-    claimable_mesh_blocks = all_selected_slugs.select { |slug| !unclaimable_mesh_blocks.include?(slug) }
+    claimable_mesh_blocks = all_selected_slugs.
+                              select { |slug| !unclaimable_mesh_blocks.include?(slug) }.
+                              select { |slug| !claimed_mesh_blocks.include?(slug) }
     haml :download, locals: { claimable_slugs: claimable_mesh_blocks, unclaimable_slugs: unclaimable_mesh_blocks, claimed_slugs: claimed_mesh_blocks }
   end
 end
@@ -128,6 +130,8 @@ end
 post '/claim' do
   authorised do
     claim_service = ClaimService.new(settings.db)
-    claim_service.claim((params[:slugs] || []), user_email)
+    claimed = claim_service.claim((params[:slugs] || []), user_email)
+    content_type :json
+    {claimed: claimed}.to_json
   end
 end
