@@ -1,27 +1,45 @@
 .container
-  .download-type
-    .title Newly Selected Walkpaths
-    .button.button-primary.download-all Download All
-    %form.claim{action: '/claim', method: 'POST'}
-      - selected_slugs.each do |slug|
-        %input{type: 'hidden', value: slug}
-      %input.button-primary{type: 'submit', value: "Claim & Download All"}
-    /.button.button-primary.claim-all Claim & Download All
-  %ul
-    - selected_slugs.each do |slug|
-      %li.newly-added
-        %a.pdf{download: true, href: "http://turf.getup.org/walklists/#{slug}_walklist.pdf"}
-          #{slug}_walklist.pdf
-        %a.claim{download: true, href: "/claim?slugs[]=#{slug}"}
-          Claim
+  - if claimable_slugs.size > 0
+    .download-type
+      .title Newly Selected Walkpaths
+      .button.button-primary.download-all Download All
+      %form.claim{action: '/claim', method: 'POST'}
+        - claimable_slugs.each do |slug|
+          %input{type: 'hidden', value: slug}
+        %input.button-primary{type: 'submit', value: "Claim & Download All"}
+      /.button.button-primary.claim-all Claim & Download All
+      %ul
+        - claimable_slugs.each do |slug|
+          %li.claimable
+            %a.pdf{download: true, href: "http://turf.getup.org/walklists/#{slug}_walklist.pdf"}
+              #{slug}_walklist.pdf
+            %a.claim{download: true, href: "/claim?slugs[]=#{slug}"}
+              Claim
+  - if unclaimable_slugs.size > 0
+    .download-type
+      .title Walked by some one else
+      .button.button-primary.download-all Download All
+      %ul
+        - unclaimable_slugs.each do |slug, user|
+          %li.unclaimable
+            %a{download: true, href: "http://turf.getup.org/walklists/#{slug}_walklist.pdf"}
+              #{slug}_walklist.pdf
+            .details
+              is walked by 
+              %b #{user[:name]}
+              from #{user[:organisation]}.
+              Email:
+              %a{href: "mailto:#{user[:email]}"} #{user[:email]},
+              Phone:
+              %a{href: "tel:#{user[:phone]}"} #{user[:phone]}
   .download-type
     .title Previously Selected Walkpaths
     .button.button-primary.download-all Download All
-  %ul
-    - claimed_slugs.each do |slug|
-      %li
-        %a{download: true, href: "http://turf.getup.org/walklists/#{slug}_walklist.pdf"}
-          #{slug}_walklist.pdf
+    %ul
+      - claimed_slugs.each do |slug|
+        %li.claimed
+          %a{download: true, href: "http://turf.getup.org/walklists/#{slug}_walklist.pdf"}
+            #{slug}_walklist.pdf
 :javascript
   $('.download-all').click(function() {
     $.each($('.newly-added a'), function(index, link) {

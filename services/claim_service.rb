@@ -25,6 +25,17 @@ class ClaimService
       }
   end
 
+  def get_when_claimed_by_others(mesh_blocks, user_email)
+    @db[:claims].
+      where(mesh_block_slug: mesh_blocks).
+      exclude(mesh_block_claimer: user_email).
+      where("claim_date > now() - INTERVAL '2 weeks'").
+      select(:mesh_block_claimer, :mesh_block_slug).
+      map { |row|
+        [ row[:mesh_block_slug], row[:mesh_block_claimer] ]
+      }.to_h
+  end
+
   def claim(mesh_blocks, claimer)
     mesh_blocks.each do |mesh_block|
       @db[:claims].insert(:mesh_block_slug => mesh_block, :mesh_block_claimer => claimer, :claim_date => Time.now)

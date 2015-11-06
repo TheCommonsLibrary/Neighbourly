@@ -114,9 +114,14 @@ end
 
 post '/download' do
   authorised do
+    all_selected_slugs = (params[:slugs] || [])
     claim_service = ClaimService.new(settings.db)
+    user = User.new(settings.db)
     claimed_mesh_blocks = claim_service.get_mesh_blocks_for(user_email)
-    haml :download, locals: { selected_slugs: params[:slugs] || [], claimed_slugs: claimed_mesh_blocks }
+    unclaimable_mesh_blocks = claim_service.get_when_claimed_by_others(all_selected_slugs, user_email).
+                                map { |slug, email| [ slug, user.where(email: email).first ] }.to_h
+    claimable_mesh_blocks = all_selected_slugs.select { |slug| !unclaimable_mesh_blocks.include?(slug) }
+    haml :download, locals: { claimable_slugs: claimable_mesh_blocks, unclaimable_slugs: unclaimable_mesh_blocks, claimed_slugs: claimed_mesh_blocks }
   end
 end
 

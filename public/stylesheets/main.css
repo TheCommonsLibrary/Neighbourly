@@ -26,7 +26,11 @@
   display: inline-block;
 }
 
-.newly-added .claim {
+.download-type .details {
+  display: inline-block;
+}
+
+.claimable .claim {
   margin-left: 2%;
   color: #FD4A00;
 }
