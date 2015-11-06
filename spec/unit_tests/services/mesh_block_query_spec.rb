@@ -16,7 +16,8 @@ describe 'MeshBlockQuery' do
           "filter": {
             "geo_shape": {
               "location": {
-                "indexed_shape": {
+                "relation": "within",
+                  "indexed_shape": {
                   "id": 1,
                   "index": "territories",
                   "type": "territory",
