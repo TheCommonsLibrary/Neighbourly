@@ -1,5 +1,4 @@
 $('.download-all').click(function() {
-  console.log($(this).parent().find('.pdf'));
   $.each($(this).parent().find('.pdf'), function(index, link) {
     link.click();
   });

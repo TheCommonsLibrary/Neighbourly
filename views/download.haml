@@ -18,7 +18,7 @@
       %ul
         - unclaimable_slugs.each do |slug, user|
           %li.unclaimable{id: slug}
-            %a{download: true, href: "http://turf.getup.org/walklists/#{slug}_walklist.pdf"}
+            %a.pdf{download: true, href: "http://turf.getup.org/walklists/#{slug}_walklist.pdf"}
               #{slug}_walklist.pdf
             .details
               is walked by 
@@ -34,6 +34,6 @@
     %ul
       - claimed_slugs.each do |slug|
         %li.claimed{id: slug}
-          %a{download: true, href: "http://turf.getup.org/walklists/#{slug}_walklist.pdf"}
+          %a.pdf{download: true, href: "http://turf.getup.org/walklists/#{slug}_walklist.pdf"}
             #{slug}_walklist.pdf
 %script{ src: '/javascript/download.js', type: 'text/javascript' }
