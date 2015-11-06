@@ -66,11 +66,11 @@ describe "ClaimService" do
     end
   end
 
-  describe "#claim" do
-    it "should save mesh block slug and claimer into database" do
-      mesh_blocks = ["mesh_block_1", "mesh_block_2"]
-      claimer = "claimer"
-      @claim_service.claim(mesh_blocks, claimer)
+	describe '#claim' do
+		it 'should save mesh block slug and claimer into database' do
+			mesh_blocks = ["mesh_block_1", "mesh_block_2"]
+			claimer = 'claimer'
+      expect(@claim_service.claim(mesh_blocks, claimer)).to contain_exactly('mesh_block_1', 'mesh_block_2');
 
       expect(@claim_service.get_mesh_blocks_for(claimer)).to eq(["mesh_block_1", "mesh_block_2"])
       db[:claims].delete
