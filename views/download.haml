@@ -22,7 +22,7 @@
       %ul
         - unclaimable_slugs.each do |slug, user|
           %li.unclaimable
-            %a{download: true, href: "http://turf.getup.org/walklists/#{slug}_walklist.pdf"}
+            %a.pdf{download: true, href: "http://turf.getup.org/walklists/#{slug}_walklist.pdf"}
               #{slug}_walklist.pdf
             .details
               is walked by 
@@ -38,13 +38,13 @@
     %ul
       - claimed_slugs.each do |slug|
         %li.claimed
-          %a{download: true, href: "http://turf.getup.org/walklists/#{slug}_walklist.pdf"}
+          %a.pdf{download: true, href: "http://turf.getup.org/walklists/#{slug}_walklist.pdf"}
             #{slug}_walklist.pdf
 :javascript
   $('.download-all').click(function() {
-    $.each($('.newly-added a'), function(index, link) {
-      console.log(link);
-      window.open(link.href);
+    console.log($(this).parent().find('.pdf'));
+    $.each($(this).parent().find('.pdf'), function(index, link) {
+      link.click();
     });
   })
 
@@ -52,3 +52,7 @@
     var slugs = $('.newly-added .slug').text();
     $.post("/claim", { 'slugs[]': selected-slugs});
   });
+
+
+
+
