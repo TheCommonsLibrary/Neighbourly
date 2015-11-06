@@ -128,6 +128,6 @@ end
 post '/claim' do
   authorised do
     claim_service = ClaimService.new(settings.db)
-    claim_service.claim(params[:slugs], user_email)
+    claim_service.claim((params[:slugs] || []), user_email)
   end
 end
