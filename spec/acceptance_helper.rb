@@ -13,7 +13,6 @@ Capybara.app = Sinatra::Application
 Capybara.default_wait_time = 20
 
 RSpec.configure do |config|
-  config.include Capybara
   config.include Capybara::DSL
   config.add_setting :db, default: test_db_connection
 end
