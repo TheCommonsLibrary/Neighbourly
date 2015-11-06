@@ -7,6 +7,10 @@
   border-radius: 5px;
 }
 
+.grey {
+  color: #555;
+}
+
 .nav-top-right {
   float: right;
   margin-top: 31px;
