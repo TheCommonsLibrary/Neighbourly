@@ -11,7 +11,7 @@
     #load.hidden
     .header
       %a{href: '/electorates', class: 'logo-link'}
-        %img{src: '/images/getup_logo.svg', class: 'logo'}
+        %img.logo#logo-image{src: '/images/getup_logo.svg'}
       - if authorised?
         .electorate-picker
           %form{ :action => "/map", :method => "GET"}

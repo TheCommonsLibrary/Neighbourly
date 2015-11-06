@@ -3,7 +3,7 @@ require 'capybara/dsl'
 require 'capybara/rspec'
 
 shared_context "valid login" do
-  before(:each) {
+  before(:all) {
     @db = RSpec.configuration.db
     @db[:users].insert(:email => 'existuser@test.com', :name => 'Exist User', :organisation => 'Test', :phone => '123', :created_at => Time.now)
   }
@@ -14,8 +14,7 @@ shared_context "valid login" do
     find_button('login-button').click
   end
 
-
-  after(:each) {
+  after(:all) {
     @db[:users].delete
   }
 end
