@@ -3,11 +3,11 @@
     .download-type
       .title Newly Selected Walkpaths
       .button.button-primary.download-all Download All
-      %form.claim{action: '/claim', method: 'POST'}
+      %form.claim-form{action: '/claim', method: 'POST'}
         - claimable_slugs.each do |slug|
-          %input{type: 'hidden', value: slug}
+          %select{name: 'slugs[]', multiple: 'multiple'}
+            %option{selected: 'selected', value: slug}
         %input.button-primary{type: 'submit', value: "Claim & Download All"}
-      /.button.button-primary.claim-all Claim & Download All
       %ul
         - claimable_slugs.each do |slug|
           %li.claimable

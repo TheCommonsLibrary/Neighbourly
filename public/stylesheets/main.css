@@ -21,6 +21,17 @@
   display: inline-block;
   font-size: 25px;
 }
+
+.download-type .claim-form {
+  margin-left: 2%;
+  display: inline-block;
+}
+
+.download-type .claim-form select {
+  display: none;
+  visibility: none;
+}
+
 .download-type .claim {
   margin-left: 2%;
   display: inline-block;
