@@ -73,6 +73,11 @@ var makeMap = function(states, stateColors) {
 
   var meshInteractions = function() {
     var selections = {};
+    var stored_selections = localStorage.getItem('slug_selections');
+    if (stored_selections) {
+      selections = JSON.parse(stored_selections);
+    }
+
     var highlightStyle = {
         dashArray: '',
         fillOpacity: 0.9,
@@ -113,6 +118,9 @@ var makeMap = function(states, stateColors) {
       },
       blocks: {
 	      newlySelected: newlySelected,
+        save: function() {
+          localStorage.setItem('slug_selections', JSON.stringify(selections));
+        },
 	      cleared: function() {
 	        var cleared = []
 	        for(var meshId in selections) {
@@ -221,7 +229,9 @@ $('.electorate-picker select').trigger('change');
 window.onunload = function() {
   $('.electorate-picker select').val("");
 };
+
 $('.download').click(function() {
+  map.blocks.save();
   var form = '<form action="/download" method="POST"><select name="slugs[]" multiple>';
   form += map.blocks.newlySelected().map(function(x) { return '<option value="' + x + '"selected></option>'; }).join("");
   form += '</select></form>';
