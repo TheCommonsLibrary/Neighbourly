@@ -217,9 +217,10 @@ $('.electorate-picker select').change(function() {
     }    
 });
 
-
-$(window).on('focus', function(event) { $('.electorate-picker select').trigger('change'); });
-
+$('.electorate-picker select').trigger('change');
+window.onunload = function() {
+  $('.electorate-picker select').val("");
+};
 $('.download').click(function() {
   var form = '<form action="/download" method="POST"><select name="slugs[]" multiple>';
   form += map.blocks.newlySelected().map(function(x) { return '<option value="' + x + '"selected></option>'; }).join("");
