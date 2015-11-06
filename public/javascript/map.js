@@ -36,7 +36,7 @@ var makeMap = function(style) {
       //this._div.innerHTML = '<div class="text"> Walkpath is <b>' + properties.state + '</b> and is currently walked by <b>' + properties.claimedBy + '</b></div>';
       if(properties.state === 'unclaimed') {
         this._div.innerHTML = '<div class="text"><b>No one</b> will door knock this area.<br/><b>Click</b> if you want to walk it.</div>';
-      } else if(properties.state === 'selected') {
+      } else if(properties.state === 'selected' && properties.db_state !== 'claimed') {
         this._div.innerHTML = '<div class="text"><b>You</b> will door knock this area.<br/><b>Click</b> if you no longer want to door knock the area.</div>';
       } else {
         this._div.innerHTML = '<div class="text"><b>' + properties.claimedBy.organisation + '</b> will door knock this area.<br/>'
@@ -101,10 +101,10 @@ var makeMap = function(style) {
         var mesh = e.target;
         var properties = e.target.feature.properties;
         if (properties.state === 'selected') {
-          properties.state = properties.previous_state;
+          properties.state = properties.db_state;
           selections[properties.slug] = false;
         } else {
-          properties.previous_state = properties.state;
+          properties.db_state = properties.state;
           properties.state = 'selected';
           selections[properties.slug] = true;
         }
@@ -130,7 +130,7 @@ var makeMap = function(style) {
     return function(feature) {
       var initState = feature.properties.state;
       if (selected.indexOf(feature.properties.slug) > -1) {
-        feature.properties.previous_state = feature.properties.state;
+        feature.properties.db_state = feature.properties.state;
         feature.properties.state = 'selected';
       } else if (cleared.indexOf(feature.properties.slug) > -1) {
         if(feature.properties.state === 'selected') {
