@@ -71,8 +71,6 @@ var makeMap = function(states, stateColors) {
   var meshInteractions = function() {
     var selections = {};
     var highlightStyle = {
-        weight: 3,
-        color: '#666',
         dashArray: '',
         fillOpacity: 0.9,
     };
