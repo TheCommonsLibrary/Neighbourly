@@ -9,7 +9,8 @@ var claim_slugs = function(slugs, onClaim) {
   var move_to_claimed = function(slugs) {
     for(var i = 0; i < slugs.length; i++) {
       var claimable = $('#' + slugs[i] + '.claimable');
-      onClaim(claimable);
+      if (onClaim)
+        onClaim(claimable);
       $('#all-claimed ul').append(claimable);
       claimable.find('.claim').remove();
     }
