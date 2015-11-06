@@ -8,12 +8,9 @@ module Sinatra
       end
 
       def user_name
-        if session[:user].nil?
-          session[:user] = settings.db[:users].where(email: user_email).first
-          return session[:user][:name].split()[0]
-        else
-          return session[:user][:name].split()[0]
-        end
+        # so that we dont have to do db calls every time we need a different attribute of the logged in user
+        session[:user] = settings.db[:users].where(email: user_email).first if session[:user].nil?
+        session[:user][:name].split()[0]
       end
 
       def authorise(email)
