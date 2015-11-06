@@ -1,3 +1,10 @@
+.welcome-message {
+  color: #5b5c60;
+  font-weight: bold;
+  margin-right: 16px;
+  display: inline-block;
+}
+
 .flash.notice {
   margin: 20px auto;
   width: 500px;

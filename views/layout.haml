@@ -12,5 +12,7 @@
         %img.logo{src: '/images/getup_logo.svg'}
       - if authorised?
         .nav-top-right
+          Hi
+          .welcome-message #{user_name} &nbsp;
           %a#logout.button{href: '/logout'}="Logout"
     = yield
