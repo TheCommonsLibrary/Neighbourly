@@ -194,7 +194,11 @@
 }
 
 .instruct .text {
-  padding-left: 10px;
+  padding: 0 10px;
+}
+
+.instruct .hover-slug {
+  font-size: large;
 }
 
 .legend {

@@ -16,11 +16,13 @@ var makeMap = function(states, stateColors) {
   var legend = L.control({position: 'bottomright'});
   legend.onAdd = function(map) {
     var div = L.DomUtil.create('div', 'legend');
-     div.innerHTML += '<b>This block will be walked by</b>';
-     div.innerHTML += '<i style="background:' + stateColors.selected + '"></i><div>Me</div>';
-     div.innerHTML += '<i style="background:' + stateColors.claimed + '"></i><div>Someone else</div>';
-     div.innerHTML += '<i style="background:' + stateColors.unclaimed + '"></i><div>No one</div>';
-     return div;
+    div.innerHTML = [
+      '<b>This block will be walked by</b>',
+      '<i style="background:' + stateColors.selected + '"></i><div>Me</div>',
+      '<i style="background:' + stateColors.claimed + '"></i><div>Someone else</div>',
+      '<i style="background:' + stateColors.unclaimed + '"></i><div>No one</div>'
+    ].join('');
+    return div;
   }
   legend.addTo(map);
 
@@ -33,16 +35,17 @@ var makeMap = function(states, stateColors) {
 
   instruct.update = function(properties) {
     if (properties) {
-      //this._div.innerHTML = '<div class="text"> Walkpath is <b>' + properties.state + '</b> and is currently walked by <b>' + properties.claimedBy + '</b></div>';
+      var hoverText = '<span class="text hover-slug">Block ID: <strong>' + properties.slug + '</strong></span>';
       if(properties.state === states.unclaimed) {
-        this._div.innerHTML = '<div class="text"><b>No one</b> will door knock this area.<br/><b>Click</b> if you want to walk it.</div>';
+        hoverText += '<div class="text"><b>No one</b> will door knock this area.<br/><b>Click</b> if you want to door knock it.</div>';
       } else if(properties.state === states.selected && properties.db_state !== states.claimed) {
-        this._div.innerHTML = '<div class="text"><b>You</b> will door knock this area.<br/><b>Click</b> if you no longer want to door knock the area.</div>';
+        hoverText += '<div class="text"><b>You</b> will door knock this area.<br/><b>Click</b> if you no longer want to door knock the area.</div>';
       } else {
-        this._div.innerHTML = '<div class="text"><b>' + properties.claimedBy.organisation + '</b> will door knock this area.<br/>'
+        hoverText += '<div class="text"><b>' + properties.claimedBy.organisation + '</b> will door knock this area.<br/>'
           + '<br>Contact Details:<br>' + properties.claimedBy.name + '<br>' + properties.claimedBy.email + '<br>' + properties.claimedBy.phone
           + '<br><br>Click if you just want to download the walk list.</div>';
       }
+      this._div.innerHTML = hoverText;
     } else {
       this._div.innerHTML = "Hover over an area to see details";
     }
