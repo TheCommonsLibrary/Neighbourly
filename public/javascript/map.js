@@ -217,7 +217,8 @@ $('.electorate-picker select').change(function() {
 });
 
 
-$('.electorate-picker select').trigger('change');
+window.onpageshow = function(event) { $('.electorate-picker select').trigger('change'); };
+
 $('.download').click(function() {
   var form = '<form action="/download" method="POST"><select name="slugs[]" multiple>';
   form += map.blocks.newlySelected().map(function(x) { return '<option value="' + x + '"selected></option>'; }).join("");
