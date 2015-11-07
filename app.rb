@@ -62,7 +62,7 @@ post '/login' do
     authorise(email)
     redirect "/map"
   else
-    redirect "/user_details?email=#{email}"
+    redirect "/user_details?email=#{CGI.escape(email)}"
   end
 end
 
