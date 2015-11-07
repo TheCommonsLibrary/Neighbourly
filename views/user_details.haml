@@ -8,10 +8,10 @@
   %form{method: "post", action: "/user_details", class: "user-details-box"}
     %input{placeholder: "Email", name: "user_details[email]", type: "email", value: email, required: true}
     %br
-    %input{placeholder: "Name", name: "user_details[name]", type: "text"}
+    %input{placeholder: "Name", name: "user_details[name]", type: "text", required: true}
     %br
-    %input{placeholder: "Organisation", name: "user_details[organisation]", type: "text"}
+    %input{placeholder: "Organisation", name: "user_details[organisation]", type: "text", required: true}
     %br
-    %input{placeholder: "Phone", name: "user_details[phone]", type: "text"}
+    %input{placeholder: "Phone", name: "user_details[phone]", type: "text", required: true}
     %br
     %input.button-primary#login-button{type: "submit", value: "Submit"}
