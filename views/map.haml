@@ -28,6 +28,8 @@
           .button.download= "Claim/Download walkpaths"
           %a#logout.button{href: '/logout'}="Logout"
   .map-blocker
-    .text Please select an electorate.
+    .text
+      .no-data We don't have any data for that electorate yet.
+      Please select an electorate.
   .map#map
   %script{ src: '/javascript/map.js', type: 'text/javascript' }

@@ -177,9 +177,13 @@
 }
 
 .map-blocker .text {
-  margin-top: 12%;
-  margin-left: 30%;
+  margin: 12% auto;
   font-size: 3em;
+  text-align: center;
+}
+
+.map-blocker .text .no-data {
+  display: none;
 }
 
 .map-blocker {
