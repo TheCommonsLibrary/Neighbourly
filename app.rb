@@ -22,6 +22,7 @@ require_relative "models/electorate"
 
 Dotenv.load
 enable :sessions
+set :session_secret, ENV["SECRET_KEY_BASE"]
 
 def test_db_connection
   Sequel.connect(ENV['SNAP_DB_PG_URL'] || "postgres://localhost/walklist_test")
