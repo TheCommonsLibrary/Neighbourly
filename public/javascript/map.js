@@ -224,6 +224,7 @@ $('.electorate-picker select').change(function() {
       });
       $(".instruct").removeClass("hidden");
     } else {
+      $('.no-data').hide();
       map.clear();
       map.showAustralia();
       $(".instruct").addClass("hidden");
