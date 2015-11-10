@@ -1,12 +1,10 @@
 require 'sinatra'
-require 'erb'
-require 'oauth2'
-require 'byebug'
+require "sinatra/reloader" if development?
+require 'byebug' if development?
 require 'dotenv'
 require 'haml'
 require 'sequel'
 require 'time'
-require "sinatra/reloader" if development?
 require "httparty"
 require 'json'
 require 'sinatra/flash'
@@ -98,7 +96,7 @@ end
 get '/electorate/:id/meshblocks' do
   authorised do
     electorate_id = params[:id]
-    
+
     claim_service = ClaimService.new(settings.db)
     elastic_search_connection = ElasticSearch::Connection.new
     mesh_block_query = ElasticSearch::Query::MeshBlocksQuery.new(electorate_id, elastic_search_connection)
