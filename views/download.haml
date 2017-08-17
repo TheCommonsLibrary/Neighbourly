@@ -21,8 +21,8 @@
             %a.pdf{download: true, href: "http://turf.getup.org/walklists/#{slug}_walklist.pdf"}
               #{slug}_walklist.pdf
             .details
-              is walked by 
-              %b #{user[:name]}
+              is walked by
+              %b #{user[:first_name]} #{user[:last_name]}
               from #{user[:organisation]}.
               Email:
               %a{href: "mailto:#{user[:email]}"} #{user[:email]},
