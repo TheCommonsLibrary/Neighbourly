@@ -14,7 +14,7 @@ module Sinatra
       end
 
       def authorise(email)
-        session[:user_email] = email
+        session[:user_email] = email.downcase
       end
 
       def authorised?

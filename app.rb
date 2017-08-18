@@ -57,7 +57,7 @@ end
 post '/login' do
   email = params[:email].strip
   user = User.new(settings.db)
-  if user.where(email: email).any?
+  if user.where(email: email.downcase).any?
     authorise(email)
     redirect "/map"
   else
@@ -78,11 +78,13 @@ post "/user_details" do
       authorise(params[:user_details]['email'])
       redirect "/map"
     else
-      # TODO needs validation
+      #TODO - needs validation
       flash[:error] = "Please enter correct details."
       haml :user_details
     end
+  #Skip details re-entry if e-mail already exists in database
   rescue Sequel::UniqueConstraintViolation
+    #TODO - Could build user details update logic here if required
     authorise(params[:user_details]['email'])
     redirect "/map"
   end
