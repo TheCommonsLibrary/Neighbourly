@@ -10,6 +10,7 @@ gem "haml"
 gem "puma"
 gem "httparty"
 gem "sinatra-flash"
+gem "sucker_punch"
 
 group :dev, :test do
   gem "sinatra-contrib"
