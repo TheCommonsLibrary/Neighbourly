@@ -71,13 +71,20 @@ end
 
 post "/user_details" do
   user = User.new(settings.db)
-  if user.create!(params[:user_details])
+  begin
+    if user.create!(params[:user_details])
+      #Send user details to the Zapier endpoint
+      HTTParty.post(ENV["ZAP_API"],:body => params[:user_details])
+      authorise(params[:user_details]['email'])
+      redirect "/map"
+    else
+      # TODO needs validation
+      flash[:error] = "Please enter correct details."
+      haml :user_details
+    end
+  rescue Sequel::UniqueConstraintViolation
     authorise(params[:user_details]['email'])
     redirect "/map"
-  else
-    # TODO needs validation
-    flash[:error] = "Please enter correct details."
-    haml :user_details
   end
 end
 
