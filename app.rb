@@ -74,7 +74,9 @@ post "/user_details" do
   begin
     if user.create!(params[:user_details])
       #Send user details to the Zapier endpoint
-      HTTParty.post(ENV["ZAP_API"],:body => params[:user_details], timeout: 2)
+      if ENV["ZAP_API_ON"] == "True"
+        HTTParty.post(ENV["ZAP_API"],:body => params[:user_details], timeout: 2)
+      end
       authorise(params[:user_details]['email'])
       redirect "/map"
     else
