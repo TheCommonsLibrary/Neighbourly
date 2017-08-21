@@ -11,10 +11,12 @@ describe 'Login' do
 			expect(current_url).to eq("http://localhost:8080/user_details?email=newuser@test.com")
 
 			expect(page).to have_selector("input[name='user_details[email]']")
-			expect(page).to have_selector("input[name='user_details[name]']")
+			expect(page).to have_selector("input[name='user_details[first_name]']")
+			expect(page).to have_selector("input[name='user_details[last_name]']")
 			expect(page).to have_selector("input[name='user_details[organisation]']")
 			expect(page).to have_selector("input[name='user_details[phone]']")
-			
+			expect(page).to have_selector("input[name='user_details[postcode]']")
+
 			expect(find("input[name='user_details[email]']").value).to eq 'newuser@test.com'
 		end
 
@@ -30,7 +32,7 @@ describe 'Login' do
 
 	end
 
-	describe 'Exisit User' do
+	describe 'Existing User' do
 		include_context "valid login"
 		it 'should redirect to /map' do
 			login
@@ -38,5 +40,5 @@ describe 'Login' do
 			click_link('logout')
 		end
 	end
-	
+
 end

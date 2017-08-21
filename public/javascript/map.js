@@ -41,7 +41,11 @@ var makeMap = function(states, stateColors) {
       } else if(properties.state === states.selected && properties.db_state !== states.claimed) {
         hoverText += '<div class="text"><b>You</b> will door knock this area.<br/><b>Click</b> if you no longer want to door knock the area.</div>';
       } else {
-        hoverText += '<div class="text"><b>' + properties.claimedBy.organisation + '</b> will door knock this area.<br/>'
+        hoverText += '<div class="text"><b>' + properties.claimedBy.organisation + '</b> will door knock this area.'
+        + '<br><br> Name:' + properties.claimedBy.first_name + ' ' + properties.claimedBy.last_name
+        + '<br> Email:' + properties.claimedBy.email
+        + '<br> Phone:' + properties.claimedBy.phone
+        + '<br> Postcode:' + properties.claimedBy.postcode
           + '<br><br>Click if you just want to download the walk list.</div>';
       }
       this._div.innerHTML = hoverText;

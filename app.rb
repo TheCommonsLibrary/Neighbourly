@@ -74,7 +74,7 @@ post "/user_details" do
   begin
     if user.create!(params[:user_details])
       #Send user details to the Zapier endpoint
-      HTTParty.post(ENV["ZAP_API"],:body => params[:user_details])
+      HTTParty.post(ENV["ZAP_API"],:body => params[:user_details], timeout: 2)
       authorise(params[:user_details]['email'])
       redirect "/map"
     else
@@ -82,9 +82,12 @@ post "/user_details" do
       flash[:error] = "Please enter correct details."
       haml :user_details
     end
-  #Skip details re-entry if e-mail already exists in database
-  rescue Sequel::UniqueConstraintViolation
+  #Skip all errors and retry auth without ZAP_API call
+  #REDUNDANT - Skip details re-entry if e-mail already exists in database
+  #REDUNDANT - Skip if HTTParty fails to make the API call
+rescue StandardError, Sequel::UniqueConstraintViolation, HTTParty::Error => e
     #TODO - Could build user details update logic here if required
+    puts "Error in User Details Submission: #{e.message}"
     authorise(params[:user_details]['email'])
     redirect "/map"
   end
