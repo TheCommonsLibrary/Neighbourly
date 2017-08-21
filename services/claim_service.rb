@@ -5,6 +5,7 @@ class ClaimService
     @db = db
   end
 
+  #TODO - optimize out the unnecessary details collection
   def get_claimers_for(mesh_blocks)
     @db[:claims]
       .where(mesh_block_slug: get_mesh_block_slugs(mesh_blocks))
@@ -24,7 +25,6 @@ class ClaimService
         row[:mesh_block_slug]
       }
   end
-
   def get_when_claimed_by_others(mesh_blocks, user_email)
     @db[:claims].
       where(mesh_block_slug: mesh_blocks).
@@ -41,7 +41,7 @@ class ClaimService
     mesh_blocks.each do |mesh_block|
       begin
         @db[:claims].insert(mesh_block_slug: mesh_block, mesh_block_claimer: claimer, claim_date: Time.now)
-        claimed = claimed + [ mesh_block ] 
+        claimed = claimed + [ mesh_block ]
       rescue
       end
     end
