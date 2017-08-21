@@ -8,6 +8,7 @@ Sequel.migration do
       String :phone
       String :postcode
       DateTime :created_at
+      index :email
     end
   end
 
