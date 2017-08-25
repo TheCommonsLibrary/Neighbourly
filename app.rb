@@ -50,7 +50,8 @@ get '/' do
   end
 end
 
-def login_attempt(email)
+def login_attempt
+  email = params[:email].strip
   user = User.new(settings.db)
   if user.where(email: email.downcase).any?
     authorise(email)
@@ -62,14 +63,15 @@ end
 
 get '/login' do
   if params.has_key?("email")
-    login_attempt(params[:email].strip)
+    login_attempt
+  else
+    redirect '/'
   end
 
-  redirect '/'
 end
 
 post '/login' do
-  login_attempt(params[:email].strip)
+  login_attempt
 end
 
 get "/user_details" do
