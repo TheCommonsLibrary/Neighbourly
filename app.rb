@@ -43,7 +43,6 @@ end
 Sequel.datetime_class = DateTime
 
 get '/' do
-  #TODO - Set e-mail and postcode from cookie here
   if authorised?
     redirect '/map'
   else
@@ -51,23 +50,7 @@ get '/' do
   end
 end
 
-get '/login' do
-  if params.has_key?("email")
-    email = params[:email].strip
-    user = User.new(settings.db)
-    if user.where(email: email.downcase).any?
-      authorise(email)
-      redirect "/map"
-    else
-      redirect "/user_details?email=#{CGI.escape(email)}"
-    end
-  end
-
-  redirect '/'
-end
-
-post '/login' do
-  email = params[:email].strip
+def login_attempt(email)
   user = User.new(settings.db)
   if user.where(email: email.downcase).any?
     authorise(email)
@@ -75,6 +58,18 @@ post '/login' do
   else
     redirect "/user_details?email=#{CGI.escape(email)}"
   end
+end
+
+get '/login' do
+  if params.has_key?("email")
+    login_attempt(params[:email].strip)
+  end
+
+  redirect '/'
+end
+
+post '/login' do
+  login_attempt(params[:email].strip)
 end
 
 get "/user_details" do
