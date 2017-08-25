@@ -52,6 +52,17 @@ get '/' do
 end
 
 get '/login' do
+  if params.has_key?("email")
+    email = params[:email].strip
+    user = User.new(settings.db)
+    if user.where(email: email.downcase).any?
+      authorise(email)
+      redirect "/map"
+    else
+      redirect "/user_details?email=#{CGI.escape(email)}"
+    end
+  end
+
   redirect '/'
 end
 
