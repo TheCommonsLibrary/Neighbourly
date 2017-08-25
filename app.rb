@@ -43,6 +43,7 @@ end
 Sequel.datetime_class = DateTime
 
 get '/' do
+  #TODO - Set e-mail and postcode from cookie here
   if authorised?
     redirect '/map'
   else
@@ -55,7 +56,6 @@ get '/login' do
 end
 
 post '/login' do
-  #TODO - Set e-mail and postcode from cookie here
   email = params[:email].strip
   user = User.new(settings.db)
   if user.where(email: email.downcase).any?

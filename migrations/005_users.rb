@@ -4,7 +4,6 @@ Sequel.migration do
       String :email, primary_key: true
       String :first_name
       String :last_name
-      String :organisation
       String :phone
       String :postcode
       DateTime :created_at

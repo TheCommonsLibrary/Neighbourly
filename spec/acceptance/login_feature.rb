@@ -13,7 +13,6 @@ describe 'Login' do
 			expect(page).to have_selector("input[name='user_details[email]']")
 			expect(page).to have_selector("input[name='user_details[first_name]']")
 			expect(page).to have_selector("input[name='user_details[last_name]']")
-			expect(page).to have_selector("input[name='user_details[organisation]']")
 			expect(page).to have_selector("input[name='user_details[phone]']")
 			expect(page).to have_selector("input[name='user_details[postcode]']")
 
