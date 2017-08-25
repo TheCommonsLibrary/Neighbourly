@@ -11,7 +11,7 @@ shared_context "valid login" do
   before(:all) {
     @db = RSpec.configuration.db
     @db[:users].insert(:email => 'existuser@test.com', :first_name => 'Exist', \
-    :last_name => 'User', :organisation => 'Test', :postcode => '2042', \
+    :last_name => 'User', :postcode => '2042', \
     :phone => '123', :created_at => Time.now)
   }
 

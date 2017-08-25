@@ -8,7 +8,7 @@ describe 'Login' do
 			visit 'http://localhost:8080'
 			fill_in('login-input', :with => 'newuser@test.com')
 			find_button('login-button').click
-			expect(current_url).to eq("http://localhost:8080/user_details?email=newuser@test.com")
+			expect(current_url).to eq("http://localhost:8080/user_details?email=newuser%40test.com")
 
 			expect(page).to have_selector("input[name='user_details[email]']")
 			expect(page).to have_selector("input[name='user_details[first_name]']")
@@ -23,6 +23,10 @@ describe 'Login' do
 			visit 'http://localhost:8080'
 			fill_in('login-input', :with => 'createuser@test.com')
 			find_button('login-button').click
+			fill_in("first_name",:with => 'Test')
+			fill_in("last_name",:with => 'User')
+			fill_in("phone",:with => '0408881276')
+			fill_in("postcode",:with => '2113')
 			find_button('login-button').click
 
 			expect(current_url).to eq("http://localhost:8080/map")
