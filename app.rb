@@ -55,6 +55,7 @@ get '/login' do
 end
 
 post '/login' do
+  #TODO - Set e-mail and postcode from cookie here
   email = params[:email].strip
   user = User.new(settings.db)
   if user.where(email: email.downcase).any?
@@ -71,6 +72,8 @@ end
 
 post "/user_details" do
   user = User.new(settings.db)
+  #Submit user details to database
+  #And, Catch double-submission errors and send details to Zapier
   begin
     if user.create!(params[:user_details])
       #Send user details to the Zapier endpoint
