@@ -25,6 +25,7 @@ class ClaimService
         row[:mesh_block_slug]
       }
   end
+
   def get_when_claimed_by_others(mesh_blocks, user_email)
     @db[:claims].
       where(mesh_block_slug: mesh_blocks).

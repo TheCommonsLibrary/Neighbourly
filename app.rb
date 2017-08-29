@@ -22,6 +22,13 @@ Dotenv.load
 enable :sessions
 set :session_secret, ENV["SECRET_KEY_BASE"]
 
+def set_ext_cookie_headers
+  headers['Access-Control-Allow-Origin'] = '*'
+  headers['Access-Control-Allow-Credentials'] = 'true'
+  headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE'
+  headers['Access-Control-Allow-Headers'] = 'Content-Type, *'
+end
+
 def test_db_connection
   Sequel.connect(ENV['SNAP_DB_PG_URL'] || "postgres://localhost/walklist_test")
 end
@@ -51,23 +58,25 @@ get '/' do
 end
 
 def login_attempt
-  email = params[:email].strip
+  if params.has_key?("email") || session.has_key?("email")
+    email = params[:email].strip || session[:email]
+  else
+    redirect '/'
+  end
   user = User.new(settings.db)
   if user.where(email: email.downcase).any?
     authorise(email)
     redirect "/map"
   else
+    #TODO - put code here for pulling pcode/first/last/phone?
+    #if all are fulfilled - create new user
     redirect "/user_details?email=#{CGI.escape(email)}"
   end
 end
 
 get '/login' do
-  if params.has_key?("email")
-    login_attempt
-  else
-    redirect '/'
-  end
-
+  set_ext_cookie_headers
+  login_attempt
 end
 
 post '/login' do
@@ -76,6 +85,11 @@ end
 
 get "/user_details" do
   haml :user_details, locals: { email: params[:email] }
+end
+
+def create_user()
+  #TODO - Move user creation and zapier code here
+  #and accept many/no args fpr pcode/first/last/phone
 end
 
 post "/user_details" do
