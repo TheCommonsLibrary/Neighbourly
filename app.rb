@@ -23,7 +23,7 @@ enable :sessions
 set :session_secret, ENV["SECRET_KEY_BASE"]
 
 def set_ext_cookie_headers
-  headers['Access-Control-Allow-Origin'] = '*'
+  headers['Access-Control-Allow-Origin'] = 'www.yes.org.au'
   headers['Access-Control-Allow-Credentials'] = 'true'
   headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE'
   headers['Access-Control-Allow-Headers'] = 'Content-Type, *'
@@ -50,6 +50,7 @@ end
 Sequel.datetime_class = DateTime
 
 get '/' do
+  set_ext_cookie_headers
   if authorised?
     redirect '/map'
   else
@@ -58,15 +59,21 @@ get '/' do
 end
 
 def login_attempt
+  #Primary login method is e-mail - if no e-mail is present, send to entry area
+  #FIXME - session key to be replaced with external cookie
   if params.has_key?("email") || session.has_key?("email")
     email = params[:email].strip || session[:email]
   else
     redirect '/'
   end
+
+  #Check that user exists for a given e-mail
   user = User.new(settings.db)
   if user.where(email: email.downcase).any?
     authorise(email)
     redirect "/map"
+
+  #if user does not exist - get their details
   else
     #TODO - put code here for pulling pcode/first/last/phone?
     #if all are fulfilled - create new user
