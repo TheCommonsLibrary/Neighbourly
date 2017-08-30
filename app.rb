@@ -111,7 +111,8 @@ def create_user(user_params)
   #Submit user details to database
   #And, Catch double-submission errors and send details to Zapier
   begin
-    if user.create!(user_params)
+    if user.create!(user_params) => i
+      p i
 
       #Send user details to the Zapier endpoint
       if ENV["ZAP_API_ON"] == "True"
