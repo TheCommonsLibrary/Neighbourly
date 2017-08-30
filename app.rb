@@ -78,17 +78,19 @@ def login_attempt
   if authorised?
     redirect "/map"
 
+  #If e-mail is set in param - go straight to the user_details page
+  elsif params.has_key?("email")
+    redirect "/user_details?email=#{CGI.escape(user_email)}"
+
   #If user does not exist and all fields exist in cookie - create_user
   #FIXME - currently breaks when full user passed
-  elsif fields.all? {|s| cookies.key? s}
+  elsif fields.all? {|s| cookies.key? s} &&
     fields.each do |key_get|
       user_params[key_get] = cookies[key_get]
     end
     create_user(user_params)
+    redirect "/map"
 
-  #if user does not exist - get their details from the form
-  else
-    redirect "/user_details?email=#{CGI.escape(user_email)}"
   end
 end
 
