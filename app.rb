@@ -64,9 +64,9 @@ def login_attempt
   #If a cookie is set - use that secondarily
   #If no e-mail is present, send to the frontpage
   if params.has_key?("email")
-    email = params[:email].strip
+    authorise(params[:email].strip)
   elsif cookies.has_key?("email")
-    email = cookies[:email]
+    authorise(cookies[:email])
   else
     redirect '/'
   end
@@ -76,8 +76,7 @@ def login_attempt
   user = User.new(settings.db)
 
   #Check that user exists for a given e-mail
-  if user.where(email: email.downcase).any?
-    authorise(email)
+  if authorised?
     redirect "/map"
 
   #If user does not exist and all fields exist in cookie - create_user
@@ -109,6 +108,7 @@ get "/user_details" do
 end
 
 def create_user(user_params)
+  puts "Creating user: #{user_params}"
   user = User.new(settings.db)
   #Submit user details to database
   #And, Catch double-submission errors and send details to Zapier
