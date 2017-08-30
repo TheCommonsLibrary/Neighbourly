@@ -72,9 +72,9 @@ def login_attempt
   end
 
   user_params = Hash.new
-  fields = [:email, :first_name, :last_name, :phone, :postcode]
+  fields = ["email", "first_name", "last_name", "phone", "postcode"]
 
-  #Check that user exists for a given e-mail
+  #Check that user exists for current e-mail
   if authorised?
     redirect "/map"
 
