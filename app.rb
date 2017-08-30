@@ -54,7 +54,11 @@ get '/' do
   if authorised?
     redirect '/map'
   else
-    haml :main, locals: {page: 'main', body: 'main'}
+    if ENV['PASS_THRU_ONLY'] == "False"
+      haml :main, locals: {page: 'main', body: 'main'}
+    else
+      redirect 'http://yes.org.au'
+    end
   end
 end
 
@@ -83,7 +87,6 @@ def login_attempt
     redirect "/user_details?email=#{CGI.escape(user_email)}"
 
   #If user does not exist and all fields exist in cookie - create_user
-  #FIXME - currently breaks when full user passed
   elsif fields.all? {|s| cookies.key? s}
     fields.each do |key_get|
       user_params[key_get] = cookies[key_get]
@@ -104,7 +107,11 @@ post '/login' do
 end
 
 get "/user_details" do
-  haml :user_details, locals: {page: "user_details", email: params[:email] }
+  if ENV['PASS_THRU_ONLY'] == "False"
+    haml :user_details, locals: {page: "user_details", email: params[:email] }
+  else
+    redirect 'http://yes.org.au'
+  end
 end
 
 def create_user(user_params)
@@ -132,7 +139,7 @@ def create_user(user_params)
   #Skip all errors and retry auth without ZAP_API call
   #REDUNDANT - Skip details re-entry if e-mail already exists in database
   #REDUNDANT - Skip if HTTParty fails to make the API call
-  #Look at blocking button after click on page
+  #TODO - js blocking button after click on page
 rescue StandardError, Sequel::UniqueConstraintViolation, HTTParty::Error => e
     puts "Error in User Details Submission: #{e.message}"
     authorise(user_params['email'])
