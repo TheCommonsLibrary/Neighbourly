@@ -7,6 +7,7 @@ Sequel.migration do
       String :mesh_block_id, :null=>false
       String :nation, :null=>false
       DateTime :claim_date, :null=>false
+      index :mesh_block_id
     end
   end
 

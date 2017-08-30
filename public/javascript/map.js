@@ -41,8 +41,7 @@ var makeMap = function(states, stateColors) {
       } else if(properties.state === states.selected && properties.db_state !== states.claimed) {
         hoverText += '<div class="text"><b>You</b> will door knock this area.<br/><b>Click</b> if you no longer want to door knock the area.</div>';
       } else {
-        hoverText += '<div class="text"><b>' + properties.claimedBy.organisation + '</b> will door knock this area.<br/>'
-          + '<br>Contact Details:<br>' + properties.claimedBy.name + '<br>' + properties.claimedBy.email + '<br>' + properties.claimedBy.phone
+        hoverText += '<div class="text"><b>Someone Else</b> will door knock this area.'
           + '<br><br>Click if you just want to download the walk list.</div>';
       }
       this._div.innerHTML = hoverText;
@@ -228,7 +227,7 @@ $('.electorate-picker select').change(function() {
       map.clear();
       map.showAustralia();
       $(".instruct").addClass("hidden");
-    }    
+    }
 });
 
 $('.electorate-picker select').trigger('change');

@@ -18,7 +18,7 @@ class FeatureCollection
         properties: {
           slug: mesh_block_slug,
           type: mesh_block['_source']['type'],
-          claimedBy: claimer_details,
+          claimedBy: nil,
           state: define_claimed_by_status_from(claimer_details),
         }
       }

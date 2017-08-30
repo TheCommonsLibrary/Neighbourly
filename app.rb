@@ -9,6 +9,7 @@ require "httparty"
 require 'json'
 require 'sinatra/flash'
 require 'sinatra/json'
+require 'sinatra/cookies'
 
 require_relative "lib/login_helper"
 require_relative 'lib/view_helper'
@@ -21,6 +22,13 @@ require_relative "models/electorate"
 Dotenv.load
 enable :sessions
 set :session_secret, ENV["SECRET_KEY_BASE"]
+
+def set_ext_cookie_headers
+  headers['Access-Control-Allow-Origin'] = 'www.yes.org.au'
+  headers['Access-Control-Allow-Credentials'] = 'true'
+  headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE'
+  headers['Access-Control-Allow-Headers'] = 'Content-Type, *'
+end
 
 def test_db_connection
   Sequel.connect(ENV['SNAP_DB_PG_URL'] || "postgres://localhost/walklist_test")
@@ -50,35 +58,90 @@ get '/' do
   end
 end
 
+def login_attempt
+  #Primary login method is e-mail
+  #If a param is passed (form or URL) - use that
+  #If a cookie is set - use that secondarily
+  #If no e-mail is present, send to the frontpage
+  if params.has_key?("email")
+    authorise(params[:email].strip)
+  elsif cookies.has_key?("email")
+    authorise(cookies[:email])
+  else
+    redirect '/'
+  end
+
+  user_params = Hash.new
+  fields = ["email", "first_name", "last_name", "phone", "postcode"]
+
+  #Check that user exists for current e-mail
+  if authorised?
+    redirect "/map"
+
+  #If e-mail is set in param - go straight to the user_details page
+  elsif params.has_key?("email")
+    redirect "/user_details?email=#{CGI.escape(user_email)}"
+
+  #If user does not exist and all fields exist in cookie - create_user
+  #FIXME - currently breaks when full user passed
+  elsif fields.all? {|s| cookies.key? s} &&
+    fields.each do |key_get|
+      user_params[key_get] = cookies[key_get]
+    end
+    create_user(user_params)
+    redirect "/map"
+
+  end
+end
+
 get '/login' do
-  redirect '/'
+  set_ext_cookie_headers
+  login_attempt
 end
 
 post '/login' do
-  email = params[:email].strip
-  user = User.new(settings.db)
-  if user.where(email: email).any?
-    authorise(email)
-    redirect "/map"
-  else
-    redirect "/user_details?email=#{CGI.escape(email)}"
-  end
+  login_attempt
 end
 
 get "/user_details" do
   haml :user_details, locals: { email: params[:email] }
 end
 
-post "/user_details" do
+def create_user(user_params)
+  puts "Creating user: #{user_params}"
   user = User.new(settings.db)
-  if user.create!(params[:user_details])
-    authorise(params[:user_details]['email'])
+  #Submit user details to database
+  #And, Catch double-submission errors and send details to Zapier
+  begin
+    if user.create!(user_params)
+
+      #Send user details to the Zapier endpoint
+      if ENV["ZAP_API_ON"] == "True"
+        HTTParty.post(ENV["ZAP_API"],:body => user_params, timeout: 2)
+      end
+
+      #Once the user is created - authorise them
+      authorise(user_params['email'])
+      redirect "/map"
+    else
+      #TODO - needs validation
+      flash[:error] = "Please enter correct details."
+      haml :user_details
+    end
+
+  #Skip all errors and retry auth without ZAP_API call
+  #REDUNDANT - Skip details re-entry if e-mail already exists in database
+  #REDUNDANT - Skip if HTTParty fails to make the API call
+  #Look at blocking button after click on page
+rescue StandardError, Sequel::UniqueConstraintViolation, HTTParty::Error => e
+    puts "Error in User Details Submission: #{e.message}"
+    authorise(user_params['email'])
     redirect "/map"
-  else
-    # TODO needs validation
-    flash[:error] = "Please enter correct details."
-    haml :user_details
   end
+end
+
+post "/user_details" do
+  create_user(params[:user_details])
 end
 
 get '/map' do

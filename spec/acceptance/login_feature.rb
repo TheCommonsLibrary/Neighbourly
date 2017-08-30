@@ -8,13 +8,14 @@ describe 'Login' do
 			visit 'http://localhost:8080'
 			fill_in('login-input', :with => 'newuser@test.com')
 			find_button('login-button').click
-			expect(current_url).to eq("http://localhost:8080/user_details?email=newuser@test.com")
+			expect(current_url).to eq("http://localhost:8080/user_details?email=newuser%40test.com")
 
 			expect(page).to have_selector("input[name='user_details[email]']")
-			expect(page).to have_selector("input[name='user_details[name]']")
-			expect(page).to have_selector("input[name='user_details[organisation]']")
+			expect(page).to have_selector("input[name='user_details[first_name]']")
+			expect(page).to have_selector("input[name='user_details[last_name]']")
 			expect(page).to have_selector("input[name='user_details[phone]']")
-			
+			expect(page).to have_selector("input[name='user_details[postcode]']")
+
 			expect(find("input[name='user_details[email]']").value).to eq 'newuser@test.com'
 		end
 
@@ -22,6 +23,10 @@ describe 'Login' do
 			visit 'http://localhost:8080'
 			fill_in('login-input', :with => 'createuser@test.com')
 			find_button('login-button').click
+			fill_in("first_name",:with => 'Test')
+			fill_in("last_name",:with => 'User')
+			fill_in("phone",:with => '0408881276')
+			fill_in("postcode",:with => '2113')
 			find_button('login-button').click
 
 			expect(current_url).to eq("http://localhost:8080/map")
@@ -30,7 +35,7 @@ describe 'Login' do
 
 	end
 
-	describe 'Exisit User' do
+	describe 'Existing User' do
 		include_context "valid login"
 		it 'should redirect to /map' do
 			login
@@ -38,5 +43,5 @@ describe 'Login' do
 			click_link('logout')
 		end
 	end
-	
+
 end

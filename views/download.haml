@@ -20,14 +20,6 @@
           %li.unclaimable{id: slug}
             %a.pdf{download: true, href: "http://turf.getup.org/walklists/#{slug}_walklist.pdf"}
               #{slug}_walklist.pdf
-            .details
-              is walked by 
-              %b #{user[:name]}
-              from #{user[:organisation]}.
-              Email:
-              %a{href: "mailto:#{user[:email]}"} #{user[:email]},
-              Phone:
-              %a{href: "tel:#{user[:phone]}"} #{user[:phone]}
   .download-type#all-claimed
     .title Previously Selected Walkpaths
     .button.button-primary.download-all Download All
