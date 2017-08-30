@@ -14,6 +14,8 @@ module Sinatra
       end
 
       def authorise(email)
+        #debug
+        p "Auth attempt with: #{email}"
         session[:user_email] = email.downcase
       end
 
