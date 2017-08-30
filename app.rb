@@ -72,7 +72,7 @@ def login_attempt
   end
 
   user_params = Hash.new
-  fields = [:email, :first_name, :last_name, :mobile, :postcode]
+  fields = [:email, :first_name, :last_name, :phone, :postcode]
 
   #Check that user exists for a given e-mail
   if authorised?
@@ -111,8 +111,7 @@ def create_user(user_params)
   #Submit user details to database
   #And, Catch double-submission errors and send details to Zapier
   begin
-    if user.create!(user_params) => i
-      p i
+    if user.create!(user_params)
 
       #Send user details to the Zapier endpoint
       if ENV["ZAP_API_ON"] == "True"
