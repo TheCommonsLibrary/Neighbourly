@@ -88,7 +88,7 @@ def login_attempt
 
   #if user does not exist - get their details from the form
   else
-    redirect "/user_details?email=#{CGI.escape(email)}"
+    redirect "/user_details?email=#{CGI.escape(user_email)}"
   end
 end
 
