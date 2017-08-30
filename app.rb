@@ -73,7 +73,6 @@ def login_attempt
 
   user_params = Hash.new
   fields = [:email, :first_name, :last_name, :mobile, :postcode]
-  user = User.new(settings.db)
 
   #Check that user exists for a given e-mail
   if authorised?
@@ -85,7 +84,6 @@ def login_attempt
     fields.each do |key_get|
       user_params[key_get] = cookies[key_get]
     end
-    puts "User details passed from cookie: #{user_params}"
     create_user(user_params)
 
   #if user does not exist - get their details from the form
