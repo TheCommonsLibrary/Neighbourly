@@ -1,0 +1,17 @@
+%a{href: "/map", class: "logo-link"}
+  %img.logo#logo-image{src: '/images/getup_logo.svg'}
+- if authorised?
+  .electorate-picker
+    %form{ :action => "/map", :method => "GET"}
+      %select{ :id => "electorate", :name => "electorate" }
+        %option{:value => ""}= "- Select Electorate -"
+        - ELECTORATES.each do |electorate, code|
+          - if code == params['electorate']
+            %option{:value => "#{code}", :selected => 'selected'}= "#{electorate}"
+          - else
+            %option{:value => "#{code}"}= "#{electorate}"
+  .nav-top-right
+    Hi
+    .welcome-message #{user_name}
+    .button.download= "Claim/Download walkpaths"
+    %a#logout.button{href: '/logout'}="Logout"

@@ -235,6 +235,7 @@ window.onunload = function() {
   $('.electorate-picker select').val("");
 };
 
+
 $('.download').click(function() {
   map.blocks.save();
   var form = '<form action="/download" method="POST"><select name="slugs[]" multiple>';

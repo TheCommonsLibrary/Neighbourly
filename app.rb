@@ -54,7 +54,7 @@ get '/' do
   if authorised?
     redirect '/map'
   else
-    haml :main, locals: {body: 'main'}
+    haml :main, locals: {page: 'main', body: 'main'}
   end
 end
 
@@ -84,7 +84,7 @@ def login_attempt
 
   #If user does not exist and all fields exist in cookie - create_user
   #FIXME - currently breaks when full user passed
-  elsif fields.all? {|s| cookies.key? s} &&
+  elsif fields.all? {|s| cookies.key? s}
     fields.each do |key_get|
       user_params[key_get] = cookies[key_get]
     end
@@ -104,7 +104,7 @@ post '/login' do
 end
 
 get "/user_details" do
-  haml :user_details, locals: { email: params[:email] }
+  haml :user_details, locals: {page: "user_details", email: params[:email] }
 end
 
 def create_user(user_params)
@@ -146,7 +146,7 @@ end
 
 get '/map' do
   authorised do
-    haml :map, :layout => false
+    haml :map, locals: {page: 'map'}
   end
 end
 
@@ -185,7 +185,7 @@ post '/download' do
     claimable_mesh_blocks = all_selected_slugs.
                               select { |slug| !unclaimable_mesh_blocks.include?(slug) }.
                               select { |slug| !claimed_mesh_blocks.include?(slug) }
-    haml :download, locals: { claimable_slugs: claimable_mesh_blocks, unclaimable_slugs: unclaimable_mesh_blocks, claimed_slugs: claimed_mesh_blocks }
+    haml :download, locals: { page: 'download', claimable_slugs: claimable_mesh_blocks, unclaimable_slugs: unclaimable_mesh_blocks, claimed_slugs: claimed_mesh_blocks }
   end
 end
 

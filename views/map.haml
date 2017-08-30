@@ -1,35 +1,6 @@
-%html
-  %head
-    %script{:src => "//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js", :type => "text/javascript"}
-    %script{:src => "https://unpkg.com/leaflet@0.7.7/dist/leaflet.js"}
-    %link{:href => "https://unpkg.com/leaflet@0.7.7/dist/leaflet.css", :rel => "stylesheet"}/
-    %link{:href => "/stylesheets/normalize.css", :rel => "stylesheet"}/
-    %link{:href => "/stylesheets/skeleton.css", :rel => "stylesheet"}/
-    %link{:href => "/stylesheets/main.css", :rel => "stylesheet"}/
-    %title Walk List
-  %body{class: body_class(body)}
-    #load.hidden
-    .header
-      %a{href: "/map", class: "logo-link"}
-        %img.logo#logo-image{src: '/images/getup_logo.svg'}
-      - if authorised?
-        .electorate-picker
-          %form{ :action => "/map", :method => "GET"}
-            %select{ :id => "electorate", :name => "electorate" }
-              %option{:value => ""}= "- Select Electorate -"
-              - ELECTORATES.each do |electorate, code|
-                - if code == params['electorate']
-                  %option{:value => "#{code}", :selected => 'selected'}= "#{electorate}"
-                - else
-                  %option{:value => "#{code}"}= "#{electorate}"
-        .nav-top-right
-          Hi
-          .welcome-message #{user_name}
-          .button.download= "Claim/Download walkpaths"
-          %a#logout.button{href: '/logout'}="Logout"
-  .map-blocker
-    .text
-      .no-data We don't have any data for that electorate yet.
-      Please select an electorate.
-  .map#map
-  %script{ src: '/javascript/map.js', type: 'text/javascript' }
+.map-blocker
+  .text
+    .no-data We don't have any data for that electorate yet.
+    Please select an electorate.
+.map#map
+%script{ src: '/javascript/map.js', type: 'text/javascript' }

@@ -5,14 +5,14 @@
     %link{:href => "/stylesheets/skeleton.css", :rel => "stylesheet"}/
     %link{:href => "/stylesheets/main.css", :rel => "stylesheet"}/
     %title Walk List
+    - if page == 'map'
+      %script{:src => "https://unpkg.com/leaflet@0.7.7/dist/leaflet.js"}
+      %link{:href => "https://unpkg.com/leaflet@0.7.7/dist/leaflet.css", :rel => "stylesheet"}/
   %body{class: body_class(body)}
     #load.hidden
     .header
-      %a.logo-link{href: '/map'}
-        %img.logo{src: '/images/yes_logo.png'}
-      - if authorised?
-        .nav-top-right
-          Hi
-          .welcome-message #{user_name} &nbsp;
-          %a#logout.button{href: '/logout'}="Logout"
+      - if page == 'map'
+        = haml :map_header
+      - else
+        = haml :main_header
     = yield
