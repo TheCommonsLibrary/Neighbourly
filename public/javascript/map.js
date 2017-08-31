@@ -9,6 +9,28 @@ var makeMap = function(states, stateColors) {
 
   showAustralia();
 
+  map.on('moveend', function() {
+    var lat_lng_bnd = map.getBounds();
+    var zoom = map.getZoom();
+    var swlat = lat_lng_bnd.getSouthWest().lat;
+    var swlng = lat_lng_bnd.getSouthWest().lng;
+    var nelat = lat_lng_bnd.getNorthEast().lat;
+    var nelng = lat_lng_bnd.getNorthEast().lng;
+    //Reload map if zoom not too high and TODO - if not hammering DB
+    //Make call work with new json return shiz from bounding box
+    if(zoom > 10) {
+      $.getJSON('/sa1_bounds?swlat=' + swlat + '&swlng=' + swlng
+      + '&nelat=' + nelat + '&nelng=' + nelng, function(json) {
+          //map.clear();
+          if (json.length > 0) {
+            console.log(json)
+            //map.render(json);
+          }});
+        } else {console.log('Zoom too wide:' + zoom)};
+
+    instruct.update();
+  });
+
   var tileLayer = L.tileLayer('http://{s}.tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
   }).addTo(map);
@@ -34,6 +56,7 @@ var makeMap = function(states, stateColors) {
   }
 
   instruct.update = function(properties) {
+    var zoom = map.getZoom()
     if (properties) {
       var hoverText = '<span class="text hover-slug">Block ID: <strong>' + properties.slug + '</strong></span>';
       if(properties.state === states.unclaimed) {
@@ -45,7 +68,8 @@ var makeMap = function(states, stateColors) {
           + '<br><br>Click if you just want to download the walk list.</div>';
       }
       this._div.innerHTML = hoverText;
-    } else {
+    } else if (zoom > 10) {this._div.innerHTML = "Zoom in further to load more areas.";
+      } else {
       this._div.innerHTML = "Hover over an area to see details";
     }
   }
@@ -67,8 +91,6 @@ var makeMap = function(states, stateColors) {
       fillOpacity: 0.5,
     }
   }
-
-
 
   var meshInteractions = function() {
     var selections = {};
@@ -177,7 +199,6 @@ var makeMap = function(states, stateColors) {
 }
 
 
-
 var windowHeight = function(){
     if(window.innerHeight != undefined){
         return window.innerHeight;
@@ -234,7 +255,6 @@ $('.electorate-picker select').trigger('change');
 window.onunload = function() {
   $('.electorate-picker select').val("");
 };
-
 
 $('.download').click(function() {
   map.blocks.save();

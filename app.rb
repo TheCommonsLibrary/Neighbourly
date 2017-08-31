@@ -163,19 +163,76 @@ get '/logout' do
   redirect '/'
 end
 
-get '/postcode/:id/sa1' do
-  authorised do
-    #Get preferred SA1s per postcode
-    #List with image
+#returns local sa1s and nearby sa1 event
+get '/nearby' do
+  autorised do
+    #TODO - don't return SA1s that are completely claimed
+    geo_service = GeoService.new(settings.db)
+    if cookies.has_key?("lat") && cookies.has_key?("lng")
+      lat = cookies["lat"]
+      lng = cookies["lng"]
+      #Nearest with option to select postcode
+      #TODO - get list of calling parties too -
+      #nearby_dkps = geo_service.point_dkps()
+
+      #Remove claimed by DKPs or totally claimed
+      nearby_sa1s = geo_service.point_sa1s(lat,lng,20)
+
+    elsif cookies.has_key?("postcode")
+      pcode = cookies["postcode"]
+      #Postcode sa1s with option to select Nearest
+      nearby_sa1s = geo_service.pcode_sa1s(pcode)
+
+      #haml nearby, locals{}
+    else
+      #Manual postcode
+      #haml nearby
+    end
+
   end
 end
 
+#For loading new SA1s when scrolling on the map
+get '/sa1_bounds' do
+  authorised do
+    swlat = params[:swlat]
+    swlng = params[:swlng]
+    nelat = params[:nelat]
+    nelng = params[:nelng]
+
+    #interface with darren's tool goes here
+
+    #interface with local claims table goes here
+
+    json '{ok: "ok"}'
+  end
+end
+
+#TODO - work with Darren's SA1 endpoint
 get '/sa1/:id/meshblocks' do
   authorised do
-    #Same as electorate fetch but for SA1s
+
+    #interface with darren's tool goes here (for specific sa1)
+
+    #below adapted to local claims table
+
+    electorate_id = params[:id]
+
+    claim_service = ClaimService.new(settings.db)
+    elastic_search_connection = ElasticSearch::Connection.new
+    mesh_block_query = ElasticSearch::Query::MeshBlocksQuery.new(electorate_id, elastic_search_connection)
+
+    query_results = mesh_block_query.execute
+    mesh_blocks = query_results['hits']['hits']
+    mesh_blocks_claimers = claim_service.get_claimers_for(mesh_blocks)
+
+    feature_collection = FeatureCollection.new(query_results, user_email, mesh_blocks_claimers)
+
+    json feature_collection.to_a
   end
 end
 
+#TODO - remove - in favour of js bounding box call
 get '/electorate/:id/meshblocks' do
   authorised do
     electorate_id = params[:id]
