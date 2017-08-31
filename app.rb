@@ -167,12 +167,26 @@ get '/postcode/:id/sa1' do
   authorised do
     #Get preferred SA1s per postcode
     #List with image
+
   end
 end
 
 get '/sa1/:id/meshblocks' do
   authorised do
     #Same as electorate fetch but for SA1s
+    electorate_id = params[:id]
+
+    claim_service = ClaimService.new(settings.db)
+    elastic_search_connection = ElasticSearch::Connection.new
+    mesh_block_query = ElasticSearch::Query::MeshBlocksQuery.new(electorate_id, elastic_search_connection)
+
+    query_results = mesh_block_query.execute
+    mesh_blocks = query_results['hits']['hits']
+    mesh_blocks_claimers = claim_service.get_claimers_for(mesh_blocks)
+
+    feature_collection = FeatureCollection.new(query_results, user_email, mesh_blocks_claimers)
+
+    json feature_collection.to_a
   end
 end
 
