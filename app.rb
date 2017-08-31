@@ -163,6 +163,19 @@ get '/logout' do
   redirect '/'
 end
 
+get '/postcode/:id/sa1' do
+  authorised do
+    #Get preferred SA1s per postcode
+    #List with image
+  end
+end
+
+get '/sa1/:id/meshblocks' do
+  authorised do
+    #Same as electorate fetch but for SA1s
+  end
+end
+
 get '/electorate/:id/meshblocks' do
   authorised do
     electorate_id = params[:id]
