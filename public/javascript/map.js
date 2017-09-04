@@ -3,8 +3,9 @@ var makeMap = function(states, stateColors) {
 
   var showAustralia = function() {
     var australia_coord = [-29.8650, 131.2094];
-    map.setView(australia_coord, 4);
-    $('.map-blocker').removeClass('hidden')
+    map.setView(australia_coord, 5);
+    $(".instruct").removeClass("hidden");
+    //$('.map-blocker').removeClass('hidden')
   };
 
   showAustralia();
@@ -227,34 +228,6 @@ var states = {
 }
 
 var map = makeMap(states, stateColors);
-$('.electorate-picker select').change(function() {
-    var electorateId = $(this).val();
-    if (electorateId !== "") {
-      $('.map-blocker').addClass('hidden')
-      $('#load').removeClass('hidden');
-      $.getJSON('/electorate/' + electorateId + '/meshblocks', function(json) {
-        map.clear();
-        if (json.length > 0) {
-          map.render(json);
-        } else {
-          $('.no-data').show();
-          $('.map-blocker').removeClass("hidden");
-        }
-        $('#load').addClass('hidden');
-      });
-      $(".instruct").removeClass("hidden");
-    } else {
-      $('.no-data').hide();
-      map.clear();
-      map.showAustralia();
-      $(".instruct").addClass("hidden");
-    }
-});
-
-$('.electorate-picker select').trigger('change');
-window.onunload = function() {
-  $('.electorate-picker select').val("");
-};
 
 $('.download').click(function() {
   map.blocks.save();
