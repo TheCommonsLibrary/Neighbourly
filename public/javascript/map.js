@@ -1,22 +1,37 @@
 var makeMap = function(states, stateColors) {
   var map = L.map('map');
 
-  var showLocation = function() {
+  var mesh_layer;
+
+  var tileLayer = L.tileLayer('http://{s}.tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+  }).addTo(map);
+
+  $('#postcode-button').click(function() {
+    FitPcode($('#postcode-input').val());
+  });
+
+  var FitPcode = function(pcode) {
+    $.getJSON('/pcode_get_bounds?pcode=' + pcode, function(json) {
+      map.fitBounds([[json.swlat,json.swlng],[json.nelat,json.nelng]])
+    });
+  };
+
+  var FindLocation = function() {
     var lat = Cookies.get("lat");
     var lng = Cookies.get("lng");
     var pcode = Cookies.get("postcode");
     if (lat && lng) {map.setView([lat,lng],15)}
     else if (pcode) {
-      map.fitBounds([[0,0],[0,0]])
+      FitPcode(pcode)
     }
     else {
     var australia_coord = [-29.8650, 131.2094];
     map.setView(australia_coord, 5);}
     $(".instruct").removeClass("hidden");
-    //$('.map-blocker').removeClass('hidden')
   };
 
-  showLocation();
+  FindLocation();
 
   map.on('moveend', function() {
     var lat_lng_bnd = map.getBounds();
@@ -27,22 +42,22 @@ var makeMap = function(states, stateColors) {
     var nelng = lat_lng_bnd.getNorthEast().lng;
     //Reload map if zoom not too high and TODO - if not hammering DB
     //Make call work with new json return shiz from bounding box
-    if(zoom > 10) {
-      $.getJSON('/sa1_bounds?swlat=' + swlat + '&swlng=' + swlng
-      + '&nelat=' + nelat + '&nelng=' + nelng, function(json) {
-          //map.clear();
-          if (json.length > 0) {
-            console.log(json)
-            //map.render(json);
-          }});
-        } else {console.log('Zoom too wide:' + zoom)};
-
+    if(zoom > 14) {
+      $('#load').removeClass('hidden');
+      var url = '/meshblocks_bounds?swlat=' + swlat + '&swlng=' + swlng
+      + '&nelat=' + nelat + '&nelng=' + nelng;
+      $.getJSON( url, function( json ) {
+        getMeshblockCallback(json)
+      });
+      function getMeshblockCallback(json) {
+        if (mesh_layer) {map.removeLayer(mesh_layer)};
+        mesh_layer = L.geoJson(json,{"color": "#E6FF00","weight": 1,"opacity": 0.65});
+        mesh_layer.addTo(map);
+        $('#load').addClass('hidden');
+      }
     instruct.update();
+  }
   });
-
-  var tileLayer = L.tileLayer('http://{s}.tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-  }).addTo(map);
 
   var legend = L.control({position: 'bottomright'});
   legend.onAdd = function(map) {
@@ -202,7 +217,7 @@ var makeMap = function(states, stateColors) {
           }
         });
     },
-    showLocation: showLocation,
+    FindLocation: FindLocation,
     blocks: meshInteractions.blocks
   };
 }

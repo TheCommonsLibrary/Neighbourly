@@ -4,10 +4,11 @@ module ElasticSearch
   class Connection
     def initialize
       @elastic_search_url = ENV['ELASTIC_SEARCH_BASE_URL']
-    end 
+    end
 
     def execute(query)
-      response = HTTParty.get(@elastic_search_url + '/_search', body: query.to_json)
+      url_json = "#{@elastic_search_url}bounds?nwx=#{query['nelng']}&nwy=#{query['nelat']}&sex=#{query['swlng']}&sey=#{query['swlat']}"
+      response = HTTParty.get(url_json)
       JSON.parse response.body
     end
   end

@@ -15,6 +15,7 @@ require_relative "lib/login_helper"
 require_relative 'lib/view_helper'
 require_relative './services/elastic_search/mesh_block_query'
 require_relative './services/claim_service'
+require_relative './services/geo_service'
 require_relative './models/feature_collection'
 require_relative "models/user"
 require_relative "models/electorate"
@@ -163,94 +164,34 @@ get '/logout' do
   redirect '/'
 end
 
-#returns local sa1s and nearby sa1 event
-get '/nearby' do
-  autorised do
-    #TODO - don't return SA1s that are completely claimed
-    geo_service = GeoService.new(settings.db)
-    if cookies.has_key?("lat") && cookies.has_key?("lng")
-      lat = cookies["lat"]
-      lng = cookies["lng"]
-      #Nearest with option to select postcode
-      #TODO - get list of calling parties too -
-      #nearby_dkps = geo_service.point_dkps()
-
-      #Remove claimed by DKPs or totally claimed
-      nearby_sa1s = geo_service.point_sa1s(lat,lng,20)
-
-    elsif cookies.has_key?("postcode")
-      pcode = cookies["postcode"]
-      #Postcode sa1s with option to select Nearest
-      nearby_sa1s = geo_service.pcode_sa1s(pcode)
-
-      #haml nearby, locals{}
-    else
-      #Manual postcode
-      #haml nearby
-    end
-
-  end
-end
-
 #For loading new SA1s when scrolling on the map
-get '/sa1_bounds' do
+get '/meshblocks_bounds' do
   authorised do
-    swlat = params[:swlat]
-    swlng = params[:swlng]
-    nelat = params[:nelat]
-    nelng = params[:nelng]
+    query = {'swlat' => params[:swlat],
+    'swlng' => params[:swlng],
+    'nelat' => params[:nelat],
+    'nelng' => params[:nelng]}
 
     #interface with darren's tool goes here
+    elastic_search_connection = ElasticSearch::Connection.new
+
 
     #interface with local claims table goes here
-
-    json '{ok: "ok"}'
+    data = elastic_search_connection.execute(query)
+    json data
   end
 end
 
-#TODO - work with Darren's SA1 endpoint
-get '/sa1/:id/meshblocks' do
+#For finding out the bounds of a postcode
+get '/pcode_get_bounds' do
   authorised do
-
-    #interface with darren's tool goes here (for specific sa1)
-
-    #below adapted to local claims table
-
-    electorate_id = params[:id]
-
-    claim_service = ClaimService.new(settings.db)
-    elastic_search_connection = ElasticSearch::Connection.new
-    mesh_block_query = ElasticSearch::Query::MeshBlocksQuery.new(electorate_id, elastic_search_connection)
-
-    query_results = mesh_block_query.execute
-    mesh_blocks = query_results['hits']['hits']
-    mesh_blocks_claimers = claim_service.get_claimers_for(mesh_blocks)
-
-    feature_collection = FeatureCollection.new(query_results, user_email, mesh_blocks_claimers)
-
-    json feature_collection.to_a
+    geo_service = GeoService.new(settings.db)
+    bounds = geo_service.pcode_bounds(params[:pcode])
+    json bounds[0]
   end
 end
 
-#TODO - remove - in favour of js bounding box call
-get '/electorate/:id/meshblocks' do
-  authorised do
-    electorate_id = params[:id]
-
-    claim_service = ClaimService.new(settings.db)
-    elastic_search_connection = ElasticSearch::Connection.new
-    mesh_block_query = ElasticSearch::Query::MeshBlocksQuery.new(electorate_id, elastic_search_connection)
-
-    query_results = mesh_block_query.execute
-    mesh_blocks = query_results['hits']['hits']
-    mesh_blocks_claimers = claim_service.get_claimers_for(mesh_blocks)
-
-    feature_collection = FeatureCollection.new(query_results, user_email, mesh_blocks_claimers)
-
-    json feature_collection.to_a
-  end
-end
-
+#FIXME - needs to work with new meshblocks
 post '/download' do
   authorised do
     all_selected_slugs = (params[:slugs] || [])
