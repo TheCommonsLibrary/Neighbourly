@@ -1,14 +1,22 @@
 var makeMap = function(states, stateColors) {
   var map = L.map('map');
 
-  var showAustralia = function() {
+  var showLocation = function() {
+    var lat = Cookies.get("lat");
+    var lng = Cookies.get("lng");
+    var pcode = Cookies.get("postcode");
+    if (lat && lng) {map.setView([lat,lng],15)}
+    else if (pcode) {
+      map.fitBounds([[0,0],[0,0]])
+    }
+    else {
     var australia_coord = [-29.8650, 131.2094];
-    map.setView(australia_coord, 5);
+    map.setView(australia_coord, 5);}
     $(".instruct").removeClass("hidden");
     //$('.map-blocker').removeClass('hidden')
   };
 
-  showAustralia();
+  showLocation();
 
   map.on('moveend', function() {
     var lat_lng_bnd = map.getBounds();
@@ -194,7 +202,7 @@ var makeMap = function(states, stateColors) {
           }
         });
     },
-    showAustralia: showAustralia,
+    showLocation: showLocation,
     blocks: meshInteractions.blocks
   };
 }
