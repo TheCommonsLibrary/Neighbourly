@@ -33,6 +33,36 @@ var makeMap = function(states, stateColors) {
 
   FindLocation();
 
+  function addGeoJsonProperties(json) {
+    var layer = L.geoJson(json,{
+      style: function(feature) {
+        switch (feature.properties.claim_status) {
+          case 'claimed_by_you': return {color: "#DDA0DD"}
+          case 'claimed': return {color: "#F0054C"}
+          case 'quarantined': return {color: "#DDA0DD"}
+          default: return {"fillColor": "#E6FF00", "color": "#111111",
+            "weight": 1, "opacity": 0.65}
+        }
+      },
+      //{"fillColor": "#DDA0DD", "color": "#111111",
+        //"weight": 1, "opacity": 0.65},
+    onEachFeature: function(feature, featureLayer) {
+      var popuptext = "<b>Meshblock:</b> " + feature.properties.slug;
+      if (feature.properties.claim_status === 'claimed_by_you') {
+        popuptext += '<br>Claimed by YOU!'
+      }
+      else if (feature.properties.claim_status === 'claimed') {
+        popuptext += '<br>Claimed by SOMEONE ELSE!'
+      }
+      else {
+        popuptext += '<br>UNCLAIMED!'
+      }
+      featureLayer.bindPopup(popuptext + ' Hello');
+    }});
+    //Logic for discovering claimed/unclaimed/self/quarantined blocks
+    return layer;
+  };
+
   map.on('moveend', function() {
     var lat_lng_bnd = map.getBounds();
     var zoom = map.getZoom();
@@ -40,7 +70,7 @@ var makeMap = function(states, stateColors) {
     var swlng = lat_lng_bnd.getSouthWest().lng;
     var nelat = lat_lng_bnd.getNorthEast().lat;
     var nelng = lat_lng_bnd.getNorthEast().lng;
-    //Reload map if zoom not too high and TODO - if not hammering DB
+    //Reload map if zoom not too high
     //Make call work with new json return shiz from bounding box
     if(zoom > 14) {
       $('#load').removeClass('hidden');
@@ -51,7 +81,7 @@ var makeMap = function(states, stateColors) {
       });
       function getMeshblockCallback(json) {
         if (mesh_layer) {map.removeLayer(mesh_layer)};
-        mesh_layer = L.geoJson(json,{"color": "#E6FF00","weight": 1,"opacity": 0.65});
+        mesh_layer = addGeoJsonProperties(json);
         mesh_layer.addTo(map);
         $('#load').addClass('hidden');
       }
@@ -64,7 +94,7 @@ var makeMap = function(states, stateColors) {
     var div = L.DomUtil.create('div', 'legend');
     div.innerHTML = [
       '<b>This block will be walked by</b>',
-      '<i style="background:' + stateColors.selected + '"></i><div>Me</div>',
+      '<i style="background:' + stateColors.claimed_by_you + '"></i><div>Me</div>',
       '<i style="background:' + stateColors.claimed + '"></i><div>Someone else</div>',
       '<i style="background:' + stateColors.unclaimed + '"></i><div>No one</div>'
     ].join('');
@@ -92,7 +122,7 @@ var makeMap = function(states, stateColors) {
           + '<br><br>Click if you just want to download the walk list.</div>';
       }
       this._div.innerHTML = hoverText;
-    } else if (zoom > 10) {this._div.innerHTML = "Zoom in further to load more areas.";
+    } else if (zoom > 14) {this._div.innerHTML = "Zoom in further to load more areas.";
       } else {
       this._div.innerHTML = "Hover over an area to see details";
     }
@@ -196,7 +226,6 @@ var makeMap = function(states, stateColors) {
   }
 
 
-
   return {
     render: function(features) {
       var onEachFeatureCB = function(feature, layer) {
@@ -207,7 +236,6 @@ var makeMap = function(states, stateColors) {
                       {"type": 'FeatureCollection', "features": features},
                       { style: mergeModelsAndStyle(meshInteractions.blocks.newlySelected(), meshInteractions.blocks.cleared()), onEachFeature: onEachFeatureCB }
                     ).addTo(map);
-
       map.fitBounds(mesh_boxes.getBounds());
     },
     clear: function() {
@@ -239,7 +267,7 @@ $('#map').height(windowHeight() - $('.header').height());
 $('#map').width("100%");
 
 var stateColors =  {
-  selected: '#DDA0DD', //Purple
+  claimed_by_you: '#DDA0DD', //Purple
   unclaimed: '#E6FF00', //Green
   claimed: '#F0054C', //Pink
 };

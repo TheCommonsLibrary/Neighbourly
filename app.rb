@@ -140,7 +140,6 @@ def create_user(user_params)
   #Skip all errors and retry auth without ZAP_API call
   #REDUNDANT - Skip details re-entry if e-mail already exists in database
   #REDUNDANT - Skip if HTTParty fails to make the API call
-  #TODO - js blocking button after click on page
 rescue StandardError, Sequel::UniqueConstraintViolation, HTTParty::Error => e
     puts "Error in User Details Submission: #{e.message}"
     authorise(user_params['email'])
@@ -164,6 +163,33 @@ get '/logout' do
   redirect '/'
 end
 
+def get_meshblocks_with_status(json)
+  slugs = Array.new
+  json["features"].each do |slug|
+    slugs << slug["properties"]["slug"]
+  end
+  claim_service = ClaimService.new(settings.db)
+  claimed = Array.new
+  claimed_by_you = Array.new
+  claim_service.get_mesh_blocks(slugs).each { |claim|
+  if claim[:mesh_block_claimer] != session[:user_email]
+    claimed << claim[:mesh_block_slug]
+  else
+    claimed_by_you << claim[:mesh_block_slug]
+  end
+  }
+  json["features"].each_with_index { |slug, index|
+    if claimed.include? slug["properties"]["slug"]
+      json["features"][index]["properties"]["claim_status"] = "claimed"
+    elsif claimed_by_you.include? slug["properties"]["slug"]
+      json["features"][index]["properties"]["claim_status"] = "claimed_by_you"
+    else
+      json["features"][index]["properties"]["claim_status"] = "unclaimed"
+    end
+  }
+  json
+end
+
 #For loading new SA1s when scrolling on the map
 get '/meshblocks_bounds' do
   authorised do
@@ -177,7 +203,8 @@ get '/meshblocks_bounds' do
 
     #interface with local claims table goes here
     data = elastic_search_connection.execute(query)
-    json data
+
+    json get_meshblocks_with_status(data)
   end
 end
 
