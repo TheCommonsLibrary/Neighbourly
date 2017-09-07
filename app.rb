@@ -175,7 +175,6 @@ get '/meshblocks_bounds' do
     #interface with darren's tool goes here
     elastic_search_connection = ElasticSearch::Connection.new
 
-
     #interface with local claims table goes here
     data = elastic_search_connection.execute(query)
     json data
