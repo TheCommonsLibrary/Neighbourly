@@ -45,6 +45,13 @@ class ClaimService
     @db[:claims].insert(mesh_block_slug: mesh_block, mesh_block_claimer: claimer, claim_date: Time.now)
   end
 
+  def unclaim(mesh_block, unclaimer)
+    @db[:claims]
+    .where(mesh_block_claimer: unclaimer)
+    .where(mesh_block_slug: mesh_block)
+    .delete
+  end
+
   private
   def claimer_details(email)
     @db[:users].where(email: email).first

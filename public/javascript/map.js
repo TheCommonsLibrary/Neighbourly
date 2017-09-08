@@ -1,7 +1,8 @@
 var makeMap = function(states, stateColors) {
   var map = L.map('map');
 
-  var mesh_layer;
+  var mesh_layer; //Rendered map
+  var last_update_bounds;
 
   var tileLayer = L.tileLayer('http://{s}.tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
@@ -21,22 +22,27 @@ var makeMap = function(states, stateColors) {
     var lat = Cookies.get("lat");
     var lng = Cookies.get("lng");
     var pcode = Cookies.get("postcode");
-    if (lat && lng) {map.setView([lat,lng],15)}
+    if (lat && lng) {
+      map.setView([lat,lng],15)
+    }
     else if (pcode) {
       FitPcode(pcode)
     }
     else {
-    var australia_coord = [-29.8650, 131.2094];
-    map.setView(australia_coord, 5);}
+      var australia_coord = [-29.8650, 131.2094];
+      map.setView(australia_coord, 5);
+    }
     $(".instruct").removeClass("hidden");
   };
 
   FindLocation();
 
   function addGeoJsonProperties(json) {
+
+
     var layer = L.geoJson(json,{
       style: function(feature) {
-        switch (feature.properties.claim_status) {
+          switch (feature.properties.claim_status) {
           case 'claimed_by_you': return {color: "#DDA0DD"}
           case 'claimed': return {color: "#F0054C"}
           case 'quarantined': return {color: "#DDA0DD"}
@@ -44,23 +50,114 @@ var makeMap = function(states, stateColors) {
             "weight": 1, "opacity": 0.65}
         }
       },
-      //{"fillColor": "#DDA0DD", "color": "#111111",
-        //"weight": 1, "opacity": 0.65},
     onEachFeature: function(feature, featureLayer) {
-      var popuptext = "<b>Meshblock:</b> " + feature.properties.slug;
+      featureLayer._leaflet_id = feature.properties.slug;
+
+      this.btnClaim = function (featureLayer) {
+        var leaflet_id = this._leaflet_id;
+        $.post("/claim_meshblock/" + leaflet_id);
+        this.setStyle({fillColor: "#DDA0DD"})
+        $('#load').removeClass('hidden');
+
+        var base64str = $.get("/mesh_pdf/" + leaflet_id, function(base64str) {
+          //TODO - potentially hit the AWS endpoint directly
+
+          // decode base64 string, remove space for IE compatibility
+          var binary = atob(base64str.replace(/\s/g, ''));
+
+          // get binary length
+          var len = binary.length;
+
+          // create ArrayBuffer with binary length
+          var buffer = new ArrayBuffer(len);
+
+          // create 8-bit Array
+          var view = new Uint8Array(buffer);
+
+          // save unicode of binary data into 8-bit Array
+          for (var i = 0; i < len; i++) {
+            view[i] = binary.charCodeAt(i);
+          }
+
+          // create the blob object with content-type "application/pdf"
+          var blob = new Blob( [view], { type: "image/png" });
+
+          var url = window.URL.createObjectURL(blob);
+          var a = document.createElement('a');
+          //window.location = url;
+          a.href = url;
+          a.download = leaflet_id + '.png';
+          a.click();
+          //window.URL.revokeObjectURL(url);
+          $('#load').addClass('hidden');
+        });
+        // decode base64 string, remove space for IE compatibility
+        //var binary = atob(base64str.replace(/\s/g, ''));
+
+        // get binary length
+        //var len = binary.length;
+
+        // create ArrayBuffer with binary length
+        //var buffer = new ArrayBuffer(len);
+
+        // create 8-bit Array
+        //var view = new Uint8Array(buffer);
+
+        // save unicode of binary data into 8-bit Array
+        //for (var i = 0; i < len; i++) {
+        //  view[i] = binary.charCodeAt(i);
+        //}
+
+        // create the blob object with content-type "application/pdf"
+        //var blob = new Blob( [view], { type: "image/png" });
+
+        //var url = window.URL.createObjectURL(blob);
+
+        //a.href = url;
+        //a.download = $(this).data('meshblock') + '.png';
+        //a.click();
+        //window.URL.revokeObjectURL(url);
+      }
+
+      this.btnUnclaim = function (featureLayer) {
+        $.post("/unclaim_meshblock/" + this._leaflet_id);
+        this.setStyle({"fillColor": "#E6FF00", "color": "#111111",
+          "weight": 1, "opacity": 0.65})
+      }
+
+      var container = L.DomUtil.create('div')
+      var btn = L.DomUtil.create('button', '', container)
+      btn.setAttribute('type', 'button')
+
+      var btndom = L.DomEvent
+          .addListener(btn, 'click', L.DomEvent.stopPropagation)
+          .addListener(btn, 'click', L.DomEvent.preventDefault)
+
       if (feature.properties.claim_status === 'claimed_by_you') {
-        popuptext += '<br>Claimed by YOU!'
+        btn.innerHTML = 'Unclaim'
+        btndom.addListener(btn, 'click', this.btnUnclaim, featureLayer);
+        var popup = L.popup({},featureLayer).setContent(btn);
       }
       else if (feature.properties.claim_status === 'claimed') {
-        popuptext += '<br>Claimed by SOMEONE ELSE!'
+        var popup = L.popup({},featureLayer).setContent('Someone else got it.');
       }
       else {
-        popuptext += '<br>UNCLAIMED!'
+        btn.innerHTML = 'Download + Claim'
+        btndom.addListener(btn, 'click', this.btnClaim, featureLayer);
+        var popup = L.popup({},featureLayer).setContent(btn);
       }
-      featureLayer.bindPopup(popuptext + ' Hello');
+      featureLayer.bindPopup(popup)
+
     }});
-    //Logic for discovering claimed/unclaimed/self/quarantined blocks
+
     return layer;
+  };
+
+  function getMeshblockCallback(json) {
+    if (mesh_layer) {map.removeLayer(mesh_layer)};
+    mesh_layer = addGeoJsonProperties(json);
+    mesh_layer.addTo(map);
+    $('#load').addClass('hidden');
   };
 
   map.on('moveend', function() {
@@ -71,20 +168,16 @@ var makeMap = function(states, stateColors) {
     var nelat = lat_lng_bnd.getNorthEast().lat;
     var nelng = lat_lng_bnd.getNorthEast().lng;
     //Reload map if zoom not too high
-    //Make call work with new json return shiz from bounding box
-    if(zoom > 14) {
+    //and
+    //there is no last_update or the current map bounds are not within the last update's
+    if(zoom > 14 && (!last_update_bounds || !last_update_bounds.contains(lat_lng_bnd))) {
       $('#load').removeClass('hidden');
       var url = '/meshblocks_bounds?swlat=' + swlat + '&swlng=' + swlng
       + '&nelat=' + nelat + '&nelng=' + nelng;
-      $.getJSON( url, function( json ) {
-        getMeshblockCallback(json)
+      $.getJSON(url, function(json) {
+        getMeshblockCallback(json);
+        last_update_bounds = map.getBounds();
       });
-      function getMeshblockCallback(json) {
-        if (mesh_layer) {map.removeLayer(mesh_layer)};
-        mesh_layer = addGeoJsonProperties(json);
-        mesh_layer.addTo(map);
-        $('#load').addClass('hidden');
-      }
     instruct.update();
   }
   });
@@ -128,126 +221,6 @@ var makeMap = function(states, stateColors) {
     }
   }
   instruct.addTo(map);
-
-  var styleFor = function(feature) {
-    var color = stateColors.unclaimed
-    if (feature.properties.state === states.selected) {
-      color = stateColors.selected
-    } else if (feature.properties.state === states.claimed) {
-      color = stateColors.claimed
-    }
-    return {
-      weight: 2,
-      opacity: 1,
-      color: 'white',
-      dashArray: '3',
-      fillColor: color,
-      fillOpacity: 0.5,
-    }
-  }
-
-  var meshInteractions = function() {
-    var selections = {};
-    var stored_selections = localStorage.getItem('slug_selections');
-    if (stored_selections) {
-      selections = JSON.parse(stored_selections);
-    }
-
-    var highlightStyle = {
-        dashArray: '',
-        fillOpacity: 0.9,
-    };
-
-    var newlySelected = function() {
-          var newlySelected = []
-          for(var meshId in selections) {
-            if(selections[meshId]) {
-              newlySelected.push(meshId);
-            }
-          }
-
-          return newlySelected;
-        }
-
-    return {
-      mouseover: function(e) {
-        instruct.update(e.target.feature.properties);
-      	e.target.setStyle(highlightStyle);
-      },
-      mouseout: function(e) {
-        instruct.update();
-        e.target.setStyle(styleFor(e.target.feature));
-      },
-      click: function(e) {
-        var mesh = e.target;
-        var properties = e.target.feature.properties;
-        if (properties.state === states.selected) {
-          properties.state = properties.db_state;
-          selections[properties.slug] = false;
-        } else {
-          properties.db_state = properties.state;
-          properties.state = states.selected;
-          selections[properties.slug] = true;
-        }
-        e.target.setStyle(styleFor(mesh.feature));
-      },
-      blocks: {
-	      newlySelected: newlySelected,
-        save: function() {
-          localStorage.setItem('slug_selections', JSON.stringify(selections));
-        },
-	      cleared: function() {
-	        var cleared = []
-	        for(var meshId in selections) {
-	          if(selections[meshId] === false) {
-	            cleared.push(meshId);
-	          }
-	        }
-
-	        return cleared;
-	      }
-	    }
-      };
-  }();
-
-  var mergeModelsAndStyle = function(selected, cleared) {
-    return function(feature) {
-      var initState = feature.properties.state;
-      if (selected.indexOf(feature.properties.slug) > -1) {
-        feature.properties.db_state = feature.properties.state;
-        feature.properties.state = states.selected;
-      } else if (cleared.indexOf(feature.properties.slug) > -1) {
-        if(feature.properties.state === states.selected) {
-          feature.properties.state = states.unclaimed;
-        }
-      }
-      return styleFor(feature);
-    }
-  }
-
-
-  return {
-    render: function(features) {
-      var onEachFeatureCB = function(feature, layer) {
-        layer.on(meshInteractions)
-      }
-
-      var mesh_boxes = L.geoJson(
-                      {"type": 'FeatureCollection', "features": features},
-                      { style: mergeModelsAndStyle(meshInteractions.blocks.newlySelected(), meshInteractions.blocks.cleared()), onEachFeature: onEachFeatureCB }
-                    ).addTo(map);
-      map.fitBounds(mesh_boxes.getBounds());
-    },
-    clear: function() {
-        map.eachLayer(function(layer) {
-          if (layer != tileLayer && layer != legend && layer != instruct) {
-            map.removeLayer(layer)
-          }
-        });
-    },
-    FindLocation: FindLocation,
-    blocks: meshInteractions.blocks
-  };
 }
 
 
@@ -279,11 +252,3 @@ var states = {
 }
 
 var map = makeMap(states, stateColors);
-
-$('.download').click(function() {
-  map.blocks.save();
-  var form = '<form action="/download" method="POST"><select name="slugs[]" multiple>';
-  form += map.blocks.newlySelected().map(function(x) { return '<option value="' + x + '"selected></option>'; }).join("");
-  form += '</select></form>';
-  $(form).appendTo('body').submit();
-});
