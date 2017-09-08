@@ -5,19 +5,11 @@ class ClaimService
     @db = db
   end
 
-<<<<<<< HEAD
   def get_mesh_blocks(slugs)
     @db[:claims].
       where('mesh_block_slug IN ?', slugs)
   end
 
-=======
-  def get_mesh_blocks(slugs, email)
-    @db[:claims].
-      where('mesh_block_slug IN ?', slugs)
-  end
-  
->>>>>>> refs/remotes/origin/master
   def get_claimers_for(mesh_blocks)
     @db[:claims]
       .where(mesh_block_slug: get_mesh_block_slugs(mesh_blocks))
