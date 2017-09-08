@@ -1,15 +1,9 @@
 %a{href: "/map", class: "logo-link"}
   %img.logo#logo-image{src: '/images/yes_logo.png'}
 - if authorised?
-  .electorate-picker
-    %form{ :action => "/map", :method => "GET"}
-      %select{ :id => "electorate", :name => "electorate" }
-        %option{:value => ""}= "- Select Electorate -"
-        - ELECTORATES.each do |electorate, code|
-          - if code == params['electorate']
-            %option{:value => "#{code}", :selected => 'selected'}= "#{electorate}"
-          - else
-            %option{:value => "#{code}"}= "#{electorate}"
+  %form{:method => "GET", :onsubmit => "return false;"}
+    %input#postcode-input{placeholder: "Postcode", name: "pcode"}/
+    %input.button-primary#postcode-button{type: "button", value: "Go To Postcode"}
   .nav-top-right
     Hi
     .welcome-message #{user_name}

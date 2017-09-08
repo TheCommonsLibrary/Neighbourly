@@ -5,7 +5,11 @@ class ClaimService
     @db = db
   end
 
-  #TODO - optimize out the unnecessary details collection
+  def get_mesh_blocks(slugs)
+    @db[:claims].
+      where('mesh_block_slug IN ?', slugs)
+  end
+
   def get_claimers_for(mesh_blocks)
     @db[:claims]
       .where(mesh_block_slug: get_mesh_block_slugs(mesh_blocks))

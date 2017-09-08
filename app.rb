@@ -15,6 +15,7 @@ require_relative "lib/login_helper"
 require_relative 'lib/view_helper'
 require_relative './services/elastic_search/mesh_block_query'
 require_relative './services/claim_service'
+require_relative './services/geo_service'
 require_relative './models/feature_collection'
 require_relative "models/user"
 require_relative "models/electorate"
@@ -139,7 +140,6 @@ def create_user(user_params)
   #Skip all errors and retry auth without ZAP_API call
   #REDUNDANT - Skip details re-entry if e-mail already exists in database
   #REDUNDANT - Skip if HTTParty fails to make the API call
-  #TODO - js blocking button after click on page
 rescue StandardError, Sequel::UniqueConstraintViolation, HTTParty::Error => e
     puts "Error in User Details Submission: #{e.message}"
     authorise(user_params['email'])
@@ -163,6 +163,7 @@ get '/logout' do
   redirect '/'
 end
 
+<<<<<<< HEAD
 get '/postcode/:id/sa1' do
   authorised do
     #Get preferred SA1s per postcode
@@ -187,27 +188,63 @@ get '/sa1/:id/meshblocks' do
     feature_collection = FeatureCollection.new(query_results, user_email, mesh_blocks_claimers)
 
     json feature_collection.to_a
+=======
+def get_meshblocks_with_status(json)
+  slugs = Array.new
+  json["features"].each do |slug|
+    slugs << slug["properties"]["slug"]
   end
+  claim_service = ClaimService.new(settings.db)
+  claimed = Array.new
+  claimed_by_you = Array.new
+  claim_service.get_mesh_blocks(slugs).each { |claim|
+  if claim[:mesh_block_claimer] != session[:user_email]
+    claimed << claim[:mesh_block_slug]
+  else
+    claimed_by_you << claim[:mesh_block_slug]
+>>>>>>> sa1-upgrade
+  end
+  }
+  json["features"].each_with_index { |slug, index|
+    if claimed.include? slug["properties"]["slug"]
+      json["features"][index]["properties"]["claim_status"] = "claimed"
+    elsif claimed_by_you.include? slug["properties"]["slug"]
+      json["features"][index]["properties"]["claim_status"] = "claimed_by_you"
+    else
+      json["features"][index]["properties"]["claim_status"] = "unclaimed"
+    end
+  }
+  json
 end
 
-get '/electorate/:id/meshblocks' do
+#For loading new SA1s when scrolling on the map
+get '/meshblocks_bounds' do
   authorised do
-    electorate_id = params[:id]
+    query = {'swlat' => params[:swlat],
+    'swlng' => params[:swlng],
+    'nelat' => params[:nelat],
+    'nelng' => params[:nelng]}
 
-    claim_service = ClaimService.new(settings.db)
+    #interface with darren's tool goes here
     elastic_search_connection = ElasticSearch::Connection.new
-    mesh_block_query = ElasticSearch::Query::MeshBlocksQuery.new(electorate_id, elastic_search_connection)
 
-    query_results = mesh_block_query.execute
-    mesh_blocks = query_results['hits']['hits']
-    mesh_blocks_claimers = claim_service.get_claimers_for(mesh_blocks)
+    #interface with local claims table goes here
+    data = elastic_search_connection.execute(query)
 
-    feature_collection = FeatureCollection.new(query_results, user_email, mesh_blocks_claimers)
-
-    json feature_collection.to_a
+    json get_meshblocks_with_status(data)
   end
 end
 
+#For finding out the bounds of a postcode
+get '/pcode_get_bounds' do
+  authorised do
+    geo_service = GeoService.new(settings.db)
+    bounds = geo_service.pcode_bounds(params[:pcode])
+    json bounds[0]
+  end
+end
+
+#FIXME - needs to work with new meshblocks
 post '/download' do
   authorised do
     all_selected_slugs = (params[:slugs] || [])

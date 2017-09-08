@@ -1,24 +1,100 @@
 var makeMap = function(states, stateColors) {
   var map = L.map('map');
 
-  var showAustralia = function() {
-    var australia_coord = [-29.8650, 131.2094];
-    map.setView(australia_coord, 4);
-    $('.map-blocker').removeClass('hidden')
-  };
-
-  showAustralia();
+  var mesh_layer;
 
   var tileLayer = L.tileLayer('http://{s}.tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
   }).addTo(map);
+
+  $('#postcode-button').click(function() {
+    FitPcode($('#postcode-input').val());
+  });
+
+  var FitPcode = function(pcode) {
+    $.getJSON('/pcode_get_bounds?pcode=' + pcode, function(json) {
+      map.fitBounds([[json.swlat,json.swlng],[json.nelat,json.nelng]])
+    });
+  };
+
+  var FindLocation = function() {
+    var lat = Cookies.get("lat");
+    var lng = Cookies.get("lng");
+    var pcode = Cookies.get("postcode");
+    if (lat && lng) {map.setView([lat,lng],15)}
+    else if (pcode) {
+      FitPcode(pcode)
+    }
+    else {
+    var australia_coord = [-29.8650, 131.2094];
+    map.setView(australia_coord, 5);}
+    $(".instruct").removeClass("hidden");
+  };
+
+  FindLocation();
+
+  function addGeoJsonProperties(json) {
+    var layer = L.geoJson(json,{
+      style: function(feature) {
+        switch (feature.properties.claim_status) {
+          case 'claimed_by_you': return {color: "#DDA0DD"}
+          case 'claimed': return {color: "#F0054C"}
+          case 'quarantined': return {color: "#DDA0DD"}
+          default: return {"fillColor": "#E6FF00", "color": "#111111",
+            "weight": 1, "opacity": 0.65}
+        }
+      },
+      //{"fillColor": "#DDA0DD", "color": "#111111",
+        //"weight": 1, "opacity": 0.65},
+    onEachFeature: function(feature, featureLayer) {
+      var popuptext = "<b>Meshblock:</b> " + feature.properties.slug;
+      if (feature.properties.claim_status === 'claimed_by_you') {
+        popuptext += '<br>Claimed by YOU!'
+      }
+      else if (feature.properties.claim_status === 'claimed') {
+        popuptext += '<br>Claimed by SOMEONE ELSE!'
+      }
+      else {
+        popuptext += '<br>UNCLAIMED!'
+      }
+      featureLayer.bindPopup(popuptext + ' Hello');
+    }});
+    //Logic for discovering claimed/unclaimed/self/quarantined blocks
+    return layer;
+  };
+
+  map.on('moveend', function() {
+    var lat_lng_bnd = map.getBounds();
+    var zoom = map.getZoom();
+    var swlat = lat_lng_bnd.getSouthWest().lat;
+    var swlng = lat_lng_bnd.getSouthWest().lng;
+    var nelat = lat_lng_bnd.getNorthEast().lat;
+    var nelng = lat_lng_bnd.getNorthEast().lng;
+    //Reload map if zoom not too high
+    //Make call work with new json return shiz from bounding box
+    if(zoom > 14) {
+      $('#load').removeClass('hidden');
+      var url = '/meshblocks_bounds?swlat=' + swlat + '&swlng=' + swlng
+      + '&nelat=' + nelat + '&nelng=' + nelng;
+      $.getJSON( url, function( json ) {
+        getMeshblockCallback(json)
+      });
+      function getMeshblockCallback(json) {
+        if (mesh_layer) {map.removeLayer(mesh_layer)};
+        mesh_layer = addGeoJsonProperties(json);
+        mesh_layer.addTo(map);
+        $('#load').addClass('hidden');
+      }
+    instruct.update();
+  }
+  });
 
   var legend = L.control({position: 'bottomright'});
   legend.onAdd = function(map) {
     var div = L.DomUtil.create('div', 'legend');
     div.innerHTML = [
       '<b>This block will be walked by</b>',
-      '<i style="background:' + stateColors.selected + '"></i><div>Me</div>',
+      '<i style="background:' + stateColors.claimed_by_you + '"></i><div>Me</div>',
       '<i style="background:' + stateColors.claimed + '"></i><div>Someone else</div>',
       '<i style="background:' + stateColors.unclaimed + '"></i><div>No one</div>'
     ].join('');
@@ -34,6 +110,7 @@ var makeMap = function(states, stateColors) {
   }
 
   instruct.update = function(properties) {
+    var zoom = map.getZoom()
     if (properties) {
       var hoverText = '<span class="text hover-slug">Block ID: <strong>' + properties.slug + '</strong></span>';
       if(properties.state === states.unclaimed) {
@@ -45,7 +122,8 @@ var makeMap = function(states, stateColors) {
           + '<br><br>Click if you just want to download the walk list.</div>';
       }
       this._div.innerHTML = hoverText;
-    } else {
+    } else if (zoom > 14) {this._div.innerHTML = "Zoom in further to load more areas.";
+      } else {
       this._div.innerHTML = "Hover over an area to see details";
     }
   }
@@ -67,8 +145,6 @@ var makeMap = function(states, stateColors) {
       fillOpacity: 0.5,
     }
   }
-
-
 
   var meshInteractions = function() {
     var selections = {};
@@ -150,7 +226,6 @@ var makeMap = function(states, stateColors) {
   }
 
 
-
   return {
     render: function(features) {
       var onEachFeatureCB = function(feature, layer) {
@@ -161,7 +236,6 @@ var makeMap = function(states, stateColors) {
                       {"type": 'FeatureCollection', "features": features},
                       { style: mergeModelsAndStyle(meshInteractions.blocks.newlySelected(), meshInteractions.blocks.cleared()), onEachFeature: onEachFeatureCB }
                     ).addTo(map);
-
       map.fitBounds(mesh_boxes.getBounds());
     },
     clear: function() {
@@ -171,11 +245,10 @@ var makeMap = function(states, stateColors) {
           }
         });
     },
-    showAustralia: showAustralia,
+    FindLocation: FindLocation,
     blocks: meshInteractions.blocks
   };
 }
-
 
 
 var windowHeight = function(){
@@ -194,7 +267,7 @@ $('#map').height(windowHeight() - $('.header').height());
 $('#map').width("100%");
 
 var stateColors =  {
-  selected: '#DDA0DD', //Purple
+  claimed_by_you: '#DDA0DD', //Purple
   unclaimed: '#E6FF00', //Green
   claimed: '#F0054C', //Pink
 };
@@ -206,35 +279,6 @@ var states = {
 }
 
 var map = makeMap(states, stateColors);
-$('.electorate-picker select').change(function() {
-    var electorateId = $(this).val();
-    if (electorateId !== "") {
-      $('.map-blocker').addClass('hidden')
-      $('#load').removeClass('hidden');
-      $.getJSON('/electorate/' + electorateId + '/meshblocks', function(json) {
-        map.clear();
-        if (json.length > 0) {
-          map.render(json);
-        } else {
-          $('.no-data').show();
-          $('.map-blocker').removeClass("hidden");
-        }
-        $('#load').addClass('hidden');
-      });
-      $(".instruct").removeClass("hidden");
-    } else {
-      $('.no-data').hide();
-      map.clear();
-      map.showAustralia();
-      $(".instruct").addClass("hidden");
-    }
-});
-
-$('.electorate-picker select').trigger('change');
-window.onunload = function() {
-  $('.electorate-picker select').val("");
-};
-
 
 $('.download').click(function() {
   map.blocks.save();
