@@ -108,6 +108,7 @@ post '/login' do
 end
 
 get "/user_details" do
+  #Only to be enabled if pass thru isn't working
   if ENV['PASS_THRU_ONLY'] == "False"
     haml :user_details, locals: {page: "user_details", email: params[:email] }
   else
@@ -214,6 +215,13 @@ get '/pcode_get_bounds' do
     geo_service = GeoService.new(settings.db)
     bounds = geo_service.pcode_bounds(params[:pcode])
     json bounds[0]
+  end
+end
+
+post '/claim_meshblock/:id' do
+  authorised do
+    claim_service = ClaimService.new(settings.db)
+    claim_service.claim(:id, user_email)
   end
 end
 
