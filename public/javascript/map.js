@@ -44,9 +44,12 @@ var makeMap = function(states, stateColors) {
     var layer = L.geoJson(json,{
       style: function(feature) {
           switch (feature.properties.claim_status) {
-          case 'claimed_by_you': return {color: "#DDA0DD"}
-          case 'claimed': return {color: "#F0054C"}
-          case 'quarantined': return {color: "#DDA0DD"}
+          case 'claimed_by_you': return {"fillColor": "#DDA0DD", "color": "#111111",
+            "weight": 1, "opacity": 0.65}
+          case 'claimed': return {"fillColor": "#F0054C", "color": "#111111",
+            "weight": 1, "opacity": 0.65}
+          case 'quarantine': return {"fillColor": "#F0054C", "color": "#111111",
+            "weight": 1, "opacity": 0.65}
           default: return {"fillColor": "#E6FF00", "color": "#111111",
             "weight": 1, "opacity": 0.65}
         }
@@ -57,7 +60,8 @@ var makeMap = function(states, stateColors) {
       this.btnClaim = function (featureLayer) {
         var leaflet_id = this._leaflet_id;
         $.post("/claim_meshblock/" + leaflet_id);
-        this.setStyle({fillColor: "#DDA0DD"})
+        this.setStyle({"fillColor": "#DDA0DD", "color": "#111111",
+          "weight": 1, "opacity": 0.65})
         $('#load').removeClass('hidden');
 
         var base64str = $.get("/mesh_pdf/" + leaflet_id, function(base64str) {
@@ -114,7 +118,7 @@ var makeMap = function(states, stateColors) {
         var popup = L.popup({},featureLayer).setContent(btn);
       }
       else if (feature.properties.claim_status === 'claimed') {
-        var popup = L.popup({},featureLayer).setContent('Someone else got it.');
+        var popup = L.popup({},featureLayer).setContent('This block is claimed by someone else.');
       }
       else {
         btn.innerHTML = 'Download + Claim'
@@ -162,10 +166,11 @@ var makeMap = function(states, stateColors) {
   legend.onAdd = function(map) {
     var div = L.DomUtil.create('div', 'legend');
     div.innerHTML = [
-      '<b>This block will be walked by</b>',
+      '<div><b>This block is claimed by</b></div>',
       '<i style="background:' + stateColors.claimed_by_you + '"></i><div>Me</div>',
       '<i style="background:' + stateColors.claimed + '"></i><div>Someone else</div>',
-      '<i style="background:' + stateColors.unclaimed + '"></i><div>No one</div>'
+      '<i style="background:' + stateColors.unclaimed + '"></i><div>No one</div>',
+      '<i style="background:' + stateColors.quarantine + '"></i><div>A doorknocking event</div>'
     ].join('');
     return div;
   }
@@ -206,6 +211,7 @@ var stateColors =  {
   claimed_by_you: '#DDA0DD', //Purple
   unclaimed: '#E6FF00', //Green
   claimed: '#F0054C', //Pink
+  quarantine: '#F0054C', //Pink
 };
 
 var states = {
