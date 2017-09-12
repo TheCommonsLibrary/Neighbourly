@@ -28,7 +28,13 @@ var makeMap = function(states, stateColors) {
     var lng = Cookies.get("lng");
     var pcode = Cookies.get("postcode");
     if (lat && lng) {
+      var zoom = Cookies.set("zoom");
+      if (zoom) {
+      map.setView([lat,lng],zoom)
+    }
+    else {
       map.setView([lat,lng],15)
+    }
     }
     else if (pcode) {
       FitPcode(pcode)
@@ -149,11 +155,14 @@ var makeMap = function(states, stateColors) {
   map.on('moveend', function() {
     var lat_lng_bnd = map.getBounds();
     var lat_lng_centroid = map.getCenter();
+    Cookies.set("lat",lat_lng_centroid.lat);
+    Cookies.set("lng",lat_lng_centroid.lng);
     if (last_update_centroid) {
       var distance_moved = lat_lng_centroid.distanceTo(last_update_centroid);
     }
     else {var distance_moved = 201};
     var zoom = map.getZoom();
+    Cookies.set("zoom",zoom);
     var swlat = lat_lng_bnd.getSouthWest().lat;
     var swlng = lat_lng_bnd.getSouthWest().lng;
     var nelat = lat_lng_bnd.getNorthEast().lat;
