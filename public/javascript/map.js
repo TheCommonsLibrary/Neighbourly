@@ -3,6 +3,7 @@ var makeMap = function(states, stateColors) {
 
   var mesh_layer; //Rendered map
   var last_update_bounds;
+  var last_update_centroid;
 
   var tileLayer = L.tileLayer('http://{s}.tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
@@ -103,9 +104,10 @@ var makeMap = function(states, stateColors) {
         this.setStyle({"fillColor": "#E6FF00", "color": "#111111",
           "weight": 1, "opacity": 0.65})
       }
-
       var container = L.DomUtil.create('div')
-      var btn = L.DomUtil.create('button', '', container)
+      var textcontainer = L.DomUtil.create('div', '', container)
+      var btncontainer = L.DomUtil.create('div', '', container)
+      var btn = L.DomUtil.create('button', '', btncontainer)
       btn.setAttribute('type', 'button')
 
       var btndom = L.DomEvent
@@ -113,17 +115,19 @@ var makeMap = function(states, stateColors) {
           .addListener(btn, 'click', L.DomEvent.preventDefault)
 
       if (feature.properties.claim_status === 'claimed_by_you') {
+        textcontainer.innerHTML = 'Click to remove your claim on a previously claimed area.<br>'
         btn.innerHTML = 'Unclaim'
         btndom.addListener(btn, 'click', this.btnUnclaim, featureLayer);
-        var popup = L.popup({},featureLayer).setContent(btn);
+        var popup = L.popup({},featureLayer).setContent(container);
       }
       else if (feature.properties.claim_status === 'claimed') {
-        var popup = L.popup({},featureLayer).setContent('This block is claimed by someone else.');
+        var popup = L.popup({},featureLayer).setContent('This area is claimed by someone else and is unable to be claimed.');
       }
       else {
+        textcontainer.innerHTML = 'Click to claim area and download PDF of addresses to doorknock.<br>'
         btn.innerHTML = 'Download + Claim'
         btndom.addListener(btn, 'click', this.btnClaim, featureLayer);
-        var popup = L.popup({},featureLayer).setContent(btn);
+        var popup = L.popup({},featureLayer).setContent(container);
       }
       featureLayer.bindPopup(popup)
 
@@ -141,6 +145,11 @@ var makeMap = function(states, stateColors) {
 
   map.on('moveend', function() {
     var lat_lng_bnd = map.getBounds();
+    var lat_lng_centroid = map.getCenter();
+    if (last_update_centroid) {
+      var distance_moved = lat_lng_centroid.distanceTo(last_update_centroid);
+    }
+    else {var distance_moved = 201};
     var zoom = map.getZoom();
     var swlat = lat_lng_bnd.getSouthWest().lat;
     var swlng = lat_lng_bnd.getSouthWest().lng;
@@ -149,7 +158,7 @@ var makeMap = function(states, stateColors) {
     //Reload map if zoom not too high
     //and
     //there is no last_update or the current map bounds are not within the last update's
-    if(zoom > 14 &&
+    if(zoom > 14 && distance_moved > 200 &&
       (!last_update_bounds || !last_update_bounds.contains(lat_lng_bnd))) {
       $('#load').removeClass('hidden');
       var url = '/meshblocks_bounds?swlat=' + swlat + '&swlng=' + swlng
@@ -157,6 +166,7 @@ var makeMap = function(states, stateColors) {
       $.getJSON(url, function(json) {
         getMeshblockCallback(json);
         last_update_bounds = map.getBounds();
+        last_update_centroid = map.getCenter();
       });
     }
     instruct.update();
