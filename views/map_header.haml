@@ -1,10 +1,15 @@
-%a{href: "/map", class: "logo-link"}
-  %img.logo#logo-image{src: '/images/yes_logo.png'}
-- if authorised?
-  %form{:method => "GET", :onsubmit => "return false;"}
-    %input#postcode-input{placeholder: "Postcode", name: "pcode"}/
-    %input.button-primary#postcode-button{type: "button", value: "Go To Postcode"}
-  .nav-top-right
-    Hi
-    .welcome-message #{user_name}
-    %a#logout.button{href: '/logout'}="Logout"
+.container-fluid
+  .panel-half-relative.panel-30.panel-pad-sides.padtopmore.padbottommore.logo-outer
+    %a{href: "http://yes.org.au", class: "logo-link"}
+      %img.logo#logo-image{src: '/images/yes_logo.png'}
+    - if authorised?
+      .welcome-container
+        Hi
+        .welcome-message #{user_name}
+  - if authorised?
+    .panel-half-relative.panel-70.panel-pad-sides.padtopmore.padbottommore.form-outer
+      %form#address_search_form
+        .input-group
+          %input#address_search.text.form-control{:autocomplete => "off", :placeholder => "Enter your postcode", :type => "search"}/
+          .input-group-btn
+            %button#postcode-button#address_search_button.btn.btn-custom.button-light-blue{:name => "search", :type => "submit"} Go To Postcode
