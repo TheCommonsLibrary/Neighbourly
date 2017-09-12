@@ -41,16 +41,15 @@ class ClaimService
       }.to_h
   end
 
-  def claim(mesh_blocks, claimer)
-    claimed = []
-    mesh_blocks.each do |mesh_block|
-      begin
-        @db[:claims].insert(mesh_block_slug: mesh_block, mesh_block_claimer: claimer, claim_date: Time.now)
-        claimed = claimed + [ mesh_block ]
-      rescue
-      end
-    end
-    claimed
+  def claim(mesh_block, claimer)
+    @db[:claims].insert(mesh_block_slug: mesh_block, mesh_block_claimer: claimer, claim_date: Time.now)
+  end
+
+  def unclaim(mesh_block, unclaimer)
+    @db[:claims]
+    .where(mesh_block_claimer: unclaimer)
+    .where(mesh_block_slug: mesh_block)
+    .delete
   end
 
   private

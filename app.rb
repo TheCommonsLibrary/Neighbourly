@@ -55,7 +55,7 @@ get '/' do
   if authorised?
     redirect '/map'
   else
-    if ENV['PASS_THRU_ONLY'] == "False"
+    if ENV['NODE_ENV'] == "development" || ENV['PASS_THRU_ONLY'] == "False"
       haml :main, locals: {page: 'main', body: 'main'}
     else
       redirect 'http://yes.org.au'
@@ -108,7 +108,8 @@ post '/login' do
 end
 
 get "/user_details" do
-  if ENV['PASS_THRU_ONLY'] == "False"
+  #Only to be enabled if pass thru isn't working
+  if ENV['NODE_ENV'] == "development" || ENV['PASS_THRU_ONLY'] == "False"
     haml :user_details, locals: {page: "user_details", email: params[:email] }
   else
     redirect 'http://yes.org.au'
@@ -214,6 +215,34 @@ get '/pcode_get_bounds' do
     geo_service = GeoService.new(settings.db)
     bounds = geo_service.pcode_bounds(params[:pcode])
     json bounds[0]
+  end
+end
+
+post '/claim_meshblock/:id' do
+  authorised do
+    claim_service = ClaimService.new(settings.db)
+    claim_service.claim(params['id'], user_email)
+    status 200
+  end
+end
+
+post '/unclaim_meshblock/:id' do
+  authorised do
+    claim_service = ClaimService.new(settings.db)
+    #TODO - return error on fail
+    claim_service.unclaim(params['id'], user_email)
+    status 200
+  end
+end
+
+get '/mesh_pdf/:id' do
+  authorised do
+    url = ENV["LAMBDA_BASE_URL"] + 'map?slug=' + params['id']
+    response = HTTParty.get(ENV["LAMBDA_BASE_URL"] + 'map?slug=' + params['id'])
+    response = JSON.parse(response.body)
+    string_of_base64 = response['results']['image']
+    encoding, base64 = [string_of_base64[0..string_of_base64.index(',')], string_of_base64[(string_of_base64.index(',')+1)..-1]]
+    base64
   end
 end
 
