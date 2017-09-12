@@ -50,17 +50,16 @@ var makeMap = function(states, stateColors) {
 
   function addGeoJsonProperties(json) {
 
-
     var layer = L.geoJson(json,{
       style: function(feature) {
           switch (feature.properties.claim_status) {
-          case 'claimed_by_you': return {"fillColor": "#DDA0DD", "color": "#111111",
+          case 'claimed_by_you': return {"fillColor": "#9400D3", "color": "#111111",
             "weight": 1, "opacity": 0.65}
-          case 'claimed': return {"fillColor": "#F0054C", "color": "#111111",
+          case 'claimed': return {"fillColor": "#0000FF", "color": "#111111",
             "weight": 1, "opacity": 0.65}
-          case 'quarantine': return {"fillColor": "#F0054C", "color": "#111111",
+          case 'quarantine': return {"fillColor": "#0000FF", "color": "#111111",
             "weight": 1, "opacity": 0.65}
-          default: return {"fillColor": "#E6FF00", "color": "#111111",
+          default: return {"fillColor": "#FF0000", "color": "#111111",
             "weight": 1, "opacity": 0.65}
         }
       },
@@ -70,7 +69,7 @@ var makeMap = function(states, stateColors) {
       this.btnClaim = function (featureLayer) {
         var leaflet_id = this._leaflet_id;
         $.post("/claim_meshblock/" + leaflet_id);
-        this.setStyle({"fillColor": "#DDA0DD", "color": "#111111",
+        this.setStyle({"fillColor": "#9400D3", "color": "#111111",
           "weight": 1, "opacity": 0.65})
         $('#load').removeClass('hidden');
 
@@ -110,7 +109,7 @@ var makeMap = function(states, stateColors) {
 
       this.btnUnclaim = function (featureLayer) {
         $.post("/unclaim_meshblock/" + this._leaflet_id);
-        this.setStyle({"fillColor": "#E6FF00", "color": "#111111",
+        this.setStyle({"fillColor": "#FF0000", "color": "#111111",
           "weight": 1, "opacity": 0.65})
       }
       var container = L.DomUtil.create('div')
@@ -152,7 +151,21 @@ var makeMap = function(states, stateColors) {
     $('#load').addClass('hidden');
   };
 
-  map.on('moveend', function() {
+  var instruct = L.control();
+  instruct.onAdd = function(map) {
+    this._div = L.DomUtil.create('div', 'instruct'); // create a div with a class "instruct"
+    this._div.innerHTML = "Zoom in further to load doorknockable areas.";
+    this.update();
+    return this._div;
+  }
+
+  instruct.update = function() {
+    $(".instruct").toggleClass('hidden', map.getZoom() > 14)
+  }
+
+  instruct.addTo(map);
+
+  function updateMap() {
     var lat_lng_bnd = map.getBounds();
     var lat_lng_centroid = map.getCenter();
     Cookies.set("lat",lat_lng_centroid.lat);
@@ -170,7 +183,7 @@ var makeMap = function(states, stateColors) {
     //Reload map if zoom not too high
     //and
     //there is no last_update or the current map bounds are not within the last update's
-    if(zoom > 14 && distance_moved > 200 &&
+    if(zoom > 14 && (!last_update_bounds || distance_moved > 200) &&
       (!last_update_bounds || !last_update_bounds.contains(lat_lng_bnd))) {
       $('#load').removeClass('hidden');
       var url = '/meshblocks_bounds?swlat=' + swlat + '&swlng=' + swlng
@@ -182,7 +195,13 @@ var makeMap = function(states, stateColors) {
       });
     }
     instruct.update();
+  };
+
+  map.on('moveend', function() {
+    updateMap();
   });
+
+
 
   var legend = L.control({position: 'bottomright'});
   legend.onAdd = function(map) {
@@ -191,28 +210,15 @@ var makeMap = function(states, stateColors) {
       '<div><b>This block is claimed by</b></div>',
       '<i style="background:' + stateColors.claimed_by_you + '"></i><div>Me</div>',
       '<i style="background:' + stateColors.claimed + '"></i><div>Someone else</div>',
-      '<i style="background:' + stateColors.unclaimed + '"></i><div>No one</div>',
-      '<i style="background:' + stateColors.quarantine + '"></i><div>A doorknocking event</div>'
+      '<i style="background:' + stateColors.quarantine + '"></i><div>A doorknocking event</div>',
+      '<i style="background:' + stateColors.unclaimed + '"></i><div>No one</div>'
     ].join('');
     return div;
   }
   legend.addTo(map);
+  map.whenReady(updateMap);
 
-  var instruct = L.control();
-  instruct.onAdd = function(map) {
-    this._div = L.DomUtil.create('div', 'instruct'); // create a div with a class "instruct"
-    this._div.innerHTML = "Zoom in further to load doorknockable areas.";
-    this.update();
-    return this._div;
-  }
-
-  instruct.update = function() {
-    $(".instruct").toggleClass('hidden', map.getZoom() > 14)
-  }
-
-  instruct.addTo(map);
 }
-
 
 var windowHeight = function(){
     if(window.innerHeight != undefined){
@@ -224,16 +230,14 @@ var windowHeight = function(){
     }
 }
 
-
-
 $('#map').height(windowHeight() - $('.header').height());
 $('#map').width("100%");
 
 var stateColors =  {
-  claimed_by_you: '#DDA0DD', //Purple
-  unclaimed: '#E6FF00', //Green
-  claimed: '#F0054C', //Pink
-  quarantine: '#F0054C', //Pink
+  claimed_by_you: '#9400D3', //Purple
+  unclaimed: '#FF0000', //Green
+  claimed: '#0000FF', //Pink
+  quarantine: '#FFFF00', //Pink
 };
 
 var states = {
