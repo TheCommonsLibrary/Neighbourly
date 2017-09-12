@@ -54,13 +54,13 @@ var makeMap = function(states, stateColors) {
       style: function(feature) {
           switch (feature.properties.claim_status) {
           case 'claimed_by_you': return {"fillColor": "#9400D3", "color": "#111111",
-            "weight": 1, "opacity": 0.65}
+            "weight": 1, "opacity": 0.65, "fillOpacity": 0.8}
           case 'claimed': return {"fillColor": "#0000FF", "color": "#111111",
-            "weight": 1, "opacity": 0.65}
+            "weight": 1, "opacity": 0.65, "fillOpacity": 0.8}
           case 'quarantine': return {"fillColor": "#0000FF", "color": "#111111",
-            "weight": 1, "opacity": 0.65}
+            "weight": 1, "opacity": 0.65, "fillOpacity": 0.8}
           default: return {"fillColor": "#FF0000", "color": "#111111",
-            "weight": 1, "opacity": 0.65}
+            "weight": 1, "opacity": 0.65, "fillOpacity": 0.2}
         }
       },
     onEachFeature: function(feature, featureLayer) {
@@ -70,7 +70,7 @@ var makeMap = function(states, stateColors) {
         var leaflet_id = this._leaflet_id;
         $.post("/claim_meshblock/" + leaflet_id);
         this.setStyle({"fillColor": "#9400D3", "color": "#111111",
-          "weight": 1, "opacity": 0.65})
+          "weight": 1, "opacity": 0.65, "fillOpacity": 0.8})
         $('#load').removeClass('hidden');
 
         var base64str = $.get("/mesh_pdf/" + leaflet_id, function(base64str) {
@@ -110,7 +110,7 @@ var makeMap = function(states, stateColors) {
       this.btnUnclaim = function (featureLayer) {
         $.post("/unclaim_meshblock/" + this._leaflet_id);
         this.setStyle({"fillColor": "#FF0000", "color": "#111111",
-          "weight": 1, "opacity": 0.65})
+          "weight": 1, "opacity": 0.65, "fillOpacity": 0.2})
       }
       var container = L.DomUtil.create('div')
       var textcontainer = L.DomUtil.create('div', '', container)
@@ -200,8 +200,6 @@ var makeMap = function(states, stateColors) {
   map.on('moveend', function() {
     updateMap();
   });
-
-
 
   var legend = L.control({position: 'bottomright'});
   legend.onAdd = function(map) {
