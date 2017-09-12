@@ -7,8 +7,9 @@ var makeMap = function(states, stateColors) {
       attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
   }).addTo(map);
 
-  $('#postcode-button').click(function() {
-    FitPcode($('#postcode-input').val());
+  $('#address_search_form').submit(function(event) {
+    event.preventDefault();
+    FitPcode($('#address_search').val());
   });
 
   var FitPcode = function(pcode) {
