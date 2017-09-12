@@ -91,32 +91,6 @@ var makeMap = function(states, stateColors) {
           //window.URL.revokeObjectURL(url);
           $('#load').addClass('hidden');
         });
-        // decode base64 string, remove space for IE compatibility
-        //var binary = atob(base64str.replace(/\s/g, ''));
-
-        // get binary length
-        //var len = binary.length;
-
-        // create ArrayBuffer with binary length
-        //var buffer = new ArrayBuffer(len);
-
-        // create 8-bit Array
-        //var view = new Uint8Array(buffer);
-
-        // save unicode of binary data into 8-bit Array
-        //for (var i = 0; i < len; i++) {
-        //  view[i] = binary.charCodeAt(i);
-        //}
-
-        // create the blob object with content-type "application/pdf"
-        //var blob = new Blob( [view], { type: "image/png" });
-
-        //var url = window.URL.createObjectURL(blob);
-
-        //a.href = url;
-        //a.download = $(this).data('meshblock') + '.png';
-        //a.click();
-        //window.URL.revokeObjectURL(url);
       }
 
       this.btnUnclaim = function (featureLayer) {
