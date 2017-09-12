@@ -33,7 +33,7 @@ var makeMap = function(states, stateColors) {
       var australia_coord = [-29.8650, 131.2094];
       map.setView(australia_coord, 5);
     }
-    $(".instruct").removeClass("hidden");
+
   };
 
   FindLocation();
@@ -81,13 +81,13 @@ var makeMap = function(states, stateColors) {
           }
 
           // create the blob object with content-type "application/pdf"
-          var blob = new Blob( [view], { type: "image/png" });
+          var blob = new Blob( [view], { type: "application/pdf" });
 
           var url = window.URL.createObjectURL(blob);
           var a = document.createElement('a');
           //window.location = url;
           a.href = url;
-          a.download = leaflet_id + '.png';
+          a.download = leaflet_id + '.pdf';
           a.click();
           //window.URL.revokeObjectURL(url);
           $('#load').addClass('hidden');
@@ -145,7 +145,8 @@ var makeMap = function(states, stateColors) {
     //Reload map if zoom not too high
     //and
     //there is no last_update or the current map bounds are not within the last update's
-    if(zoom > 14 && (!last_update_bounds || !last_update_bounds.contains(lat_lng_bnd))) {
+    if(zoom > 14 &&
+      (!last_update_bounds || !last_update_bounds.contains(lat_lng_bnd))) {
       $('#load').removeClass('hidden');
       var url = '/meshblocks_bounds?swlat=' + swlat + '&swlng=' + swlng
       + '&nelat=' + nelat + '&nelng=' + nelng;
@@ -153,8 +154,8 @@ var makeMap = function(states, stateColors) {
         getMeshblockCallback(json);
         last_update_bounds = map.getBounds();
       });
+    }
     instruct.update();
-  }
   });
 
   var legend = L.control({position: 'bottomright'});
@@ -172,29 +173,16 @@ var makeMap = function(states, stateColors) {
 
   var instruct = L.control();
   instruct.onAdd = function(map) {
-    this._div = L.DomUtil.create('div', 'instruct hidden'); // create a div with a class "instruct"
+    this._div = L.DomUtil.create('div', 'instruct'); // create a div with a class "instruct"
+    this._div.innerHTML = "Zoom in further to load doorknockable areas.";
     this.update();
     return this._div;
   }
 
-  instruct.update = function(properties) {
-    var zoom = map.getZoom()
-    if (properties) {
-      var hoverText = '<span class="text hover-slug">Block ID: <strong>' + properties.slug + '</strong></span>';
-      if(properties.state === states.unclaimed) {
-        hoverText += '<div class="text"><b>No one</b> will door knock this area.<br/><b>Click</b> if you want to door knock it.</div>';
-      } else if(properties.state === states.selected && properties.db_state !== states.claimed) {
-        hoverText += '<div class="text"><b>You</b> will door knock this area.<br/><b>Click</b> if you no longer want to door knock the area.</div>';
-      } else {
-        hoverText += '<div class="text"><b>Someone Else</b> will door knock this area.'
-          + '<br><br>Click if you just want to download the walk list.</div>';
-      }
-      this._div.innerHTML = hoverText;
-    } else if (zoom > 14) {this._div.innerHTML = "Zoom in further to load more areas.";
-      } else {
-      this._div.innerHTML = "Hover over an area to see details";
-    }
+  instruct.update = function() {
+    $(".instruct").toggleClass('hidden', map.getZoom() > 14)
   }
+
   instruct.addTo(map);
 }
 

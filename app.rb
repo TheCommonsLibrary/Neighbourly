@@ -58,7 +58,7 @@ get '/' do
     if ENV['NODE_ENV'] == "development" || ENV['PASS_THRU_ONLY'] == "False"
       haml :main, locals: {page: 'main', body: 'main'}
     else
-      redirect 'http://yes.org.au'
+      redirect 'http://yes.org.au/'
     end
   end
 end
@@ -240,8 +240,8 @@ get '/mesh_pdf/:id' do
     url = ENV["LAMBDA_BASE_URL"] + 'map?slug=' + params['id']
     response = HTTParty.get(ENV["LAMBDA_BASE_URL"] + 'map?slug=' + params['id'])
     response = JSON.parse(response.body)
-    string_of_base64 = response['results']['image']
-    encoding, base64 = [string_of_base64[0..string_of_base64.index(',')], string_of_base64[(string_of_base64.index(',')+1)..-1]]
+    base64 = response['base64']
+    #encoding, base64 = [string_of_base64[0..string_of_base64.index(',')], string_of_base64[(string_of_base64.index(',')+1)..-1]]
     base64
   end
 end
