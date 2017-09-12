@@ -16,7 +16,10 @@ var makeMap = function(states, stateColors) {
 
   var FitPcode = function(pcode) {
     $.getJSON('/pcode_get_bounds?pcode=' + pcode, function(json) {
+      if (json) {
       map.fitBounds([[json.swlat,json.swlng],[json.nelat,json.nelng]])
+    }
+    else {alert("Postcode not found");}
     });
   };
 
