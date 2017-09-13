@@ -93,7 +93,7 @@ var makeMap = function(stateColors) {
         $('.unclaim').removeClass('hidden');
         $('.download').removeClass('hidden');
         $('.claim').addClass('hidden');
-        this.setStyle(stateColors.claimed)
+        this.setStyle(stateColors.claimed_by_you)
         $('#load').removeClass('hidden');
         downloadmesh(leaflet_id);
       }
