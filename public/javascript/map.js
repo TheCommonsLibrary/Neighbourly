@@ -144,7 +144,6 @@ var makeMap = function(states, stateColors) {
         };
 
       var container = L.DomUtil.create('div')
-      //debugger;
       var claimout = create_popup_btn(container, 'claim','Claim + Download',
         'Click to claim area and download PDF of addresses to doorknock.<br>');
         claimout.btndom.addListener(claimout.btn, 'click', this.btnClaim, featureLayer);
@@ -158,8 +157,6 @@ var makeMap = function(states, stateColors) {
         otherstxtcontainer.innerHTML = 'This area is claimed by someone else and is unable to be claimed.'
       var quarantinetxtcontainer = L.DomUtil.create('div', 'popuptext hidden quarantinetext', container)
         quarantinetxtcontainer.innerHTML = 'This area is coordinated by a central event.'
-
-      //btn.setAttribute('type', 'button')
 
       if (feature.properties.claim_status === 'claimed_by_you') {
         L.DomUtil.removeClass(unclaimout.grpdiv, 'hidden');
@@ -212,6 +209,12 @@ var makeMap = function(states, stateColors) {
     }
     else {var distance_moved = 201};
     var zoom = map.getZoom();
+    if (zoom > 14) {
+      var reload_dist = 1000/(zoom-14);
+      }
+      else {
+        var reload_dist = 0;
+      };
     Cookies.set("zoom",zoom);
     var swlat = lat_lng_bnd.getSouthWest().lat;
     var swlng = lat_lng_bnd.getSouthWest().lng;
@@ -220,7 +223,7 @@ var makeMap = function(states, stateColors) {
     //Reload map if zoom not too high
     //and
     //there is no last_update or the current map bounds are not within the last update's
-    if(zoom > 14 && (!last_update_bounds || distance_moved > 200) &&
+    if(zoom > 14 && (!last_update_bounds || distance_moved > reload_dist) &&
       (!last_update_bounds || !last_update_bounds.contains(lat_lng_bnd))) {
       $('#load').removeClass('hidden');
       var url = '/meshblocks_bounds?swlat=' + swlat + '&swlng=' + swlng
