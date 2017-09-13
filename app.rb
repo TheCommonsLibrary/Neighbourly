@@ -15,7 +15,7 @@ require_relative "lib/login_helper"
 require_relative 'lib/view_helper'
 require_relative './services/claim_service'
 require_relative './services/geo_service'
-require_relative './services/elastic_search/connection'
+require_relative './services/AwsLambda/connection'
 require_relative "models/user"
 
 Dotenv.load
@@ -199,10 +199,10 @@ get '/meshblocks_bounds' do
     'nelng' => params[:nelng]}
 
     #interface with darren's tool goes here
-    elastic_search_connection = ElasticSearch::Connection.new
+    lambda_connection = AwsLambda::Connection.new
 
     #interface with local claims table goes here
-    data = elastic_search_connection.execute(query)
+    data = lambda_connection.execute(query)
 
     json get_meshblocks_with_status(data)
   end
