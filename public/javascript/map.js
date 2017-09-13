@@ -257,13 +257,13 @@ $('#map').height(windowHeight() - $('.header').height());
 $('#map').width("100%");
 
 var stateColors =  {
-  claimed_by_you: {"fillColor": "#9400D3", "color": "#111111",
+  claimed_by_you: {"fillColor": "#9d5fa7", "color": "#111111",
     "weight": 1, "opacity": 0.65, "fillOpacity": 0.8}, //Purple
-  unclaimed: {"fillColor": "#FF0000", "color": "#111111",
+  unclaimed: {"fillColor": "#059ad6", "color": "#111111",
     "weight": 1, "opacity": 0.65, "fillOpacity": 0.2}, //Red
-  claimed: {"fillColor": "#0000FF", "color": "#111111",
+  claimed: {"fillColor": "#ffc746", "color": "#111111",
     "weight": 1, "opacity": 0.65, "fillOpacity": 0.8}, //Blue
-  quarantine: {"fillColor": "#FFFF00", "color": "#111111",
+  quarantine: {"fillColor": "#6dbd4b", "color": "#111111",
     "weight": 1, "opacity": 0.65, "fillOpacity": 0.8}, //Yellow
 };
 
