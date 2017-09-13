@@ -230,11 +230,10 @@ var makeMap = function(stateColors) {
   legend.onAdd = function(map) {
     var div = L.DomUtil.create('div', 'legend');
     div.innerHTML = [
-      '<div><b>This block is claimed by</b></div>',
-      '<i style="background:' + stateColors.claimed_by_you.fillColor + '"></i><div>Me</div>',
-      '<i style="background:' + stateColors.claimed.fillColor + '"></i><div>Someone else</div>',
-      '<i style="background:' + stateColors.quarantine.fillColor + '"></i><div>A doorknocking event</div>',
-      '<i style="background:' + stateColors.unclaimed.fillColor + '"></i><div>No one</div>'
+      '<i style="background:' + stateColors.claimed_by_you.fillColor + '"></i><div>My area</div>',
+      '<i style="background:' + stateColors.claimed.fillColor + '"></i><div>Claimed</div>',
+      '<i style="background:' + stateColors.quarantine.fillColor + '"></i><div>Organised door knocking event</div>',
+      '<i style="background:' + stateColors.unclaimed.fillColor + '"></i><div>Yet to be claimed!</div>'
     ].join('');
     return div;
   }
@@ -259,9 +258,9 @@ $('#map').width("100%");
 var stateColors =  {
   claimed_by_you: {"fillColor": "#9d5fa7", "color": "#111111",
     "weight": 1, "opacity": 0.65, "fillOpacity": 0.8}, //Purple
-  unclaimed: {"fillColor": "#059ad6", "color": "#111111",
+  unclaimed: {"fillColor": "#ffc746", "color": "#111111",
     "weight": 1, "opacity": 0.65, "fillOpacity": 0.2}, //Red
-  claimed: {"fillColor": "#ffc746", "color": "#111111",
+  claimed: {"fillColor": "#d5545a", "color": "#111111",
     "weight": 1, "opacity": 0.65, "fillOpacity": 0.8}, //Blue
   quarantine: {"fillColor": "#6dbd4b", "color": "#111111",
     "weight": 1, "opacity": 0.65, "fillOpacity": 0.8}, //Yellow
