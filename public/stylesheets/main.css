@@ -197,7 +197,7 @@
 
 .instruct {
     padding: 6px 8px;
-    font: 14px/16px Arial, Helvetica, sans-serif;
+    font: 20px/24px Arial, Helvetica, sans-serif;
     background: white;
     background: rgba(255,255,255,0.9);
     box-shadow: 0 0 15px rgba(0,0,0,0.2);
@@ -210,6 +210,17 @@
 
 .instruct .hover-slug {
   font-size: large;
+}
+
+.popuptxt {
+  font-size: large;
+  text-align: center;
+}
+
+.popupbutton {
+  font-size: large;
+  display: flex;
+  justify-content: center;
 }
 
 .legend {

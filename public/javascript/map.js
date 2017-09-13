@@ -66,14 +66,8 @@ var makeMap = function(states, stateColors) {
     onEachFeature: function(feature, featureLayer) {
       featureLayer._leaflet_id = feature.properties.slug;
 
-      this.btnClaim = function (featureLayer) {
-        var leaflet_id = this._leaflet_id;
-        $.post("/claim_meshblock/" + leaflet_id);
-        this.setStyle({"fillColor": "#9400D3", "color": "#111111",
-          "weight": 1, "opacity": 0.65, "fillOpacity": 0.8})
-        $('#load').removeClass('hidden');
-
-        var base64str = $.get("/mesh_pdf/" + leaflet_id, function(base64str) {
+      function downloadmesh (mesh_id) {
+        var base64str = $.get("/mesh_pdf/" + mesh_id, function(base64str) {
           //TODO - potentially hit the AWS endpoint directly
 
           // decode base64 string, remove space for IE compatibility
@@ -100,41 +94,84 @@ var makeMap = function(states, stateColors) {
           var a = document.createElement('a');
           //window.location = url;
           a.href = url;
-          a.download = leaflet_id + '.pdf';
+          a.download = mesh_id + '.pdf';
           a.click();
           //window.URL.revokeObjectURL(url);
           $('#load').addClass('hidden');
-        });
+        })
+      };
+
+      this.btnClaim = function (featureLayer) {
+        var leaflet_id = this._leaflet_id;
+        $.post("/claim_meshblock/" + leaflet_id);
+        $('.unclaim').removeClass('hidden');
+        $('.download').removeClass('hidden');
+        $('.claim').addClass('hidden');
+        this.setStyle({"fillColor": "#9400D3", "color": "#111111",
+          "weight": 1, "opacity": 0.65, "fillOpacity": 0.8})
+        $('#load').removeClass('hidden');
+        downloadmesh(leaflet_id);
       }
 
       this.btnUnclaim = function (featureLayer) {
         $.post("/unclaim_meshblock/" + this._leaflet_id);
         this.setStyle({"fillColor": "#FF0000", "color": "#111111",
           "weight": 1, "opacity": 0.65, "fillOpacity": 0.2})
+          $('.unclaim').addClass('hidden');
+          $('.download').addClass('hidden');
+          $('.claim').removeClass('hidden');
       }
-      var container = L.DomUtil.create('div')
-      var textcontainer = L.DomUtil.create('div', '', container)
-      var btncontainer = L.DomUtil.create('div', '', container)
-      var btn = L.DomUtil.create('button', '', btncontainer)
-      btn.setAttribute('type', 'button')
 
-      var btndom = L.DomEvent
-          .addListener(btn, 'click', L.DomEvent.stopPropagation)
-          .addListener(btn, 'click', L.DomEvent.preventDefault)
+      this.btnDownload = function (featureLayer){
+        var leaflet_id = this._leaflet_id;
+        $('#load').removeClass('hidden');
+        downloadmesh(leaflet_id);
+      }
+
+      function create_popup_btn(container, div_class, btn_text_inner, faq_text_inner)
+        {
+          var grpdiv = L.DomUtil.create('div', 'popupgrp hidden ' + div_class, container)
+          var txtdiv = L.DomUtil.create('div', 'popuptxt txt' + div_class, grpdiv)
+            txtdiv.innerHTML = faq_text_inner
+          var btndiv = L.DomUtil.create('div', 'popupbutton btn' + div_class, grpdiv)
+          var btn = L.DomUtil.create('button', '', btndiv)
+            btn.setAttribute('type', 'button')
+            btn.innerHTML = btn_text_inner
+          var btndom = L.DomEvent
+            btndom.addListener(btn, 'click', L.DomEvent.stopPropagation)
+            btndom.addListener(btn, 'click', L.DomEvent.preventDefault)
+            return { grpdiv, btn, btndom }
+        };
+
+      var container = L.DomUtil.create('div')
+      //debugger;
+      var claimout = create_popup_btn(container, 'claim','Claim + Download',
+        'Click to claim area and download PDF of addresses to doorknock.<br>');
+        claimout.btndom.addListener(claimout.btn, 'click', this.btnClaim, featureLayer);
+      var unclaimout = create_popup_btn(container, 'unclaim','Unclaim',
+        'Click to remove your claim on a previously claimed area.<br>');
+        unclaimout.btndom.addListener(unclaimout.btn, 'click', this.btnUnclaim, featureLayer);
+      var downloadout = create_popup_btn(container, 'download','Download',
+        'Click to download your claimed area.<br>')
+        downloadout.btndom.addListener(downloadout.btn, 'click', this.btnDownload, featureLayer);
+      var otherstxtcontainer = L.DomUtil.create('div', 'popuptext hidden otherstext', container)
+        otherstxtcontainer.innerHTML = 'This area is claimed by someone else and is unable to be claimed.'
+      var quarantinetxtcontainer = L.DomUtil.create('div', 'popuptext hidden quarantinetext', container)
+        quarantinetxtcontainer.innerHTML = 'This area is coordinated by a central event.'
+
+      //btn.setAttribute('type', 'button')
 
       if (feature.properties.claim_status === 'claimed_by_you') {
-        textcontainer.innerHTML = 'Click to remove your claim on a previously claimed area.<br>'
-        btn.innerHTML = 'Unclaim'
-        btndom.addListener(btn, 'click', this.btnUnclaim, featureLayer);
+        L.DomUtil.removeClass(unclaimout.grpdiv, 'hidden');
+        L.DomUtil.removeClass(downloadout.grpdiv, 'hidden');
         var popup = L.popup({},featureLayer).setContent(container);
       }
       else if (feature.properties.claim_status === 'claimed') {
-        var popup = L.popup({},featureLayer).setContent('This area is claimed by someone else and is unable to be claimed.');
+        L.DomUtil.removeClass(otherstxtcontainer, 'hidden');
+        var popup = L.popup({},featureLayer).setContent(container);
       }
       else {
-        textcontainer.innerHTML = 'Click to claim area and download PDF of addresses to doorknock.<br>'
-        btn.innerHTML = 'Download + Claim'
-        btndom.addListener(btn, 'click', this.btnClaim, featureLayer);
+        L.DomUtil.removeClass(claimout.grpdiv, 'hidden');
         var popup = L.popup({},featureLayer).setContent(container);
       }
       featureLayer.bindPopup(popup)
