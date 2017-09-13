@@ -5,7 +5,10 @@
     - if authorised?
       .welcome-container
         Hi
-        .welcome-message #{user_name}
+        .welcome-message #{user_name} ,
+        %a{href: "/faq"}
+          click here
+        for more information about the doorknocking tool
   - if authorised?
     .panel-half-relative.panel-70.panel-pad-sides.padtopmore.padbottommore.form-outer
       %form#address_search_form
