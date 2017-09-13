@@ -186,6 +186,7 @@ def get_meshblocks_with_status(json)
       json["features"][index]["properties"]["claim_status"] = "claimed_by_you"
     else
       json["features"][index]["properties"]["claim_status"] = "unclaimed"
+      #TODO - add quarantine logic here when it is added to GEOJSON
     end
   }
   json
@@ -232,41 +233,5 @@ post '/unclaim_meshblock/:id' do
     #TODO - return error on fail
     claim_service.unclaim(params['id'], user_email)
     status 200
-  end
-end
-
-get '/mesh_pdf/:id' do
-  authorised do
-    url = ENV["LAMBDA_BASE_URL"] + 'map?slug=' + params['id']
-    response = HTTParty.get(ENV["LAMBDA_BASE_URL"] + 'map?slug=' + params['id'])
-    response = JSON.parse(response.body)
-    base64 = response['base64']
-    #encoding, base64 = [string_of_base64[0..string_of_base64.index(',')], string_of_base64[(string_of_base64.index(',')+1)..-1]]
-    base64
-  end
-end
-
-#FIXME - needs to work with new meshblocks
-post '/download' do
-  authorised do
-    all_selected_slugs = (params[:slugs] || [])
-    claim_service = ClaimService.new(settings.db)
-    user = User.new(settings.db)
-    claimed_mesh_blocks = claim_service.get_mesh_blocks_for(user_email)
-    unclaimable_mesh_blocks = claim_service.get_when_claimed_by_others(all_selected_slugs, user_email).
-                                map { |slug, email| [ slug, user.where(email: email).first ] }.to_h
-    claimable_mesh_blocks = all_selected_slugs.
-                              select { |slug| !unclaimable_mesh_blocks.include?(slug) }.
-                              select { |slug| !claimed_mesh_blocks.include?(slug) }
-    haml :download, locals: { page: 'download', claimable_slugs: claimable_mesh_blocks, unclaimable_slugs: unclaimable_mesh_blocks, claimed_slugs: claimed_mesh_blocks }
-  end
-end
-
-post '/claim' do
-  authorised do
-    claim_service = ClaimService.new(settings.db)
-    claimed = claim_service.claim((params[:slugs] || []), user_email)
-    content_type :json
-    {claimed: claimed}.to_json
   end
 end

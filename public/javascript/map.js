@@ -1,4 +1,4 @@
-var makeMap = function(states, stateColors) {
+var makeMap = function(stateColors) {
   var map = L.map('map');
 
   var mesh_layer; //Rendered map
@@ -29,12 +29,12 @@ var makeMap = function(states, stateColors) {
     var pcode = Cookies.get("postcode");
     if (lat && lng) {
       var zoom = Cookies.set("zoom");
-      if (zoom) {
-      map.setView([lat,lng],zoom)
-    }
-    else {
-      map.setView([lat,lng],15)
-    }
+        if (zoom) {
+        map.setView([lat,lng],zoom)
+        }
+        else {
+          map.setView([lat,lng],15)
+        }
     }
     else if (pcode) {
       FitPcode(pcode)
@@ -43,60 +43,50 @@ var makeMap = function(states, stateColors) {
       var australia_coord = [-29.8650, 131.2094];
       map.setView(australia_coord, 5);
     }
-
   };
 
   FindLocation();
 
   function addGeoJsonProperties(json) {
 
-    var layer = L.geoJson(json,{
-      style: function(feature) {
-          switch (feature.properties.claim_status) {
-          case 'claimed_by_you': return {"fillColor": "#9400D3", "color": "#111111",
-            "weight": 1, "opacity": 0.65, "fillOpacity": 0.8}
-          case 'claimed': return {"fillColor": "#0000FF", "color": "#111111",
-            "weight": 1, "opacity": 0.65, "fillOpacity": 0.8}
-          case 'quarantine': return {"fillColor": "#0000FF", "color": "#111111",
-            "weight": 1, "opacity": 0.65, "fillOpacity": 0.8}
-          default: return {"fillColor": "#FF0000", "color": "#111111",
-            "weight": 1, "opacity": 0.65, "fillOpacity": 0.2}
+  var layer = L.geoJson(json,{
+    style: function(feature) {
+        switch (feature.properties.claim_status) {
+        case 'claimed_by_you': return {"fillColor": "#9400D3", "color": "#111111",
+          "weight": 1, "opacity": 0.65, "fillOpacity": 0.8}
+        case 'claimed': return {"fillColor": "#0000FF", "color": "#111111",
+          "weight": 1, "opacity": 0.65, "fillOpacity": 0.8}
+        case 'quarantine': return {"fillColor": "#0000FF", "color": "#111111",
+          "weight": 1, "opacity": 0.65, "fillOpacity": 0.8}
+        default: return {"fillColor": "#FF0000", "color": "#111111",
+          "weight": 1, "opacity": 0.65, "fillOpacity": 0.2}
         }
       },
     onEachFeature: function(feature, featureLayer) {
       featureLayer._leaflet_id = feature.properties.slug;
 
       function downloadmesh (mesh_id) {
-        var base64str = $.get("/mesh_pdf/" + mesh_id, function(base64str) {
+        var base64str = $.get('https://4oqtu02x7f.execute-api.ap-southeast-2.amazonaws.com/prod/map?slug=' + mesh_id, function(base64str) {
           //TODO - potentially hit the AWS endpoint directly
 
-          // decode base64 string, remove space for IE compatibility
-          var binary = atob(base64str.replace(/\s/g, ''));
-
-          // get binary length
+          //decode base64 string
+          var binary = atob(base64str.base64.replace(/\s/g, ''));
           var len = binary.length;
-
-          // create ArrayBuffer with binary length
           var buffer = new ArrayBuffer(len);
-
-          // create 8-bit Array
           var view = new Uint8Array(buffer);
-
-          // save unicode of binary data into 8-bit Array
           for (var i = 0; i < len; i++) {
             view[i] = binary.charCodeAt(i);
           }
 
-          // create the blob object with content-type "application/pdf"
-          var blob = new Blob( [view], { type: "application/pdf" });
+          //create the blob object
+          var blob = new Blob([view], {type: "application/pdf"});
 
+          //create clickable URL for download
           var url = window.URL.createObjectURL(blob);
           var a = document.createElement('a');
-          //window.location = url;
           a.href = url;
           a.download = mesh_id + '.pdf';
           a.click();
-          //window.URL.revokeObjectURL(url);
           $('#load').addClass('hidden');
         })
       };
@@ -122,14 +112,13 @@ var makeMap = function(states, stateColors) {
           $('.claim').removeClass('hidden');
       }
 
-      this.btnDownload = function (featureLayer){
+      this.btnDownload = function (featureLayer) {
         var leaflet_id = this._leaflet_id;
         $('#load').removeClass('hidden');
         downloadmesh(leaflet_id);
       }
 
-      function create_popup_btn(container, div_class, btn_text_inner, faq_text_inner)
-        {
+      function create_popup_btn(container, div_class, btn_text_inner, faq_text_inner) {
           var grpdiv = L.DomUtil.create('div', 'popupgrp hidden ' + div_class, container)
           var txtdiv = L.DomUtil.create('div', 'popuptxt txt' + div_class, grpdiv)
             txtdiv.innerHTML = faq_text_inner
@@ -148,16 +137,16 @@ var makeMap = function(states, stateColors) {
         'Click to claim area and download PDF of addresses to doorknock.<br>');
         claimout.btndom.addListener(claimout.btn, 'click', this.btnClaim, featureLayer);
       var unclaimout = create_popup_btn(container, 'unclaim','Unclaim',
-        'Click to remove your claim on a previously claimed area.<br>');
+        'Click to remove your claim on this area.<br>');
         unclaimout.btndom.addListener(unclaimout.btn, 'click', this.btnUnclaim, featureLayer);
       var downloadout = create_popup_btn(container, 'download','Download',
         'Click to download your claimed area.<br>')
         downloadout.btndom.addListener(downloadout.btn, 'click', this.btnDownload, featureLayer);
-      var otherstxtcontainer = L.DomUtil.create('div', 'popuptext hidden otherstext', container)
+      var otherstxtcontainer = L.DomUtil.create('div', 'popuptxt hidden otherstext', container)
         otherstxtcontainer.innerHTML = 'This area is claimed by someone else and is unable to be claimed.'
-      var quarantinetxtcontainer = L.DomUtil.create('div', 'popuptext hidden quarantinetext', container)
-        quarantinetxtcontainer.innerHTML = 'This area is coordinated by a central event.'
-
+      var quarantinetxtcontainer = L.DomUtil.create('div', 'popuptxt hidden quarantinetext', container)
+        quarantinetxtcontainer.innerHTML = 'This area is coordinated by a central event. ' +
+        '<a href="http://www.yes.org.au/centrally_coordinated_door_knocking_events">Click here</a> to go to it.';
       if (feature.properties.claim_status === 'claimed_by_you') {
         L.DomUtil.removeClass(unclaimout.grpdiv, 'hidden');
         L.DomUtil.removeClass(downloadout.grpdiv, 'hidden');
@@ -173,7 +162,8 @@ var makeMap = function(states, stateColors) {
       }
       featureLayer.bindPopup(popup)
 
-    }});
+    }
+  });
 
     return layer;
   };
@@ -242,20 +232,21 @@ var makeMap = function(states, stateColors) {
   });
 
   var legend = L.control({position: 'bottomright'});
+
   legend.onAdd = function(map) {
     var div = L.DomUtil.create('div', 'legend');
     div.innerHTML = [
       '<div><b>This block is claimed by</b></div>',
-      '<i style="background:' + stateColors.claimed_by_you + '"></i><div>Me</div>',
+      '<i style="background:' + stateColors.claimed_by_you.fillColor + '"></i><div>Me</div>',
       '<i style="background:' + stateColors.claimed + '"></i><div>Someone else</div>',
       '<i style="background:' + stateColors.quarantine + '"></i><div>A doorknocking event</div>',
       '<i style="background:' + stateColors.unclaimed + '"></i><div>No one</div>'
     ].join('');
     return div;
   }
+
   legend.addTo(map);
   map.whenReady(updateMap);
-
 }
 
 var windowHeight = function(){
@@ -272,16 +263,11 @@ $('#map').height(windowHeight() - $('.header').height());
 $('#map').width("100%");
 
 var stateColors =  {
-  claimed_by_you: '#9400D3', //Purple
+  claimed_by_you: {"fillColor": "#9400D3", "color": "#111111",
+    "weight": 1, "opacity": 0.65, "fillOpacity": 0.8}, //Purple
   unclaimed: '#FF0000', //Green
   claimed: '#0000FF', //Pink
   quarantine: '#FFFF00', //Pink
 };
 
-var states = {
-  selected: 'selected',
-  unclaimed: 'unclaimed',
-  claimed: 'claimed'
-}
-
-var map = makeMap(states, stateColors);
+var map = makeMap(stateColors);
