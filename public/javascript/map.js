@@ -52,14 +52,10 @@ var makeMap = function(stateColors) {
   var layer = L.geoJson(json,{
     style: function(feature) {
         switch (feature.properties.claim_status) {
-        case 'claimed_by_you': return {"fillColor": "#9400D3", "color": "#111111",
-          "weight": 1, "opacity": 0.65, "fillOpacity": 0.8}
-        case 'claimed': return {"fillColor": "#0000FF", "color": "#111111",
-          "weight": 1, "opacity": 0.65, "fillOpacity": 0.8}
-        case 'quarantine': return {"fillColor": "#0000FF", "color": "#111111",
-          "weight": 1, "opacity": 0.65, "fillOpacity": 0.8}
-        default: return {"fillColor": "#FF0000", "color": "#111111",
-          "weight": 1, "opacity": 0.65, "fillOpacity": 0.2}
+        case 'claimed_by_you': return stateColors.claimed_by_you
+        case 'claimed': return stateColors.claimed
+        case 'quarantine': return stateColors.quarantine
+        default: return stateColors.unclaimed
         }
       },
     onEachFeature: function(feature, featureLayer) {
@@ -97,16 +93,14 @@ var makeMap = function(stateColors) {
         $('.unclaim').removeClass('hidden');
         $('.download').removeClass('hidden');
         $('.claim').addClass('hidden');
-        this.setStyle({"fillColor": "#9400D3", "color": "#111111",
-          "weight": 1, "opacity": 0.65, "fillOpacity": 0.8})
+        this.setStyle(stateColors.claimed)
         $('#load').removeClass('hidden');
         downloadmesh(leaflet_id);
       }
 
       this.btnUnclaim = function (featureLayer) {
         $.post("/unclaim_meshblock/" + this._leaflet_id);
-        this.setStyle({"fillColor": "#FF0000", "color": "#111111",
-          "weight": 1, "opacity": 0.65, "fillOpacity": 0.2})
+        this.setStyle(stateColors.unclaimed)
           $('.unclaim').addClass('hidden');
           $('.download').addClass('hidden');
           $('.claim').removeClass('hidden');
@@ -238,9 +232,9 @@ var makeMap = function(stateColors) {
     div.innerHTML = [
       '<div><b>This block is claimed by</b></div>',
       '<i style="background:' + stateColors.claimed_by_you.fillColor + '"></i><div>Me</div>',
-      '<i style="background:' + stateColors.claimed + '"></i><div>Someone else</div>',
-      '<i style="background:' + stateColors.quarantine + '"></i><div>A doorknocking event</div>',
-      '<i style="background:' + stateColors.unclaimed + '"></i><div>No one</div>'
+      '<i style="background:' + stateColors.claimed.fillColor + '"></i><div>Someone else</div>',
+      '<i style="background:' + stateColors.quarantine.fillColor + '"></i><div>A doorknocking event</div>',
+      '<i style="background:' + stateColors.unclaimed.fillColor + '"></i><div>No one</div>'
     ].join('');
     return div;
   }
@@ -265,9 +259,12 @@ $('#map').width("100%");
 var stateColors =  {
   claimed_by_you: {"fillColor": "#9400D3", "color": "#111111",
     "weight": 1, "opacity": 0.65, "fillOpacity": 0.8}, //Purple
-  unclaimed: '#FF0000', //Green
-  claimed: '#0000FF', //Pink
-  quarantine: '#FFFF00', //Pink
+  unclaimed: {"fillColor": "#FF0000", "color": "#111111",
+    "weight": 1, "opacity": 0.65, "fillOpacity": 0.2}, //Red
+  claimed: {"fillColor": "#0000FF", "color": "#111111",
+    "weight": 1, "opacity": 0.65, "fillOpacity": 0.8}, //Blue
+  quarantine: {"fillColor": "#FFFF00", "color": "#111111",
+    "weight": 1, "opacity": 0.65, "fillOpacity": 0.8}, //Yellow
 };
 
 var map = makeMap(stateColors);

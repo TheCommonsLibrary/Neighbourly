@@ -13,12 +13,10 @@ require 'sinatra/cookies'
 
 require_relative "lib/login_helper"
 require_relative 'lib/view_helper'
-require_relative './services/elastic_search/mesh_block_query'
 require_relative './services/claim_service'
 require_relative './services/geo_service'
-require_relative './models/feature_collection'
+require_relative './services/elastic_search/connection'
 require_relative "models/user"
-require_relative "models/electorate"
 
 Dotenv.load
 enable :sessions
