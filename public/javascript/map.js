@@ -64,7 +64,9 @@ var makeMap = function(stateColors) {
       function downloadmesh (mesh_id) {
         var base64str = $.get('https://4oqtu02x7f.execute-api.ap-southeast-2.amazonaws.com/prod/map?slug=' + mesh_id, function(base64str) {
           //TODO - potentially hit the AWS endpoint directly
-
+          if (base64str.message == "Internal server error") {
+            return alert("This area cannot be downloaded due to a pdf rendering error, please try another area.");
+          };
           //decode base64 string
           var binary = atob(base64str.base64.replace(/\s/g, ''));
           var len = binary.length;
