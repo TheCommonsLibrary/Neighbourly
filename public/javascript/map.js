@@ -274,7 +274,9 @@ var stateColors =  {
 };
 
 $('#faqlink').click(function() {
-  $("#dialog").dialog({minWidth: 500});
+  $("#dialog").dialog({minWidth: 500,
+    beforeClose: function(e,ui){$("#dialog").addClass('hidden');}});
+  $("#dialog").removeClass('hidden');
 });
 
 var map = makeMap(stateColors);
