@@ -222,7 +222,8 @@ var makeMap = function(stateColors) {
         getMeshblockCallback(json);
         last_update_bounds = map.getBounds();
         last_update_centroid = map.getCenter();
-      });
+      })
+      .fail( function() {$('#load').addClass('hidden');} );
     }
     instruct.update();
   };

@@ -206,8 +206,11 @@ get '/meshblocks_bounds' do
 
     #interface with local claims table goes here
     data = lambda_connection.execute(query)
-
-    json get_meshblocks_with_status(data)
+    if data['features'] == nil
+        status 404
+    else
+      json get_meshblocks_with_status(data)
+    end
   end
 end
 
