@@ -63,7 +63,6 @@ var makeMap = function(stateColors) {
 
       function downloadmesh (mesh_id) {
         var base64str = $.get('https://4oqtu02x7f.execute-api.ap-southeast-2.amazonaws.com/prod/map?slug=' + mesh_id, function(base64str) {
-          //TODO - potentially hit the AWS endpoint directly
           if (base64str.message == "Internal server error") {
             return alert("This area cannot be downloaded due to a pdf rendering error, please try another area.");
           };
@@ -142,7 +141,7 @@ var makeMap = function(stateColors) {
         otherstxtcontainer.innerHTML = 'This area is claimed by someone else and is unable to be claimed.'
       var quarantinetxtcontainer = L.DomUtil.create('div', 'popuptxt hidden quarantinetext', container)
         quarantinetxtcontainer.innerHTML = 'This area is coordinated by a central event. ' +
-        '<a href="http://www.yes.org.au/centrally_coordinated_door_knocking_events">Click here</a> to go to it.';
+        '<a href="http://www.yes.org.au/centrally_coordinated_door_knocking_events">Click here</a> to find it.';
       if (feature.properties.claim_status === 'claimed_by_you') {
         L.DomUtil.removeClass(unclaimout.grpdiv, 'hidden');
         L.DomUtil.removeClass(downloadout.grpdiv, 'hidden');
@@ -150,6 +149,10 @@ var makeMap = function(stateColors) {
       }
       else if (feature.properties.claim_status === 'claimed') {
         L.DomUtil.removeClass(otherstxtcontainer, 'hidden');
+        var popup = L.popup({},featureLayer).setContent(container);
+      }
+      else if (feature.properties.claim_status === 'quarantine') {
+        L.DomUtil.removeClass(quarantinetxtcontainer, 'hidden');
         var popup = L.popup({},featureLayer).setContent(container);
       }
       else {
@@ -207,6 +210,7 @@ var makeMap = function(stateColors) {
     var nelat = lat_lng_bnd.getNorthEast().lat;
     var nelng = lat_lng_bnd.getNorthEast().lng;
     //Reload map if zoom not too high
+    //Distance moved is not short
     //and
     //there is no last_update or the current map bounds are not within the last update's
     if(zoom > 14 && (!last_update_bounds || distance_moved > reload_dist) &&

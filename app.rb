@@ -183,8 +183,11 @@ def get_meshblocks_with_status(json)
     elsif claimed_by_you.include? slug["properties"]["slug"]
       json["features"][index]["properties"]["claim_status"] = "claimed_by_you"
     else
+      if json["features"][index]["properties"]["quarantined"] = "true"
+        json["features"][index]["properties"]["claim_status"] = "quarantine"
+      else
       json["features"][index]["properties"]["claim_status"] = "unclaimed"
-      #TODO - add quarantine logic here when it is added to GEOJSON
+      end
     end
   }
   json
