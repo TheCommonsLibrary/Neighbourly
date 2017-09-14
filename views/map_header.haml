@@ -6,7 +6,7 @@
       .welcome-container
         Hi
         .welcome-message #{user_name} ,
-        %a{href: "/faq"}
+        %a#faqlink{href: "/", onclick: "return false;"}
           click here
         for more information about the doorknocking tool
   - if authorised?

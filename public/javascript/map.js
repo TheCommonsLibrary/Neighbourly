@@ -266,4 +266,8 @@ var stateColors =  {
     "weight": 1, "opacity": 0.65, "fillOpacity": 0.8}, //Yellow
 };
 
+$('#faqlink').click(function() {
+  $("#dialog").dialog({minWidth: 500});
+});
+
 var map = makeMap(stateColors);

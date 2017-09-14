@@ -156,12 +156,6 @@ get '/map' do
   end
 end
 
-get '/faq' do
-  authorised do
-    haml :faq, locals: {page: 'faq'}
-  end
-end
-
 get '/logout' do
   session.clear
   flash[:notice] = 'You have been logged out.'
