@@ -178,16 +178,14 @@ def get_meshblocks_with_status(json)
   end
   }
   json["features"].each_with_index { |slug, index|
-    if claimed.include? slug["properties"]["slug"]
+    if json["features"][index]["properties"]["quarantined"] == true
+      json["features"][index]["properties"]["claim_status"] = "quarantine"
+    elsif claimed.include? slug["properties"]["slug"]
       json["features"][index]["properties"]["claim_status"] = "claimed"
     elsif claimed_by_you.include? slug["properties"]["slug"]
       json["features"][index]["properties"]["claim_status"] = "claimed_by_you"
     else
-      if json["features"][index]["properties"]["quarantined"] == true
-        json["features"][index]["properties"]["claim_status"] = "quarantine"
-      else
-        json["features"][index]["properties"]["claim_status"] = "unclaimed"
-      end
+      json["features"][index]["properties"]["claim_status"] = "unclaimed"
     end
   }
   json
