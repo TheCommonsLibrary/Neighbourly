@@ -136,6 +136,11 @@
   z-index: 1;
 }
 
+#dialog {
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
 .select-electorate .spacer {
 	height: 16em;
 }

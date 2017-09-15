@@ -274,7 +274,7 @@ var stateColors =  {
 };
 
 function openfaq(){
-  $("#dialog").dialog({minWidth: 500,
+  $("#dialog").dialog({minWidth: 500, height: 300,
     beforeClose: function(e,ui){$("#dialog").addClass('hidden');}});
   $("#dialog").removeClass('hidden');
 };
