@@ -223,7 +223,9 @@ var makeMap = function(stateColors) {
         last_update_bounds = map.getBounds();
         last_update_centroid = map.getCenter();
       })
-      .fail( function() {$('#load').addClass('hidden');} );
+      .fail( function() {
+        $('#load').addClass('hidden');
+      } );
     }
     instruct.update();
   };

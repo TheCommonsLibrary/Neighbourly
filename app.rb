@@ -56,7 +56,8 @@ get '/' do
     if ENV['NODE_ENV'] == "development" || ENV['PASS_THRU_ONLY'] == "False"
       haml :main, locals: {page: 'main', body: 'main'}
     else
-      redirect 'http://yes.org.au/'
+      put "Redirected to yes.org doorknock"
+      redirect 'http://yes.org.au/doorknock'
     end
   end
 end
@@ -90,8 +91,8 @@ def login_attempt
     fields.each do |key_get|
       user_params[key_get] = cookies[key_get]
     end
-    create_user(user_params)
-    redirect "/map"
+  create_user(user_params)
+  redirect "/map"
 
   end
 end
