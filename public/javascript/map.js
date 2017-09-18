@@ -176,7 +176,7 @@ var makeMap = function(stateColors) {
 
   var instruct = L.control();
   instruct.onAdd = function(map) {
-    this._div = L.DomUtil.create('div', 'instruct'); // create a div with a class "instruct"
+    this._div = L.DomUtil.create('div', 'instruct');
     this._div.innerHTML = "Zoom in further to load doorknockable areas.";
     this.update();
     return this._div;
@@ -266,11 +266,11 @@ var stateColors =  {
   claimed_by_you: {"fillColor": "#9d5fa7", "color": "#111111",
     "weight": 1, "opacity": 0.65, "fillOpacity": 0.8}, //Purple
   unclaimed: {"fillColor": "#ffc746", "color": "#111111",
-    "weight": 1, "opacity": 0.65, "fillOpacity": 0.2}, //Red
+    "weight": 1, "opacity": 0.65, "fillOpacity": 0.2}, //Yellow
   claimed: {"fillColor": "#d5545a", "color": "#111111",
-    "weight": 1, "opacity": 0.65, "fillOpacity": 0.8}, //Blue
+    "weight": 1, "opacity": 0.65, "fillOpacity": 0.8}, //Red
   quarantine: {"fillColor": "#6dbd4b", "color": "#111111",
-    "weight": 1, "opacity": 0.65, "fillOpacity": 0.8}, //Yellow
+    "weight": 1, "opacity": 0.65, "fillOpacity": 0.8}, //Green
 };
 
 function openfaq(){
