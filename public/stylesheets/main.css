@@ -17,6 +17,10 @@
   color: #555;
 }
 
+#address_search {
+  font-size: 16px;
+}
+
 .nav-top-right {
   float: right;
   margin-top: 31px;

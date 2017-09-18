@@ -1,18 +1,19 @@
-.container-fluid
-  .panel-half-relative.panel-30.panel-pad-sides.padtopmore.padbottommore.logo-outer
-    %a{href: "http://yes.org.au", class: "logo-link"}
-      %img.logo#logo-image{src: '/images/yes_logo.png'}
+%meta#viewport{content: "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"}
+  .container-fluid
+    .panel-half-relative.panel-30.panel-pad-sides.padtopmore.padbottommore.logo-outer
+      %a{href: "http://yes.org.au", class: "logo-link"}
+        %img.logo#logo-image{src: '/images/yes_logo.png'}
+      - if authorised?
+        .welcome-container
+          Hi
+          .welcome-message #{user_name} ,
+          %a#faqlink{href: "/", onclick: "return false;"}
+            click here
+          for more information about the doorknocking tool
     - if authorised?
-      .welcome-container
-        Hi
-        .welcome-message #{user_name} ,
-        %a#faqlink{href: "/", onclick: "return false;"}
-          click here
-        for more information about the doorknocking tool
-  - if authorised?
-    .panel-half-relative.panel-70.panel-pad-sides.padtopmore.padbottommore.form-outer
-      %form#address_search_form
-        .input-group
-          %input#address_search.text.form-control{:autocomplete => "off", :placeholder => "Enter your postcode", :type => "search"}/
-          .input-group-btn
-            %button#postcode-button#address_search_button.btn.btn-custom.button-light-blue{:name => "search", :type => "submit"} Go To Postcode
+      .panel-half-relative.panel-70.panel-pad-sides.padtopmore.padbottommore.form-outer
+        %form#address_search_form
+          .input-group
+            %input#address_search.text.form-control{:autocomplete => "off", :placeholder => "Enter your postcode", :type => "search"}/
+            .input-group-btn
+              %button#postcode-button#address_search_button.btn.btn-custom.button-light-blue{:name => "search", :type => "submit"} Go To Postcode
