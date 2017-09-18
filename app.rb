@@ -56,7 +56,7 @@ get '/' do
     if ENV['NODE_ENV'] == "development" || ENV['PASS_THRU_ONLY'] == "False"
       haml :main, locals: {page: 'main', body: 'main'}
     else
-      puts "Redirected to yes.org.au doorknock"
+      puts "Redirected to yes.org.au/doorknocking"
       puts request.env['HTTP_REFERER']
       redirect 'http://yes.org.au/doorknocking'
     end
