@@ -58,7 +58,7 @@ get '/' do
     else
       puts "Redirected to yes.org.au doorknock"
       puts request.env['HTTP_REFERER']
-      redirect 'http://yes.org.au/doorknock'
+      redirect 'http://yes.org.au/doorknocking'
     end
   end
 end
