@@ -146,6 +146,16 @@ select:focus,
   overflow-x: hidden;
 }
 
+.ui-dialog-title {
+  font-size: 36px;
+}
+
+.ui-dialog-titlebar-close {
+  height: 50px !important;
+  width: 50px !important;
+  top: 30% !important;
+}
+
 .select-electorate .spacer {
 	height: 16em;
 }
