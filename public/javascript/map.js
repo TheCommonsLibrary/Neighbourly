@@ -277,8 +277,9 @@ var stateColors =  {
 
 function openfaq(){
   $("#dialog").dialog({minWidth: 800, width: 800,
-    height: windowHeight() - $('.header').height() - 200, position:[200,200],
+    height: windowHeight() - $('.header').height() - 200,
     beforeClose: function(e,ui){$("#dialog").addClass('hidden');}});
+  $("#dialog").dialog({position: { my: "center top", at: "center top+15%", of: window }});
   $("#dialog").removeClass('hidden');
 };
 
@@ -288,4 +289,6 @@ $('#faqlink').click(function() {
 
 var map = makeMap(stateColors);
 
-openfaq();
+$(window).load(function(){
+  openfaq();
+});
