@@ -277,7 +277,7 @@ var stateColors =  {
 
 function openfaq(){
   $("#dialog").dialog({minWidth: 800, width: 800,
-    height: windowHeight() - $('.header').height() - 200,
+    height: Math.min(windowHeight() - $('.header').height() - 200,800),
     beforeClose: function(e,ui){$("#dialog").addClass('hidden');}});
   $("#dialog").dialog({position: { my: "center top", at: "center top+15%", of: window }});
   $("#dialog").removeClass('hidden');

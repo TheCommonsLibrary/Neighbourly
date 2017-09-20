@@ -4,6 +4,27 @@
   display: inline-block;
 }
 
+
+.faq-intro {
+    font-size: 36px;
+    font-size: 2vw;
+}
+
+.faq-qa p {
+    font-size: 36px;
+    font-size: 2vw;
+}
+
+.question {
+  font-weight:600;
+}
+
+.welcome-container {
+    font-size: 24px;
+    font-size: 2vw;
+}
+
+
 .flash.notice {
   margin: 20px auto;
   width: 500px;
