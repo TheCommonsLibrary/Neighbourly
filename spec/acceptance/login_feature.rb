@@ -30,7 +30,7 @@ describe 'Login' do
 			find_button('login-button').click
 
 			expect(current_url).to eq("http://localhost:8080/map")
-			click_link('logout')
+			visit 'http://localhost:8080/logout'
 		end
 
 	end
@@ -40,7 +40,7 @@ describe 'Login' do
 		it 'should redirect to /map' do
 			login
 			expect(current_url).to eq("http://localhost:8080/map")
-			click_link('logout')
+			visit 'http://localhost:8080/logout'
 		end
 	end
 

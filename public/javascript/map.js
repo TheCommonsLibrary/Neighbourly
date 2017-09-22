@@ -120,6 +120,7 @@ var makeMap = function(stateColors) {
           var btndiv = L.DomUtil.create('div', 'popupbutton btn' + div_class, grpdiv)
           var btn = L.DomUtil.create('button', '', btndiv)
             btn.setAttribute('type', 'button')
+            btn.setAttribute('name', div_class)
             btn.innerHTML = btn_text_inner
           var btndom = L.DomEvent
             btndom.addListener(btn, 'click', L.DomEvent.stopPropagation)
