@@ -6,6 +6,14 @@ module Sinatra
       def body_class(body)
         body ? body : nil
       end
+
+      def versioned_stylesheet(stylesheet)
+        "/stylesheets/#{stylesheet}.css?" + File.mtime(File.join("public", "stylesheets", "#{stylesheet}.css")).to_i.to_s
+      end
+
+      def versioned_javascript(js)
+        "/javascript/#{js}.js?" + File.mtime(File.join("public", "javascript", "#{js}.js")).to_i.to_s
+      end
     end
 
     def self.registered(app)
