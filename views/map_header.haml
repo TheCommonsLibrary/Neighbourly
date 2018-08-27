@@ -1,12 +1,12 @@
 .container-fluid
   .panel-half-relative.panel-30.panel-pad-sides.padtopmore.padbottommore.logo-outer
-    %a{href: "http://getupturf.herokuapp.com/", class: "logo-link"}
-      %img.logo#logo-image{src: '/images/logo.svg'}
+    %a{href: "/", class: "logo-link"}
+      %img.logo#logo-image{src: '/images/map-logo.png'}
     - if authorised?
       %h2
         .welcome-container
           Hi
-          .welcome-message #{user_name} ,
+          .welcome-message #{user_name},
           %a#faqlink{href: "/", onclick: "return false;"}
             click here
           for more information about the doorknocking tool

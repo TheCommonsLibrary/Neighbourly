@@ -1,16 +1,15 @@
 %html
   %head
-    %meta{:property => "og:title", :content => "GetUp Doorknocking"}
-    %meta{:property => "og:description", :content => "GetUp doorknocking map page."}
-    %meta{:property => "og:description", :content => "/images/logo.svg"}
+    %meta{:property => "og:title", :content => ENV['APP_NAME']}
+    %meta{:property => "og:description", :content => ENV['APP_DESCRIPTION']}
     %script{:src => "//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js", :type => "text/javascript"}
-    %link{:href => "img/favicon.ico", :rel => "icon", :type => "img/ico"}
+    %link{:href => "favicon.ico", :rel => "icon", :type => "img/ico"}
     %link{:href => versioned_stylesheet('normalize'), :rel => "stylesheet"}/
     %link{:href => versioned_stylesheet('skeleton'), :rel => "stylesheet"}/
     %link{:href => versioned_stylesheet('main'), :rel => "stylesheet"}/
     / = File.read "./public/facebook_pixel.html"
     / = File.read "./public/google_tag.html"
-    %title GetUp! Doorknocking
+    %title= ENV['APP_NAME']
     - if page == 'map'
       %script{src: 'https://code.jquery.com/ui/1.12.1/jquery-ui.js'}
       %script{:src => "https://unpkg.com/leaflet@0.7.7/dist/leaflet.js"}

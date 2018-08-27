@@ -1,5 +1,6 @@
 .logo-outer {
   min-height: 108px;
+  margin-top: 10px;
 }
 
 .form-outer {
@@ -12,6 +13,5 @@ form {
 }
 
 .welcome-container {
-  margin-top: 30px;
   margin-left: 130px;
 }

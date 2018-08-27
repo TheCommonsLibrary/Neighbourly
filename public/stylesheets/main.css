@@ -117,8 +117,14 @@ select:focus,
 }
 
 .main {
-  background-image: url('/images/background-home-image.jpg');
+  background-image: url('/images/home-background.jpg');
   background-size: 100%;
+}
+
+.home-logo {
+  margin: 15px 20px;
+  width: 120px;
+  height: auto;
 }
 
 .logo {

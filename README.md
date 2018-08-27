@@ -17,6 +17,16 @@
 5. Create a new `.env` file in the project root and set the environment variables according to the examples in .env.example.
 6. Run `ruby app.rb` to start the application
 
+### Updating the design to suit your organisation
+
+1. Inside the `public/images` folder, replace the `home-background.jpg` with a photo of your choice. This is the image used on the main login screen.
+2. Inside the `public/images` folder, replace the `home-logo.png` with the logo you would like to appear in the top-left of the main login screen.
+  - Ideally you should use the inverse version of your logo (e.g. white, with a transparent background), given this logo appears on top of a photo.
+  - A square version of your logo will work well. For reference, the current example logo has a 5:4 aspect ratio.
+3. Inside the `public/images` folder, replace the `map-logo.png` with your primary logo to appear in the top-left of the main map screen.
+  - A square version of your logo will work well. For reference, the current example logo has a 5:4 aspect ratio.
+4. Update the `favicon.ico` image inside the `public` folder.
+
 ### Deployment
 
 1. Download and install the [Heroku toolbelt](https://devcenter.heroku.com/articles/heroku-cli#download-and-install). You can skip this step if you have previously installed this tool on your computer.
