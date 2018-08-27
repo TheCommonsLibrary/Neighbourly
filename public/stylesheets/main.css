@@ -129,7 +129,7 @@ select:focus,
 
 .logo {
   width: 100px;
-  height: 88px;
+  height: auto;
 }
 
 .errors {
