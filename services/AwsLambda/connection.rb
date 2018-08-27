@@ -3,7 +3,7 @@ require 'httparty'
 module AwsLambda
   class Connection
     def initialize
-      @lambda_url = ENV['LAMBDA_BASE_URL']
+      @lambda_url = ENV['LAMBDA_BASE_URL'] + '/territories/'
     end
 
     def execute(query)

@@ -1,4 +1,4 @@
-.map#map{"data-central-events-url": ENV['CENTRALLY_COORDINATED_EVENTS_URL'], "data-is-admin": is_admin?(user_email).to_s}
+.map#map{"data-central-events-url": ENV['CENTRALLY_COORDINATED_EVENTS_URL'], "data-is-admin": is_admin?(user_email).to_s, "data-lambda-base-url": ENV['LAMBDA_BASE_URL']}
 .div.hidden{id: "dialog", title: "FAQ"}
   .faq-intro
     %p Welcome to the doorknocking tool!

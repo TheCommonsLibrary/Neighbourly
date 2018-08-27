@@ -62,7 +62,8 @@ var makeMap = function(stateColors) {
       featureLayer._leaflet_id = feature.properties.slug;
 
       function downloadmesh (mesh_id) {
-        var base64str = $.get('https://4oqtu02x7f.execute-api.ap-southeast-2.amazonaws.com/prod/map?slug=' + mesh_id, function(base64str) {
+        var lambda_base_url = $("#map").data("data-lambda-base-url");
+        var base64str = $.get(lambda_base_url + '/map?slug=' + mesh_id, function(base64str) {
           if (base64str.message == "Internal server error") {
             return alert("This area cannot be downloaded due to a pdf rendering error, please try another area.");
           };
