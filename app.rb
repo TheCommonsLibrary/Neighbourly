@@ -22,19 +22,12 @@ Dotenv.load
 enable :sessions
 set :session_secret, ENV["SECRET_KEY_BASE"]
 
-def set_ext_cookie_headers
-  headers['Access-Control-Allow-Origin'] = 'www.yes.org.au'
-  headers['Access-Control-Allow-Credentials'] = 'true'
-  headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE'
-  headers['Access-Control-Allow-Headers'] = 'Content-Type, *'
-end
-
 def test_db_connection
-  Sequel.connect(ENV['SNAP_DB_PG_URL'] || "postgres://localhost/walklist_test")
+  Sequel.connect(ENV['SNAP_DB_PG_URL'] || "postgres://localhost/neighbourly_test")
 end
 
 configure do
-  db = Sequel.connect('postgres://localhost/walklist')
+  db = Sequel.connect('postgres://localhost/neighbourly')
   set :db, db
 end
 
@@ -53,13 +46,7 @@ get '/' do
   if authorised?
     redirect '/map'
   else
-    if ENV['NODE_ENV'] == "development" || ENV['PASS_THRU_ONLY'] == "False"
-      haml :main, locals: {page: 'main', body: 'main'}
-    else
-      puts "Redirected to yes.org.au/doorknocking"
-      puts request.env['HTTP_REFERER']
-      redirect 'http://yes.org.au/doorknocking'
-    end
+    haml :main, locals: {page: 'main', body: 'main'}
   end
 end
 
@@ -99,7 +86,6 @@ def login_attempt
 end
 
 get '/login' do
-  set_ext_cookie_headers
   login_attempt
 end
 
@@ -108,12 +94,7 @@ post '/login' do
 end
 
 get "/user_details" do
-  #Only to be enabled if pass thru isn't working
-  if ENV['NODE_ENV'] == "development" || ENV['PASS_THRU_ONLY'] == "False"
-    haml :user_details, locals: {page: "user_details", email: params[:email] }
-  else
-    redirect 'http://yes.org.au'
-  end
+  haml :user_details, locals: {page: "user_details", email: params[:email] }
 end
 
 def create_user(user_params)
