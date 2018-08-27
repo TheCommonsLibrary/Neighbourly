@@ -152,16 +152,19 @@ def get_meshblocks_with_status(json)
   end
   claim_service = ClaimService.new(settings.db)
   claimed = Array.new
+  centrally_claimed = Array.new
   claimed_by_you = Array.new
-  claim_service.get_mesh_blocks(slugs).each { |claim|
-  if claim[:mesh_block_claimer] != session[:user_email]
-    claimed << claim[:mesh_block_slug]
-  else
-    claimed_by_you << claim[:mesh_block_slug]
+  claim_service.get_mesh_blocks(slugs).each do |claim|
+    if is_admin?(claim[:mesh_block_claimer])
+      centrally_claimed << claim[:mesh_block_slug]
+    elsif claim[:mesh_block_claimer] == session[:user_email]
+      claimed_by_you << claim[:mesh_block_slug]
+    else
+      claimed << claim[:mesh_block_slug]
+    end
   end
-  }
   json["features"].each_with_index { |slug, index|
-    if json["features"][index]["properties"]["quarantined"] == true
+    if centrally_claimed.include? slug["properties"]["slug"]
       json["features"][index]["properties"]["claim_status"] = "quarantine"
     elsif claimed.include? slug["properties"]["slug"]
       json["features"][index]["properties"]["claim_status"] = "claimed"
@@ -217,7 +220,11 @@ post '/unclaim_meshblock/:id' do
   authorised do
     claim_service = ClaimService.new(settings.db)
     #TODO - return error on fail
-    claim_service.unclaim(params['id'], user_email)
+    if is_admin?(user_email)
+      claim_service.admin_unclaim(params['id'])
+    else
+      claim_service.unclaim(params['id'], user_email)
+    end
     status 200
   end
 end

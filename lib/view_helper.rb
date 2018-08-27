@@ -14,6 +14,11 @@ module Sinatra
       def versioned_javascript(js)
         "/javascript/#{js}.js?" + File.mtime(File.join("public", "javascript", "#{js}.js")).to_i.to_s
       end
+
+      def is_admin?(email)
+        domains = ENV['PRIMARY_DOMAINS'].split(",").map(&:strip)
+        domains.any? { |domain| email.include?(domain) }
+      end
     end
 
     def self.registered(app)

@@ -21,7 +21,20 @@ class ClaimService
     .delete
   end
 
+  def admin_unclaim(mesh_block)
+    domains = ENV['PRIMARY_DOMAINS'].split(",").map(&:strip)
+    domain_conditions = domains.map{ |domain|
+      "lower(mesh_block_claimer) ILIKE '%#{domain}'"
+    }.join(' OR ')
+
+    @db[:claims]
+    .where(mesh_block_slug: mesh_block)
+    .where(domain_conditions)
+    .delete
+  end
+
   private
+
   def claimer_details(email)
     @db[:users].where(email: email).first
   end

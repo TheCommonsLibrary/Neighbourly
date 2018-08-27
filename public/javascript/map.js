@@ -94,7 +94,11 @@ var makeMap = function(stateColors) {
         $('.unclaim').removeClass('hidden');
         $('.download').removeClass('hidden');
         $('.claim').addClass('hidden');
-        this.setStyle(stateColors.claimed_by_you)
+        if($("#map").data("is-admin") === true){
+          this.setStyle(stateColors.quarantine)
+        } else {
+          this.setStyle(stateColors.claimed_by_you)
+        }
         $('#load').removeClass('hidden');
         downloadmesh(leaflet_id);
       }
@@ -142,7 +146,7 @@ var makeMap = function(stateColors) {
         otherstxtcontainer.innerHTML = 'This area is claimed by someone else and is unable to be claimed.'
       var quarantinetxtcontainer = L.DomUtil.create('div', 'popuptxt hidden quarantinetext', container)
         quarantinetxtcontainer.innerHTML = 'This area is coordinated by a central event. ' +
-        '<a href="http://www.yes.org.au/centrally_coordinated_door_knocking_events">Click here</a> to find it.';
+        '<a href="' + $("#map").data("central-events-url") + '" target="_blank">Click here</a> to find it.';
       if (feature.properties.claim_status === 'claimed_by_you') {
         L.DomUtil.removeClass(unclaimout.grpdiv, 'hidden');
         L.DomUtil.removeClass(downloadout.grpdiv, 'hidden');
@@ -153,7 +157,12 @@ var makeMap = function(stateColors) {
         var popup = L.popup({},featureLayer).setContent(container);
       }
       else if (feature.properties.claim_status === 'quarantine') {
-        L.DomUtil.removeClass(quarantinetxtcontainer, 'hidden');
+        if ($("#map").data("is-admin") === true) {
+          L.DomUtil.removeClass(unclaimout.grpdiv, 'hidden');
+          L.DomUtil.removeClass(downloadout.grpdiv, 'hidden');
+        } else {
+          L.DomUtil.removeClass(quarantinetxtcontainer, 'hidden');
+        }
         var popup = L.popup({},featureLayer).setContent(container);
       }
       else {
