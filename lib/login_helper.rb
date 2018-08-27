@@ -10,11 +10,13 @@ module Sinatra
       def user_name
         # so that we dont have to do db calls every time we need a different attribute of the logged in user
         session[:user] = settings.db[:users].where(email: user_email).first if session[:user].nil?
-        session[:user][:name].split()[0]
+        session[:user][:first_name].split()[0]
       end
 
       def authorise(email)
-        session[:user_email] = email
+        #debug
+        p "Auth attempt with: #{email}"
+        session[:user_email] = email.downcase
       end
 
       def authorised?

@@ -1,9 +1,29 @@
 .welcome-message {
   color: #5b5c60;
   font-weight: bold;
-  margin-right: 16px;
   display: inline-block;
 }
+
+
+.faq-intro {
+    font-size: 36px;
+    font-size: 2vw;
+}
+
+.faq-qa p {
+    font-size: 36px;
+    font-size: 2vw;
+}
+
+.question {
+  font-weight:600;
+}
+
+.welcome-container {
+    font-size: 24px;
+    font-size: 2vw;
+}
+
 
 .flash.notice {
   margin: 20px auto;
@@ -16,6 +36,11 @@
 
 .grey {
   color: #555;
+}
+
+select:focus,
+#address_search {
+  font-size: 36px;
 }
 
 .nav-top-right {
@@ -98,7 +123,7 @@
 
 .logo {
   width: 100px;
-  margin: 20px 0 0 20px;
+  height: 88px;
 }
 
 .errors {
@@ -135,6 +160,21 @@
 	height: 50em;
 	width: 100%;
   z-index: 1;
+}
+
+#dialog {
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.ui-dialog-title {
+  font-size: 36px;
+}
+
+.ui-dialog-titlebar-close {
+  height: 50px !important;
+  width: 50px !important;
+  top: 30% !important;
 }
 
 .select-electorate .spacer {
@@ -197,7 +237,7 @@
 
 .instruct {
     padding: 6px 8px;
-    font: 14px/16px Arial, Helvetica, sans-serif;
+    font: 32px/36px Arial, Helvetica, sans-serif;
     background: white;
     background: rgba(255,255,255,0.9);
     box-shadow: 0 0 15px rgba(0,0,0,0.2);
@@ -212,19 +252,31 @@
   font-size: large;
 }
 
+.popuptxt {
+  font-size: large;
+  text-align: center;
+}
+
+.popupbutton {
+  font-size: large;
+  display: flex;
+  justify-content: center;
+}
+
 .legend {
     padding: 6px 8px;
-    line-height: 18px;
+    line-height: 20px;
     color: #555;
-    width: 75%;
+    width: 120%;
     background: rgba(255,255,255,0.9);
     box-shadow: 0 0 15px rgba(0,0,0,0.2);
     border-radius: 5px;
     margin-right: 10px;
     margin-bottom: 10px;
+    font-weight: bold;
 }
 .legend i {
-    width: 18px;
+    width: 30px;
     height: 18px;
     float: left;
     margin-right: 0.7em;

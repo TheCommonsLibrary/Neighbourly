@@ -2,10 +2,17 @@ require 'capybara'
 require 'capybara/dsl'
 require 'capybara/rspec'
 
+#TODO - MONDAY FIX TESTS!
+#	modified:   spec/acceptance/download_feature.rb
+#	modified:   spec/acceptance/lib/login_helpers.rb
+#	modified:   spec/acceptance/login_feature.rb
+
 shared_context "valid login" do
   before(:all) {
     @db = RSpec.configuration.db
-    @db[:users].insert(:email => 'existuser@test.com', :name => 'Exist User', :organisation => 'Test', :phone => '123', :created_at => Time.now)
+    @db[:users].insert(:email => 'existuser@test.com', :first_name => 'Exist', \
+    :last_name => 'User', :postcode => '2042', \
+    :phone => '123', :created_at => Time.now)
   }
 
   def login

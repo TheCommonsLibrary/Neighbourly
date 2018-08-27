@@ -1,183 +1,256 @@
-var makeMap = function(states, stateColors) {
+var makeMap = function(stateColors) {
   var map = L.map('map');
 
-  var showAustralia = function() {
-    var australia_coord = [-29.8650, 131.2094];
-    map.setView(australia_coord, 4);
-    $('.map-blocker').removeClass('hidden')
-  };
-
-  showAustralia();
+  var mesh_layer; //Rendered map
+  var last_update_bounds;
+  var last_update_centroid;
 
   var tileLayer = L.tileLayer('http://{s}.tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
   }).addTo(map);
 
-  var legend = L.control({position: 'bottomright'});
-  legend.onAdd = function(map) {
-    var div = L.DomUtil.create('div', 'legend');
-    div.innerHTML = [
-      '<b>This block will be walked by</b>',
-      '<i style="background:' + stateColors.selected + '"></i><div>Me</div>',
-      '<i style="background:' + stateColors.claimed + '"></i><div>Someone else</div>',
-      '<i style="background:' + stateColors.unclaimed + '"></i><div>No one</div>'
-    ].join('');
-    return div;
-  }
-  legend.addTo(map);
+  $('#address_search_form').submit(function(event) {
+    event.preventDefault();
+    FitPcode($('#address_search').val());
+  });
+
+  var FitPcode = function(pcode) {
+    $.getJSON('/pcode_get_bounds?pcode=' + pcode, function(json) {
+      if (json) {
+      map.fitBounds([[json.swlat,json.swlng],[json.nelat,json.nelng]])
+    }
+    else {alert("Postcode not found");}
+    });
+  };
+
+  var FindLocation = function() {
+    var lat = Cookies.get("lat");
+    var lng = Cookies.get("lng");
+    var pcode = Cookies.get("postcode");
+    if (lat && lng) {
+      var zoom = Cookies.set("zoom");
+        if (zoom) {
+        map.setView([lat,lng],zoom)
+        }
+        else {
+          map.setView([lat,lng],15)
+        }
+    }
+    else if (pcode) {
+      FitPcode(pcode)
+    }
+    else {
+      var australia_coord = [-29.8650, 131.2094];
+      map.setView(australia_coord, 5);
+    }
+  };
+
+  FindLocation();
+
+  function addGeoJsonProperties(json) {
+
+  var layer = L.geoJson(json,{
+    style: function(feature) {
+        switch (feature.properties.claim_status) {
+        case 'claimed_by_you': return stateColors.claimed_by_you
+        case 'claimed': return stateColors.claimed
+        case 'quarantine': return stateColors.quarantine
+        default: return stateColors.unclaimed
+        }
+      },
+    onEachFeature: function(feature, featureLayer) {
+      featureLayer._leaflet_id = feature.properties.slug;
+
+      function downloadmesh (mesh_id) {
+        var base64str = $.get('https://4oqtu02x7f.execute-api.ap-southeast-2.amazonaws.com/prod/map?slug=' + mesh_id, function(base64str) {
+          if (base64str.message == "Internal server error") {
+            return alert("This area cannot be downloaded due to a pdf rendering error, please try another area.");
+          };
+          //decode base64 string
+          var binary = atob(base64str.base64.replace(/\s/g, ''));
+          var len = binary.length;
+          var buffer = new ArrayBuffer(len);
+          var view = new Uint8Array(buffer);
+          for (var i = 0; i < len; i++) {
+            view[i] = binary.charCodeAt(i);
+          }
+
+          //create the blob object
+          var blob = new Blob([view], {type: "application/pdf"});
+
+          //create clickable URL for download
+          var url = window.URL.createObjectURL(blob);
+          var a = document.createElement('a');
+          a.href = url;
+          a.download = mesh_id + '.pdf';
+          a.click();
+          $('#load').addClass('hidden');
+        })
+      };
+
+      this.btnClaim = function (featureLayer) {
+        var leaflet_id = this._leaflet_id;
+        $.post("/claim_meshblock/" + leaflet_id);
+        $('.unclaim').removeClass('hidden');
+        $('.download').removeClass('hidden');
+        $('.claim').addClass('hidden');
+        this.setStyle(stateColors.claimed_by_you)
+        $('#load').removeClass('hidden');
+        downloadmesh(leaflet_id);
+      }
+
+      this.btnUnclaim = function (featureLayer) {
+        $.post("/unclaim_meshblock/" + this._leaflet_id);
+        this.setStyle(stateColors.unclaimed)
+          $('.unclaim').addClass('hidden');
+          $('.download').addClass('hidden');
+          $('.claim').removeClass('hidden');
+      }
+
+      this.btnDownload = function (featureLayer) {
+        var leaflet_id = this._leaflet_id;
+        $('#load').removeClass('hidden');
+        downloadmesh(leaflet_id);
+      }
+
+      function create_popup_btn(container, div_class, btn_text_inner, faq_text_inner) {
+          var grpdiv = L.DomUtil.create('div', 'popupgrp hidden ' + div_class, container)
+          var txtdiv = L.DomUtil.create('div', 'popuptxt txt' + div_class, grpdiv)
+            txtdiv.innerHTML = faq_text_inner
+          var btndiv = L.DomUtil.create('div', 'popupbutton btn' + div_class, grpdiv)
+          var btn = L.DomUtil.create('button', '', btndiv)
+            btn.setAttribute('type', 'button')
+            btn.setAttribute('name', div_class)
+            btn.innerHTML = btn_text_inner
+          var btndom = L.DomEvent
+            btndom.addListener(btn, 'click', L.DomEvent.stopPropagation)
+            btndom.addListener(btn, 'click', L.DomEvent.preventDefault)
+            return { grpdiv, btn, btndom }
+        };
+
+      var container = L.DomUtil.create('div')
+      var claimout = create_popup_btn(container, 'claim','Claim + Download',
+        'Click to claim area and download PDF of addresses to doorknock.<br>');
+        claimout.btndom.addListener(claimout.btn, 'click', this.btnClaim, featureLayer);
+      var unclaimout = create_popup_btn(container, 'unclaim','Unclaim',
+        'Click to remove your claim on this area.<br>');
+        unclaimout.btndom.addListener(unclaimout.btn, 'click', this.btnUnclaim, featureLayer);
+      var downloadout = create_popup_btn(container, 'download','Download',
+        'Click to download your claimed area.<br>')
+        downloadout.btndom.addListener(downloadout.btn, 'click', this.btnDownload, featureLayer);
+      var otherstxtcontainer = L.DomUtil.create('div', 'popuptxt hidden otherstext', container)
+        otherstxtcontainer.innerHTML = 'This area is claimed by someone else and is unable to be claimed.'
+      var quarantinetxtcontainer = L.DomUtil.create('div', 'popuptxt hidden quarantinetext', container)
+        quarantinetxtcontainer.innerHTML = 'This area is coordinated by a central event. ' +
+        '<a href="http://www.yes.org.au/centrally_coordinated_door_knocking_events">Click here</a> to find it.';
+      if (feature.properties.claim_status === 'claimed_by_you') {
+        L.DomUtil.removeClass(unclaimout.grpdiv, 'hidden');
+        L.DomUtil.removeClass(downloadout.grpdiv, 'hidden');
+        var popup = L.popup({},featureLayer).setContent(container);
+      }
+      else if (feature.properties.claim_status === 'claimed') {
+        L.DomUtil.removeClass(otherstxtcontainer, 'hidden');
+        var popup = L.popup({},featureLayer).setContent(container);
+      }
+      else if (feature.properties.claim_status === 'quarantine') {
+        L.DomUtil.removeClass(quarantinetxtcontainer, 'hidden');
+        var popup = L.popup({},featureLayer).setContent(container);
+      }
+      else {
+        L.DomUtil.removeClass(claimout.grpdiv, 'hidden');
+        var popup = L.popup({},featureLayer).setContent(container);
+      }
+      featureLayer.bindPopup(popup)
+
+    }
+  });
+
+    return layer;
+  };
+
+  function getMeshblockCallback(json) {
+    if (mesh_layer) {map.removeLayer(mesh_layer)};
+    mesh_layer = addGeoJsonProperties(json);
+    mesh_layer.addTo(map);
+    $('#load').addClass('hidden');
+  };
 
   var instruct = L.control();
   instruct.onAdd = function(map) {
-    this._div = L.DomUtil.create('div', 'instruct hidden'); // create a div with a class "instruct"
+    this._div = L.DomUtil.create('div', 'instruct');
+    this._div.innerHTML = "Zoom in further to load doorknockable areas.";
     this.update();
     return this._div;
   }
 
-  instruct.update = function(properties) {
-    if (properties) {
-      var hoverText = '<span class="text hover-slug">Block ID: <strong>' + properties.slug + '</strong></span>';
-      if(properties.state === states.unclaimed) {
-        hoverText += '<div class="text"><b>No one</b> will door knock this area.<br/><b>Click</b> if you want to door knock it.</div>';
-      } else if(properties.state === states.selected && properties.db_state !== states.claimed) {
-        hoverText += '<div class="text"><b>You</b> will door knock this area.<br/><b>Click</b> if you no longer want to door knock the area.</div>';
-      } else {
-        hoverText += '<div class="text"><b>' + properties.claimedBy.organisation + '</b> will door knock this area.<br/>'
-          + '<br>Contact Details:<br>' + properties.claimedBy.name + '<br>' + properties.claimedBy.email + '<br>' + properties.claimedBy.phone
-          + '<br><br>Click if you just want to download the walk list.</div>';
-      }
-      this._div.innerHTML = hoverText;
-    } else {
-      this._div.innerHTML = "Hover over an area to see details";
-    }
+  instruct.update = function() {
+    $(".instruct").toggleClass('hidden', map.getZoom() > 14)
   }
+
   instruct.addTo(map);
 
-  var styleFor = function(feature) {
-    var color = stateColors.unclaimed
-    if (feature.properties.state === states.selected) {
-      color = stateColors.selected
-    } else if (feature.properties.state === states.claimed) {
-      color = stateColors.claimed
+  function updateMap() {
+    var lat_lng_bnd = map.getBounds();
+    var lat_lng_centroid = map.getCenter();
+    Cookies.set("lat",lat_lng_centroid.lat);
+    Cookies.set("lng",lat_lng_centroid.lng);
+    if (last_update_centroid) {
+      var distance_moved = lat_lng_centroid.distanceTo(last_update_centroid);
     }
-    return {
-      weight: 2,
-      opacity: 1,
-      color: 'white',
-      dashArray: '3',
-      fillColor: color,
-      fillOpacity: 0.5,
-    }
-  }
-
-
-
-  var meshInteractions = function() {
-    var selections = {};
-    var stored_selections = localStorage.getItem('slug_selections');
-    if (stored_selections) {
-      selections = JSON.parse(stored_selections);
-    }
-
-    var highlightStyle = {
-        dashArray: '',
-        fillOpacity: 0.9,
-    };
-
-    var newlySelected = function() {
-          var newlySelected = []
-          for(var meshId in selections) {
-            if(selections[meshId]) {
-              newlySelected.push(meshId);
-            }
-          }
-
-          return newlySelected;
-        }
-
-    return {
-      mouseover: function(e) {
-        instruct.update(e.target.feature.properties);
-      	e.target.setStyle(highlightStyle);
-      },
-      mouseout: function(e) {
-        instruct.update();
-        e.target.setStyle(styleFor(e.target.feature));
-      },
-      click: function(e) {
-        var mesh = e.target;
-        var properties = e.target.feature.properties;
-        if (properties.state === states.selected) {
-          properties.state = properties.db_state;
-          selections[properties.slug] = false;
-        } else {
-          properties.db_state = properties.state;
-          properties.state = states.selected;
-          selections[properties.slug] = true;
-        }
-        e.target.setStyle(styleFor(mesh.feature));
-      },
-      blocks: {
-	      newlySelected: newlySelected,
-        save: function() {
-          localStorage.setItem('slug_selections', JSON.stringify(selections));
-        },
-	      cleared: function() {
-	        var cleared = []
-	        for(var meshId in selections) {
-	          if(selections[meshId] === false) {
-	            cleared.push(meshId);
-	          }
-	        }
-
-	        return cleared;
-	      }
-	    }
+    else {var distance_moved = 201};
+    var zoom = map.getZoom();
+    if (zoom > 14) {
+      var reload_dist = 1000/(zoom-14);
+      }
+      else {
+        var reload_dist = 0;
       };
-  }();
-
-  var mergeModelsAndStyle = function(selected, cleared) {
-    return function(feature) {
-      var initState = feature.properties.state;
-      if (selected.indexOf(feature.properties.slug) > -1) {
-        feature.properties.db_state = feature.properties.state;
-        feature.properties.state = states.selected;
-      } else if (cleared.indexOf(feature.properties.slug) > -1) {
-        if(feature.properties.state === states.selected) {
-          feature.properties.state = states.unclaimed;
-        }
-      }
-      return styleFor(feature);
+    Cookies.set("zoom",zoom);
+    var swlat = lat_lng_bnd.getSouthWest().lat;
+    var swlng = lat_lng_bnd.getSouthWest().lng;
+    var nelat = lat_lng_bnd.getNorthEast().lat;
+    var nelng = lat_lng_bnd.getNorthEast().lng;
+    //Reload map if zoom not too high
+    //Distance moved is not short
+    //and
+    //there is no last_update or the current map bounds are not within the last update's
+    if(zoom > 14 && (!last_update_bounds || distance_moved > reload_dist) &&
+      (!last_update_bounds || !last_update_bounds.contains(lat_lng_bnd))) {
+      $('#load').removeClass('hidden');
+      var url = '/meshblocks_bounds?swlat=' + swlat + '&swlng=' + swlng
+      + '&nelat=' + nelat + '&nelng=' + nelng;
+      $.getJSON(url, function(json) {
+        getMeshblockCallback(json);
+        last_update_bounds = map.getBounds();
+        last_update_centroid = map.getCenter();
+      })
+      .fail( function() {
+        $('#load').addClass('hidden');
+      } );
     }
+    instruct.update();
+  };
+
+  map.on('moveend', function() {
+    updateMap();
+  });
+
+  var legend = L.control({position: 'bottomright'});
+
+  legend.onAdd = function(map) {
+    var div = L.DomUtil.create('div', 'legend');
+    div.innerHTML = [
+      '<i style="background:' + stateColors.claimed_by_you.fillColor + '"></i><div>My area</div>',
+      '<i style="background:' + stateColors.claimed.fillColor + '"></i><div>Claimed</div>',
+      '<i style="background:' + stateColors.quarantine.fillColor + '"></i><div>Organised door knocking event</div>',
+      '<i style="background:' + stateColors.unclaimed.fillColor + '"></i><div>Yet to be claimed!</div>'
+    ].join('');
+    return div;
   }
 
-
-
-  return {
-    render: function(features) {
-      var onEachFeatureCB = function(feature, layer) {
-        layer.on(meshInteractions)
-      }
-
-      var mesh_boxes = L.geoJson(
-                      {"type": 'FeatureCollection', "features": features},
-                      { style: mergeModelsAndStyle(meshInteractions.blocks.newlySelected(), meshInteractions.blocks.cleared()), onEachFeature: onEachFeatureCB }
-                    ).addTo(map);
-
-      map.fitBounds(mesh_boxes.getBounds());
-    },
-    clear: function() {
-        map.eachLayer(function(layer) {
-          if (layer != tileLayer && layer != legend && layer != instruct) {
-            map.removeLayer(layer)
-          }
-        });
-    },
-    showAustralia: showAustralia,
-    blocks: meshInteractions.blocks
-  };
+  legend.addTo(map);
+  map.whenReady(updateMap);
 }
-
-
 
 var windowHeight = function(){
     if(window.innerHeight != undefined){
@@ -189,57 +262,34 @@ var windowHeight = function(){
     }
 }
 
-
-
 $('#map').height(windowHeight() - $('.header').height());
 $('#map').width("100%");
 
 var stateColors =  {
-  selected: '#DDA0DD', //Purple
-  unclaimed: '#E6FF00', //Green
-  claimed: '#F0054C', //Pink
+  claimed_by_you: {"fillColor": "#9d5fa7", "color": "#111111",
+    "weight": 1, "opacity": 0.65, "fillOpacity": 0.8}, //Purple
+  unclaimed: {"fillColor": "#ffc746", "color": "#111111",
+    "weight": 1, "opacity": 0.65, "fillOpacity": 0.2}, //Yellow
+  claimed: {"fillColor": "#d5545a", "color": "#111111",
+    "weight": 1, "opacity": 0.65, "fillOpacity": 0.8}, //Red
+  quarantine: {"fillColor": "#6dbd4b", "color": "#111111",
+    "weight": 1, "opacity": 0.65, "fillOpacity": 0.8}, //Green
 };
 
-var states = {
-  selected: 'selected',
-  unclaimed: 'unclaimed',
-  claimed: 'claimed'
-}
+function openfaq(){
+  $("#dialog").dialog({minWidth: 800, width: 800,
+    height: Math.min(windowHeight() - $('.header').height() - 200,800),
+    beforeClose: function(e,ui){$("#dialog").addClass('hidden');}});
+  $("#dialog").dialog({position: { my: "center top", at: "center top+15%", of: window }});
+  $("#dialog").removeClass('hidden');
+};
 
-var map = makeMap(states, stateColors);
-$('.electorate-picker select').change(function() {
-    var electorateId = $(this).val();
-    if (electorateId !== "") {
-      $('.map-blocker').addClass('hidden')
-      $('#load').removeClass('hidden');
-      $.getJSON('/electorate/' + electorateId + '/meshblocks', function(json) {
-        map.clear();
-        if (json.length > 0) {
-          map.render(json);
-        } else {
-          $('.no-data').show();
-          $('.map-blocker').removeClass("hidden");
-        }
-        $('#load').addClass('hidden');
-      });
-      $(".instruct").removeClass("hidden");
-    } else {
-      $('.no-data').hide();
-      map.clear();
-      map.showAustralia();
-      $(".instruct").addClass("hidden");
-    }    
+$('#faqlink').click(function() {
+  openfaq();
 });
 
-$('.electorate-picker select').trigger('change');
-window.onunload = function() {
-  $('.electorate-picker select').val("");
-};
+var map = makeMap(stateColors);
 
-$('.download').click(function() {
-  map.blocks.save();
-  var form = '<form action="/download" method="POST"><select name="slugs[]" multiple>';
-  form += map.blocks.newlySelected().map(function(x) { return '<option value="' + x + '"selected></option>'; }).join("");
-  form += '</select></form>';
-  $(form).appendTo('body').submit();
+$(window).load(function(){
+  openfaq();
 });

@@ -7,6 +7,7 @@ walklist tool in collab with TW
 2. From psql run `CREATE DATABASE walklist ENCODING 'UTF_8';`
 3. From psql run `CREATE DATABASE walklist_test ENCODING 'UTF_8';`
 4. From bash run db migration `DATABASE_URL="postgres://localhost/walklist" rake db:migrate`
+5. From bash run `psql walklist < pcode_table.sql`
 
 # TEST
 Run unit test: rake spec:unit_tests

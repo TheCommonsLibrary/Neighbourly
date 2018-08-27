@@ -1,0 +1,7 @@
+%a.logo-link{href: '/map'}
+  %img.logo{src: '/images/logo.svg'}
+- if authorised?
+  .nav-top-right
+    Hi
+    .welcome-message #{user_name} &nbsp;
+    %a#logout.button{href: '/logout'}="Logout"
