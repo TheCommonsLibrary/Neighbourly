@@ -17,7 +17,7 @@ group :dev, :test do
   gem "rack-test"
   gem "rspec"
   gem "rspec-mocks"
-  gem "capybara"
+  gem 'capybara', '~> 3.0'
   gem "selenium-webdriver"
   gem "byebug"
 end
