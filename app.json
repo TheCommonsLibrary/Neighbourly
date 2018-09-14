@@ -3,10 +3,8 @@
   "description": "A turf-cutting tool for door-knocking campaigns",
   "repository": "https://github.com/TheCommonsLibrary/Neighbourly",
   "stack": "heroku-16",
-  // "image": "heroku/ruby",
   "scripts": {
     "postdeploy": "bundle exec rake db:migrate"
-    // "postdeploy": "heroku pg:psql < pcode_table.sql"
   },
   "env": {
     "APP_NAME": {
@@ -17,20 +15,6 @@
       "description": "The excerpt used in search listings and share previews",
       "value": "A turf-cutting tool for door-knocking campaigns"
     },
-    // "SECRET_KEY_BASE": {
-    //   "description": "A secret key for verifying the integrity of signed cookies.",
-    //   "generator": "secret"
-    // },
-    // "DATABASE_URL": {
-    //   "description": "",
-    //   "value": "set.automatically.by.heroku.in.production"
-    // },
-    // "RACK_ENV": {
-    //   "value": "production"
-    // },
-    // "LANG": {
-    //   "value": "en_US.UTF-8"
-    // },
     "PRIMARY_DOMAINS": {
       "description": "An optional comma-separated list of domains. Users with email addresses at these domains will be able to manage areas selected for centrally-organised doorknocking events",
       "value": ""
