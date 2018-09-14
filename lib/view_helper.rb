@@ -16,7 +16,7 @@ module Sinatra
       end
 
       def is_admin?(email)
-        if ENV['PRIMARY_DOMAINS'].nil?
+        if ENV['PRIMARY_DOMAINS'].blank?
           false
         else
           domains = ENV['PRIMARY_DOMAINS'].split(",").map(&:strip)
