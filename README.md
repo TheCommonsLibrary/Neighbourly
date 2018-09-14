@@ -14,28 +14,28 @@
 
 ### Run the app locally (optional)
 
-1. Download the code in this repository (click the "Clone or download" button above, then select "Download ZIP"). Once your download completes, unzip the folder.
-2. Open the “Terminal” application on your Mac (or the equivalent application for your Operating System) and navigate to your new Neighbourly folder on the command line by following this instruction:
+**1.** Download the code in this repository (click the "Clone or download" button above, then select "Download ZIP"). Once your download completes, unzip the folder.
+**2.** Open the “Terminal” application on your Mac (or the equivalent application for your Operating System) and navigate to your new Neighbourly folder on the command line by following this instruction:
   - Type `cd`, press the spacebar, then drag and drop the Neighbourly folder onto the command line (like [this example](https://s3-ap-southeast-2.amazonaws.com/neighbourly-data/change-directory-command-line.gif)). It should result in output something like this: `cd /Users/JoeBloggs/Desktop/Neighbourly`
-2. Install all project dependencies with the following commands:
+**3.** Install all project dependencies with the following commands:
   ```
   gem install bundler -v 1.15.3
   bundle install
   ```
-3. Create the database by running the following commands:
+**4.** Create the database by running the following commands:
   ```
   psql
   CREATE DATABASE neighbourly ENCODING 'UTF_8';
   CREATE DATABASE neighbourly_test ENCODING 'UTF_8';
   \q
   ```
-4. Run the database migrations with the following commands:
+**5.** Run the database migrations with the following commands:
   ```
   DATABASE_URL="postgres://localhost/neighbourly" rake db:migrate
   psql neighbourly < pcode_table.sql
   ```
-6. Create a new `.env` file in the project root and set the environment variables according to the examples in `.env.example`
-7. Finally start the application by running the following command:
+**6.** Create a new `.env` file in the project root and set the environment variables according to the examples in `.env.example`
+**7.** Finally start the application by running the following command:
   ```
   ruby app.rb
   ```
