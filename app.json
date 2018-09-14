@@ -4,7 +4,7 @@
   "repository": "https://github.com/TheCommonsLibrary/Neighbourly",
   "stack": "heroku-16",
   "scripts": {
-    "postdeploy": "./heroku_deploy_script.sh"
+    "postdeploy": "bundle exec rake db:migrate"
   },
   "env": {
     "APP_NAME": {
