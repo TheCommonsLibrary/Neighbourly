@@ -37,6 +37,5 @@
       "generator": "secret",
       "required": true
     }
-  },
-  "success_url": "/map" 
+  }
 }
