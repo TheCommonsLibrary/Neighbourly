@@ -16,8 +16,12 @@ module Sinatra
       end
 
       def is_admin?(email)
-        domains = ENV['PRIMARY_DOMAINS'].split(",").map(&:strip)
-        domains.any? { |domain| email.include?(domain) }
+        if ENV['PRIMARY_DOMAINS'].nil?
+          false
+        else
+          domains = ENV['PRIMARY_DOMAINS'].split(",").map(&:strip)
+          domains.any? { |domain| email.include?(domain) }
+        end
       end
     end
 
