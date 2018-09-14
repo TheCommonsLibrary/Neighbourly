@@ -1,5 +1,9 @@
 # Neighbourly
 
+### Instant deploy with Heroku
+
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
+
 ### Local setup
 
 1. Run `gem install bundler -v 1.15.3`
