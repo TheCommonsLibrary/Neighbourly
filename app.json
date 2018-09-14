@@ -4,7 +4,7 @@
   "repository": "https://github.com/TheCommonsLibrary/Neighbourly",
   "stack": "heroku-16",
   "scripts": {
-    "postdeploy": "bundle exec rake db:migrate"
+    "postdeploy": "heroku pg:psql < pcode_table.sql"
   },
   "env": {
     "APP_NAME": {
@@ -27,5 +27,6 @@
       "description": "The base URL for the API Gateway endpoints that power the backend infrastructure",
       "value": "https://4oqtu02x7f.execute-api.ap-southeast-2.amazonaws.com/prod"
     }
-  }
+  },
+  "welcome": "/map" 
 }
