@@ -4,7 +4,7 @@
   "repository": "https://github.com/TheCommonsLibrary/Neighbourly",
   "stack": "heroku-16",
   "scripts": {
-    "postdeploy": "heroku pg:psql < pcode_table.sql"
+    "postdeploy": "psql DATABASE_URL < pcode_table.sql"
   },
   "env": {
     "APP_NAME": {
