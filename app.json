@@ -5,7 +5,7 @@
   "stack": "heroku-16",
   // "image": "heroku/ruby",
   "scripts": {
-    "postdeploy": "bundle exec rake db:migrate",
+    "postdeploy": "bundle exec rake db:migrate"
     // "postdeploy": "heroku pg:psql < pcode_table.sql"
   },
   "env": {
