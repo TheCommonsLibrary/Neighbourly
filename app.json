@@ -9,24 +9,34 @@
   "env": {
     "APP_NAME": {
       "description": "",
-      "value": "Neighbourly"
+      "value": "Neighbourly",
+      "required": true
     },
     "APP_DESCRIPTION": {
       "description": "The excerpt used in search listings and share previews",
-      "value": "A turf-cutting tool for door-knocking campaigns"
+      "value": "A turf-cutting tool for door-knocking campaigns",
+      "required": true
     },
     "PRIMARY_DOMAINS": {
       "description": "An optional comma-separated list of domains. Users with email addresses at these domains will be able to manage areas selected for centrally-organised doorknocking events",
-      "value": ""
+      "value": "",
+      "required": false
     },
     "CENTRALLY_COORDINATED_EVENTS_URL": {
       "description": "The link that will appear in the popup for all areas of the map claimed by centrally-organised events",
-      "value": ""
+      "value": "",
+      "required": false
     },
     "LAMBDA_BASE_URL": {
       "description": "The base URL for the API Gateway endpoints that power the backend infrastructure",
-      "value": "https://4oqtu02x7f.execute-api.ap-southeast-2.amazonaws.com/prod"
+      "value": "https://4oqtu02x7f.execute-api.ap-southeast-2.amazonaws.com/prod",
+      "required": true
+    },
+    "SECRET_KEY_BASE": {
+      "description": "A secret key for verifying the integrity of signed cookies.",
+      "generator": "secret",
+      "required": true
     }
   },
-  "welcome": "/map" 
+  "success_url": "/map" 
 }
