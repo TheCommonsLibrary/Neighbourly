@@ -5,8 +5,14 @@ var makeMap = function(stateColors) {
   var last_update_bounds;
   var last_update_centroid;
 
-  var tileLayer = L.tileLayer('http://{s}.tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+  // Grayscale maps - broke in March 2019
+  // var tilesUrl = 'https://{s}.tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png';
+  // Standard Open Street Map tiles
+  // var tilesUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+  // Tiles with fewer markers (a more minimalist display to avoid clutter)
+  var tilesUrl = 'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png';
+  var tileLayer = L.tileLayer(tilesUrl, {
+      attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
   }).addTo(map);
 
   $('#address_search_form').submit(function(event) {
