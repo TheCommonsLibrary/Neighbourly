@@ -2,7 +2,7 @@
   "name": "Neighbourly",
   "description": "A turf-cutting tool for door-knocking campaigns",
   "repository": "https://github.com/TheCommonsLibrary/Neighbourly",
-  "stack": "heroku-16",
+  "stack": "heroku-18",
   "scripts": {
     "postdeploy": "bundle exec rake db:migrate"
   },
