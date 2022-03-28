@@ -27,7 +27,7 @@ def test_db_connection
 end
 
 configure do
-  db = Sequel.connect('postgres://localhost/neighbourly')
+  db = Sequel.connect(ENV['DATABASE_URL'] || 'postgres://localhost/neighbourly')
   set :db, db
 end
 
