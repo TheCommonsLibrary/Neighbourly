@@ -1,5 +1,5 @@
 source "https://rubygems.org"
-ruby "2.2.3"
+ruby "2.4.10"
 
 gem "sinatra"
 gem "pg"
